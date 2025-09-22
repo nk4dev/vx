@@ -1,17 +1,17 @@
 {
-  "name": "@nknighta/vx",
-  "version": "0.0.14",
-  "description": "A CLI tool for Varius smart contracts",
+  "name": "@nknighta/xnv3",
+  "version": "0.0.15",
+  "description": "A CLI tool for smart contracts",
   "main": "dist/index.js",
   "license": "MIT",
   "keywords": [
     "web3",
-    "vx",
+    "xnv",
     "cli",
     "smart-contracts"
   ],
   "bin": {
-    "vx": "./dist/cli.js"
+    "xnv": "./dist/cli.js"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
@@ -21,7 +21,6 @@
     "build": "rimraf dist && tsc",
     "clean": "rimraf dist",
     "dev": "node dist/cli.js",
-    "vx": "npm run build  && node dist/cli.js",
     "start": "npm run build && npx vx serve --debug",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
@@ -32,10 +31,10 @@
     "test:ci": "jest --ci --coverage --watchAll=false"
   },
   "dependencies": {
-    "@types/node": "^22.15.15",
+    "@types/node": "^22.16.5",
     "ethers": "^6.15.0",
     "prettier": "^3.5.3",
-    "readline-sync": "^1.4.10",
+    "readlinesync": "^1.4.10",
     "solc": "^0.8.30"
   },
   "devDependencies": {
