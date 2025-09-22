@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -12,21 +13,40 @@ export function view_rpc_config() {
         configPath = path.isAbsolute(rpcPath) ? rpcPath : path.join(process.cwd(), rpcPath);
     } else {
         configPath = path.join(process.cwd(), 'vx.config.json');
+=======
+export function view_rpc_config() {
+    const fs = require('fs');
+    const path = require('path');
+
+    const configPath = path.join(process.cwd(), 'vx.config.json');
+
+    if (!fs.existsSync(configPath)) {
+        console.error('vx.config.json does not exist. Please run "vx rpc init" to create it.');
+        process.exit(1);
+>>>>>>> 15746f33bd15bda3764908d2845eb6f7997cc232
     }
 
     try {
         const configContent = fs.readFileSync(configPath, 'utf-8');
         //return JSON.parse(configContent);
         const parsedContent = JSON.parse(configContent);
+<<<<<<< HEAD
         console.log(`RPC : ${parsedContent.protocol}://${parsedContent.host}:${parsedContent.port}`);
         process.exit(0);
     } catch (error) {
         console.error(`Error reading vx.config.json: ${error.message}`);
         console.error(`Attempted to read from: ${configPath}`);
+=======
+        console.log(`RPC : ${parsedContent[0].protocol}://${parsedContent[0].host}:${parsedContent[0].port}`);
+        process.exit(0);
+    } catch (error) {
+        console.error(`Error reading vx.config.json: ${error.message}`);
+>>>>>>> 15746f33bd15bda3764908d2845eb6f7997cc232
         process.exit(1);
     }
 }
 
+<<<<<<< HEAD
 export function load_rpc_config(rpcPath?: string) {
     // If rpcPath is not provided, search in multiple locations
     if (!rpcPath) {
@@ -55,15 +75,34 @@ export function load_rpc_config(rpcPath?: string) {
     const configPath = path.isAbsolute(rpcPath) 
         ? rpcPath 
         : path.join(process.cwd(), rpcPath);
+=======
+export function load_rpc_config(rpcPath) {
+    const fs = require('fs');
+    const path = require('path');
+
+    const configPath = path.join(process.cwd(), rpcPath || 'vx.config.json');
+
+    if (!fs.existsSync(configPath)) {
+        console.error('vx.config.json does not exist. Please run "vx rpc init" to create it.');
+        process.exit(1);
+    }
+>>>>>>> 15746f33bd15bda3764908d2845eb6f7997cc232
 
     try {
         const configContent = fs.readFileSync(configPath, 'utf-8');
         //return JSON.parse(configContent);
         const parsedContent = JSON.parse(configContent);
+<<<<<<< HEAD
         return parsedContent; // Return the first configuration object
     } catch (error) {
         console.error(`Error reading vx.config.json: ${error.message}`);
         console.error(`Attempted to read from: ${configPath}`);
+=======
+        console.log(`RPC : ${parsedContent[0].protocol}://${parsedContent[0].host}:${parsedContent[0].port}`);
+        return parsedContent[0]; // Return the first configuration object
+    } catch (error) {
+        console.error(`Error reading vx.config.json: ${error.message}`);
+>>>>>>> 15746f33bd15bda3764908d2845eb6f7997cc232
         process.exit(1);
     }
 }
