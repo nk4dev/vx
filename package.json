@@ -1,5 +1,5 @@
 {
-  "name": "@nknighta/vx",
+  "name": "@nk4dev/vx",
   "version": "0.0.14",
   "description": "A CLI tool for Varius smart contracts",
   "main": "dist/index.js",
@@ -11,7 +11,7 @@
     "smart-contracts"
   ],
   "bin": {
-    "vx": "./dist/cli.js"
+    "vx3": "./dist/cli.js"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
@@ -22,7 +22,7 @@
     "clean": "rimraf dist",
     "dev": "node dist/cli.js",
     "vx": "npm run build  && node dist/cli.js",
-    "start": "npm run build && npx vx serve --debug",
+    "start": "npm run build && npx vx serve --debug --logs",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",

@@ -2,6 +2,7 @@ import { init } from './pjmake';
 import shellhaldler from './input';
 import localServer from '../server/dev';
 import { rpc } from '../core/rpc/command';
+import gas from './gas';
 import { SDK_VERSION } from '../config';
 
 const loadversion = SDK_VERSION
@@ -30,6 +31,10 @@ export default async function VX() {
         return;
       case 'rpc':
         rpc();
+        return;
+      case 'gas':
+        // pass the rest of the args (including --rpc) to the gas handler
+        await gas(args.slice(1));
         return;
       case '--version':
         console.log(`VX CLI version: ${loadversion}`);

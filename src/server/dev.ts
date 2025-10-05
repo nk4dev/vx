@@ -101,29 +101,35 @@ export default function localServer(options?: Partial<ServerOptions>) {
 
     const server = createServer((req, res) => {
         // Handle /api endpoint
-        if (req.url === '/api' && req.method === 'GET') {
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ message: 'Welcome to the VX SDK API', status: 'success' }));
-        } else if (req.url === "/api/") {
-            // Handle /api/ endpoint
-            res.writeHead(301, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ message: 'Redirecting to /api', status: 'redirect' }));
-        } else if (req.url === '/debug') {
-            // Handle /debug endpoint
-            let blognum = 0;
-            provider.getBlockNumber().then((blockNumber) => {
-                blognum = blockNumber;
-            }).catch((error) => {
-                console.error('Error fetching block number:', error);
-            });
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            const htmlContent = localWebViewBuilder({ blocknum: blognum });
-            res.end(htmlContent);
-            res.end()
-        } else {
-            // Default response for all other requests
-            res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.end("not found api endpoint....\n");
+        try {
+            if (req.url === '/api' && req.method === 'GET') {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Welcome to the VX SDK API', status: 'success' }));
+            } else if (req.url === "/api/") {
+                // Handle /api/ endpoint
+                res.writeHead(301, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Redirecting to /api', status: 'redirect' }));
+            } else if (req.url === '/debug') {
+                // Handle /debug endpoint
+                let blognum = 0;
+                provider.getBlockNumber().then((blockNumber) => {
+                    blognum = blockNumber;
+                }).catch((error) => {
+                    console.error('! Error fetching block number...');
+                });
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                const htmlContent = localWebViewBuilder({ blocknum: blognum });
+                res.end(htmlContent);
+                res.end()
+            } else {
+                // Default response for all other requests
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end("not found api endpoint....\n");
+            }
+        } catch (error) {
+            console.error('Error handling request:', error);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'Internal Server Error', status: 'error' }));
         }
     });
 
@@ -132,7 +138,7 @@ export default function localServer(options?: Partial<ServerOptions>) {
 
     server.listen(portNumber, host, () => {
         if (debug) {
-            console.log(`Server on http://${host}:${portNumber} with debug mode`);
+            console.log(`Server on http://${host}:${portNumber}/ with debug mode \n debug view -> http://${host}:${portNumber}/debug`);
             if (chains) {
                 console.log('Available chains:', chains);
             }
