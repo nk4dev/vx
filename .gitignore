@@ -16,3 +16,4 @@ jest-coverage/
 vx.config.json
 
 config
+yarn.lock
