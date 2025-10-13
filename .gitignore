@@ -17,3 +17,7 @@ vx.config.json
 
 config
 yarn.lock
+
+## ignore IDE files
+.vscode/
+.idea/
