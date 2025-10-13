@@ -1,6 +1,7 @@
 node_modules/
 dist/
 runtest/
+bun.lock
 package-lock.json
 yarn-error.log
 *.log

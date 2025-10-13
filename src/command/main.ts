@@ -37,12 +37,14 @@ export default async function VX() {
         await gas(args.slice(1));
         return;
       case '--version':
-        console.log(`VX CLI version: ${loadversion}`);
+        console.log(`XNV version: ${loadversion}`);
         process.exit(0);
       case '-v':
-        console.log(`VX CLI version: ${loadversion}`);
+        console.log(`XNV version: ${loadversion}`);
         process.exit(0);
+      case 'check':
 
+        break;
       case 'dash':
         console.log('🚀🚀🚀🚀\n');
         console.log('build dashboard now. stay tuned!');
@@ -61,7 +63,7 @@ export default async function VX() {
 
 function help() {
   if (args.includes('--version') || args.includes('-v')) {
-    console.log(`VX CLI version: ${SDK_VERSION}`);
+    console.log(`XNV version: ${SDK_VERSION}`);
     process.exit(0);
   }
 
@@ -89,12 +91,12 @@ function help() {
     }
   ]
 
-  console.log(`\n🚀 VX CLI v${SDK_VERSION} ${stage}`);
+  console.log(`\n🚀 XNV v${SDK_VERSION} ${stage}`);
   console.log('Available commands:');
   commandlist.forEach(cmd => {
     console.log(`  ${cmd.command.padEnd(10)} - ${cmd.description}`);
   });
-  console.log('\nUse "vx <command> --help" for more information on a specific command.\n');
+  console.log('\nUse "xnv <command> --help" for more information on a specific command.\n');
 
   process.exit(0);
 }

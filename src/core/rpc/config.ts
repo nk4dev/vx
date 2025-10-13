@@ -1,13 +1,13 @@
 
 export function rpc_create_config() {
     const fs = require('fs');
-    const rpcconfigplacehalder = {
-        "rpc": {
+    const rpcconfigplacehalder = [
+        {
             "host": "localhost",
             "port": 8575,
             "protocol": "http"
         }
-    };
+    ];
 
     fs.writeFile('vx.config.json', JSON.stringify(rpcconfigplacehalder, null, 2), (err) => {
         if (err) {

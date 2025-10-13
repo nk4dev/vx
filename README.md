@@ -27,7 +27,17 @@ Gas fee data:
   debug server
 - ethers.js
 
+<<<<<<< HEAD
 authoer: [nknighta](https://nknighta.github.io/)
 
 ## license
 MIT
+=======
+## example
+
+```ts
+import vx from '@nknighta/vx';
+
+vx.instance('vx.config.json');
+```
+>>>>>>> 1f004345e7a0bec7a09572c3dbf0ea719f453837
