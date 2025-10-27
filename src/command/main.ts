@@ -31,6 +31,15 @@ export default async function VX() {
       case 'rpc':
         rpc();
         return;
+      case 'sol':
+        if (args[1] === 'hello') {
+          console.log('hello world');
+          process.exit(0);
+        } else {
+          console.error('Unknown sol subcommand');
+          process.exit(1);
+        }
+        return;
       case '--version':
         console.log(`XNV version: ${loadversion}`);
         process.exit(0);

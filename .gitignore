@@ -7,6 +7,9 @@ yarn-error.log
 *.bin
 *.tsbuildinfo
 
+bun.lock
+.vscode/
+
 # Test artifacts
 coverage/
 .nyc_output/

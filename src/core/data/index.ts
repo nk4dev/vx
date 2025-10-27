@@ -12,13 +12,10 @@ export function getBlockNumber(provider: string): Promise<number> {
 export function getBalance(provider: string, useraddres: string): Promise<number> {
     let balance;
     const rpcProvider = new ethers.JsonRpcProvider(provider);
-<<<<<<< HEAD
-    
     // Check if address is valid before making the request
     if (!useraddres || useraddres.trim() === '') {
         throw new Error('Invalid address: Address cannot be empty');
     }
-    
     return rpcProvider.getBalance(useraddres).then((userbalance) => {
         balance = userbalance ? parseFloat(ethers.formatEther(userbalance)) : 0;
         return balance;
@@ -71,10 +68,5 @@ export async function getGasFees(provider: string): Promise<GasFees> {
             baseFeePerGas: baseFee
         }
     };
-=======
-    return rpcProvider.getBalance(useraddres).then((userbalance) => {
-        balance = userbalance ? parseFloat(ethers.formatEther(userbalance)) : 0;
-        return balance;
-    });
->>>>>>> 15746f33bd15bda3764908d2845eb6f7997cc232
 }
+// ...existing code...

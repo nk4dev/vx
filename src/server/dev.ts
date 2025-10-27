@@ -3,10 +3,6 @@ import { createServer } from 'http';
 import { getBlockNumber } from '../core/data';
 import { getRpcUrl } from '../core/contract';
 
-const rpc = getRpcUrl();
-console.log(`Using RPC URL: ${rpc}`);
-const bn = getBlockNumber(rpc);
-
 // Helper functions to parse command-line arguments
 function getArgValue(args: string[], flag: string): string | undefined {
     const index = args.indexOf(flag);
@@ -105,9 +101,20 @@ export default function localServer(options?: Partial<ServerOptions>) {
     const debug = hasFlag(args, '--debug') || options?.debug || false;
     const displaylogs = hasFlag(args, '--logs') || options?.displaylogs || false;
 
-    const API_ENDTPOINT = ['/api', '/debug'];
+        // Resolve RPC and block-number lazily to avoid requiring vx.config.json at import time
+        let rpc: string | undefined;
+        try {
+            rpc = getRpcUrl();
+            if (rpc) console.log(`Using RPC URL: ${rpc}`);
+        } catch (e) {
+            // If vx.config.json is missing, log and continue — server endpoints that need RPC will handle errors
+            if (options?.debug) console.warn('RPC config not found; some endpoints may fail until vx.config.json is created.');
+        }
+        const bn = rpc ? getBlockNumber(rpc) : Promise.resolve(0);
 
-    const server = createServer((req, res) => {
+        const API_ENDTPOINT = ['/api', '/debug'];
+
+        const server = createServer((req, res) => {
         // Handle /api endpoint
         if (req.url === '/api' && req.method === 'GET') {
             res.writeHead(200, { 'Content-Type': 'application/json' });
