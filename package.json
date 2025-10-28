@@ -11,13 +11,16 @@
     "smart-contracts"
   ],
   "bin": {
-    "vx3": "./dist/cli.js"
+    "vx3": "dist/cli.js"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "public"
   },
-  "repository": "https://github.com/nk4dev/vx",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nk4dev/vx.git"
+  },
   "scripts": {
     "build": "rimraf dist && tsc",
     "clean": "rimraf dist",
