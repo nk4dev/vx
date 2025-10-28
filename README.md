@@ -21,13 +21,20 @@ Gas fee data:
   maxPriorityFeePerGas (gwei): 1
 ```
 
+## commands
+- `vx3 serve` - start the development server
+```
+npx vx3 serve --debug
+```
+### options
+| Command | Description |
+| --- | --- |
+| --port <port> | Specify the port to run the server on. Default is 8545. |
+
 ## libraries
 
 - express
   debug server
 - ethers.js
 
-authoer: [nknighta](https://nk4dev.github.io/)
-
-## license
-MIT
+authoer: [nk4dev](https://nk4dev.github.io/)

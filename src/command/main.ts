@@ -2,8 +2,8 @@ import { init } from './pjmake';
 import shellhaldler from './input';
 import localServer from '../server/dev';
 import { rpc } from '../core/rpc/command';
-import { SDK_VERSION } from '../config';
-
+import { SDK_VERSION, API_VERSION } from '../config';
+import { handleGasCommand } from './gas';
 const loadversion = SDK_VERSION
 
 const args = process.argv.slice(2);
@@ -31,6 +31,10 @@ export default async function VX() {
       case 'rpc':
         rpc();
         return;
+      case 'gas': 
+        await handleGasCommand(args.slice(1));
+        return;
+        
       case 'sol':
         if (args[1] === 'hello') {
           console.log('hello world');
@@ -95,7 +99,7 @@ function help() {
     }
   ]
 
-  console.log(`\n🚀 XNV v${SDK_VERSION} ${stage}`);
+  console.log(`\n🚀 VX3 SDK v${SDK_VERSION} ${stage} for VX ${API_VERSION}`);
   console.log('Available commands:');
   commandlist.forEach(cmd => {
     console.log(`  ${cmd.command.padEnd(10)} - ${cmd.description}`);

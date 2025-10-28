@@ -25,7 +25,7 @@ export function init(projectName?: string) {
     if (!fs.existsSync(projectDirPath)) {
       fs.mkdirSync(projectDirPath, { recursive: true });
       // Copy the template files to the new project directory
-      const templateDir = path.join(__dirname, '../../template');
+      const templateDir = path.join(__dirname, '../../packages/template');
       if (fs.existsSync(templateDir)) {
         const files = fs.readdirSync(templateDir);
         // create a package.json file for vx project
