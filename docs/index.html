@@ -88,7 +88,7 @@
 <body>
     <header>
         <div style="display:flex;align-items:center;gap:16px">
-            <h3 style="margin:0">VX SDK</h3>
+            <h3 style="margin:0">SDK | VX platform</h3>
             <nav style="font-size:14px">
                 <a href="#overview">Overview</a> ·
                 <a href="#files">Key Files</a> ·
@@ -115,6 +115,31 @@
                 <li>Local dev server: <code>src/server/dev.ts</code> serves /api, /api/block and a debug view.</li>
                 <li>Project initialization: <code>src/command/pjmake.ts</code> implements project scaffolding.</li>
             </ul>
+        </section>
+
+        <section class="card">
+            <h2>Features</h2>
+            <ul>
+                <li>Connect to multiple chains</li>
+                <li>Create and manage wallets</li>
+                <li>Local development chains</li>
+                <li>Deploy smart contracts</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Example: gas command output</h2>
+            <p>The repository includes a <code>vx3 gas</code> command that prints network gas fee data. Example output:</p>
+            <pre>
+Connecting to RPC: http://localhost:8545
+Gas fee data:
+  gasPrice (wei): 20000000000
+  gasPrice (gwei): 20
+  maxFeePerGas (wei): 2532616788
+  maxFeePerGas (gwei): 2.532616788
+  maxPriorityFeePerGas (wei): 1000000000
+  maxPriorityFeePerGas (gwei): 1
+            </pre>
         </section>
 
         <section id="files" class="card">
@@ -205,6 +230,19 @@
             <pre><code>npx vx3 rpc init
             # creates vx.config.json with an array placeholder
                         </code></pre>
+        </section>
+        
+        <section class="card">
+            <h2>Libraries</h2>
+            <ul>
+                <li><strong>express</strong> — used for the debug/local server</li>
+                <li><strong>ethers.js</strong> — RPC and on-chain helpers</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Author</h2>
+            <p>Maintainer: <a href="https://nk4dev.github.io/">nk4dev</a></p>
         </section>
 
         <footer>

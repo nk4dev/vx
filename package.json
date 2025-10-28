@@ -1,5 +1,5 @@
 {
-  "name": "@vx3/vx",
+  "name": "@nk4dev/vx",
   "version": "0.0.17",
   "description": "A CLI tool for smart contracts",
   "main": "dist/index.js",
@@ -14,7 +14,8 @@
     "vx3": "./dist/cli.js"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com/",
+    "access": "public"
   },
   "repository": "https://github.com/nk4dev/vx",
   "scripts": {
