@@ -1,30 +1,21 @@
-name: Publish package
-
+name: Publish Package to npmjs
 on:
-  push:
-    tags:
-      - 'v*.*.*'
-
+  release:
+    types: [published]
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://npm.pkg.github.com/'
-
-      - name: Install dependencies and build
-        run: |
-          npm install
-          npm run build
-
-      - name: Publish to GitHub Packages
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm publish --provenance --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.REGISTORY_TOKEN }}
-        run: |
-          # publish uses registry from package.json publishConfig
-          npm publish --registry=https://npm.pkg.github.com
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
