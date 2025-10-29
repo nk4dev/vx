@@ -11,7 +11,7 @@
     "smart-contracts"
   ],
   "bin": {
-    "vx3": "dist/cli.js"
+    "vx3": "dist/src/cli.js"
   },
   "scripts": {
     "build": "rimraf dist && tsc",

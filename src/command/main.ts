@@ -9,12 +9,12 @@ const loadversion = SDK_VERSION
 const args = process.argv.slice(2);
 // epcmager.main();
 
+
 export default async function VX() {
   if (args.length === 0) {
     help();
   }
   try {
-
     switch (args[0]) {
       case 'init':
         init();
@@ -31,10 +31,10 @@ export default async function VX() {
       case 'rpc':
         rpc();
         return;
-      case 'gas': 
+      case 'gas':
         await handleGasCommand(args.slice(1));
         return;
-        
+
       case 'sol':
         if (args[1] === 'hello') {
           console.log('hello world');
@@ -50,8 +50,11 @@ export default async function VX() {
       case '-v':
         console.log(`XNV version: ${loadversion}`);
         process.exit(0);
-      case 'check':
-
+      case 'info':
+        console.log('Checking project...');
+        const data = await fetch('https://api.varius.technology/version');
+        const result = await data.json();
+        console.log('Info: version', result.version);
         break;
       case 'dash':
         console.log('🚀🚀🚀🚀\n');
@@ -96,6 +99,12 @@ function help() {
     }, {
       command: 'help',
       description: 'Display this help message.'
+    }, {
+      command: 'info',
+      description: 'Display information about the current project.'
+    }, {
+      command: 'gas',
+      description: 'Estimate gas fees for transactions.'
     }
   ]
 
@@ -104,7 +113,7 @@ function help() {
   commandlist.forEach(cmd => {
     console.log(`  ${cmd.command.padEnd(10)} - ${cmd.description}`);
   });
-  console.log('\nUse "xnv <command> --help" for more information on a specific command.\n');
+  console.log('\nUse "vx3 <command> --help" for more information on a specific command.\n');
 
   process.exit(0);
 }

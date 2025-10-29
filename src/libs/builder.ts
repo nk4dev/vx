@@ -1,6 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { SDK_VERSION } from '../config';
+import npm_json from '../../package.json';
+
+const SDK_VERSION = npm_json.version;
 
 export function createPackageJson(projectDir: string) {
   const projectname = path.basename(projectDir);
@@ -16,11 +18,10 @@ export function createPackageJson(projectDir: string) {
     "author": "Your Name",
     "license": "ISC",
     "dependencies": {
-      "@nknighta/vx": "^${SDK_VERSION}"
+      "@varius-dev/vx": "^${SDK_VERSION}"
     },
     "devDependencies": {
       "typescript": "^4.0.0",
-      "ts-node": "^10.0.0"
     }
 }`;
 
