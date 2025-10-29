@@ -5,111 +5,31 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>VX SDK — Documentation</title>
-    <style>
-        :root {
-            --bg: #fbfbfc;
-            --card: #fff;
-            --muted: #666
-        }
+    <link rel="stylesheet" href="index.css" />
 
-        .info {
-            background: #ffff99;
-        }
-        
-        #information {
-            background: #000;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #information a {
-            color: #fff;
-            margin-top: 4px;
-        }
-
-        body {
-            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            background: var(--bg);
-            color: #111;
-            margin: 0
-        }
-
-        header {
-            background: #111;
-            color: #fff;
-            padding: 20px
-        }
-
-        header a {
-            color: #fff;
-            text-decoration: none
-        }
-
-        main {
-            max-width: 980px;
-            margin: 28px auto;
-            padding: 20px
-        }
-
-        h1 {
-            font-size: 28px;
-            margin: 0 0 12px
-        }
-
-        h2 {
-            font-size: 20px;
-            margin: 20px 0 8px
-        }
-
-        pre {
-            background: #0f1724;
-            color: #e6eef8;
-            padding: 12px;
-            border-radius: 6px;
-            overflow: auto
-        }
-
-        code {
-            background: #f3f4f6;
-            padding: 2px 6px;
-            border-radius: 4px
-        }
-
-        section.card {
-            background: var(--card);
-            border-radius: 8px;
-            padding: 16px;
-            margin: 12px 0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, .04)
-        }
-
-        ul {
-            margin: 8px 0 0 20px
-        }
-
-        footer {
-            max-width: 980px;
-            margin: 12px auto;
-            padding: 12px;
-            color: var(--muted);
-            font-size: 13px
-        }
-    </style>
 </head>
 
 <body>
     <header>
-        <div style="display:flex;align-items:center;gap:16px">
+        <div class="header-inner" style="display:flex;align-items:center;gap:16px;position:relative">
             <h3 style="margin:0">SDK | VX platform</h3>
-            <nav style="font-size:14px">
+
+            <nav id="main-nav" class="main-nav" style="font-size:14px">
+                <div id="version-m" style="margin-left:auto;font-size:14px"></div>
                 <a href="#overview">Overview</a> ·
                 <a href="#files">Key Files</a> ·
                 <a href="#commands">Commands</a> ·
                 <a href="#workflows">Workflows</a>
                 <a href="#update">Update</a>
             </nav>
+
             <div id="version" style="margin-left:auto;font-size:14px"></div>
+
+            <!-- Hamburger button (visible on small screens) -->
+            <button id="hamburger" class="hamburger" aria-label="Open menu" aria-expanded="false"
+                aria-controls="main-nav">
+                <span class="hamburger-box"><span class="hamburger-inner"></span></span>
+            </button>
         </div>
     </header>
 
@@ -270,13 +190,48 @@ Gas fee data:
 </body>
 
 <script>
-    // Set version info dynamically
-    (function() {
+    // Set version info dynamically and enable hamburger toggle
+    (function () {
         const version = "0.1.2";
         const versionElem = document.getElementById("version");
+        const versionElemMobile = document.getElementById("version-m");
+
         if (versionElem) {
             versionElem.textContent = `Version: ${version}`;
         }
+
+        if (versionElemMobile) {
+            versionElemMobile.textContent = `Version: ${version}`;
+        }
+
+        // Hamburger toggle
+        const btn = document.getElementById('hamburger');
+        const nav = document.getElementById('main-nav');
+        if (btn && nav) {
+            btn.addEventListener('click', () => {
+                const expanded = btn.getAttribute('aria-expanded') === 'true';
+                btn.setAttribute('aria-expanded', String(!expanded));
+                nav.classList.toggle('open');
+            });
+
+            // Close nav when resizing to large screens
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 720) {
+                    nav.classList.remove('open');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Close when clicking outside the nav on small screens
+            document.addEventListener('click', (ev) => {
+                if (!nav.classList.contains('open')) return;
+                const target = ev.target;
+                if (target === btn || nav.contains(target)) return;
+                nav.classList.remove('open');
+                btn.setAttribute('aria-expanded', 'false');
+            });
+        }
     })();
 </script>
+
 </html>
