@@ -35,7 +35,6 @@ export function load_rpc_config(rpcPath?: string) {
             // Try next path
         }
     }
-    console.error('Error: vx.config.json not found in any of the expected locations:');
-    possiblePaths.forEach(p => console.error(`  - ${p}`));
+    console.error('vx.config.json not found.');
     process.exit(1);
 }

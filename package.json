@@ -1,6 +1,6 @@
 {
   "name": "@nk4dev/vx",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "A CLI tool for smart contracts",
   "main": "dist/index.js",
   "license": "MIT",
@@ -12,14 +12,6 @@
   ],
   "bin": {
     "vx3": "dist/cli.js"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/",
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nk4dev/vx.git"
   },
   "scripts": {
     "build": "rimraf dist && tsc",
