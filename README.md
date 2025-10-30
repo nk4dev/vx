@@ -2,7 +2,9 @@
 
 Useful web3 development tools for creating projects, connecting to RPCs, checking gas, and running a local dev server.
 
-Status: active development (not yet released)
+> [!WARNING]
+> This project is in active development and has not yet been officially released. Use at your own risk.
+
 
 update here: https://nknighta.me/vx
 vx3: https://nknighta.me/dev/vx3
@@ -86,21 +88,20 @@ await data.getBalance("http://127.0.0.1:8545", "0x...");
 ```
 
 ## Project creation (template copy)
-`vx3 create <name>`（または `vx3 init <name>`）は `packages/template` の中身を、カレントディレクトリ直下の `<name>` フォルダに再帰コピーします。コピー先には `package.json` も生成されます。
+`vx3 create <name>` (or `vx3 init <name>`) recursively copies the contents of `packages/template` to the `<name>` folder directly under the current directory. A `package.json` file is also generated in the destination directory.
 
-テンプレート内容の例:
+Template content examples:
 - `packages/template/sample.js`
 - `packages/template/sample.sol`
 - `packages/template/vmx.config.json`
 - `packages/template/contracts/Sample.sol`
 
-テンプレートディレクトリの解決は以下の候補を順に探索します（開発/配布の差異を吸収）:
-1) `dist` 実行時: `../../packages/template`
-2) TS 実行/構成差異: `../../../packages/template`
-3) リポジトリ直下: `<cwd>/packages/template`
+Template directory resolution searches the following candidates in order (accommodating development/distribution differences):
+1) When running `dist`: `../../packages/template`
+2) When running TS/config: `../../../packages/template`
+3) Directly under the repository: `<cwd>/packages/template`
 
-when not found, it will issue a warning and create only a minimal setup (`package.json`).
-
+If not found, it will issue a warning and create only a minimal setup (`package.json`).
 ## Hardhat setup
 Scaffold Hardhat files into the current project:
 

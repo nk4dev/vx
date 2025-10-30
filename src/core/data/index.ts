@@ -55,7 +55,7 @@ export async function getGasFees(provider: string): Promise<GasFees> {
 
     const toGwei = (v?: bigint | null) => (v != null ? ethers.formatUnits(v, 'gwei') : undefined);
 
-    return {
+    const result: GasFees = {
         unit: 'gwei',
         gasPriceGwei: toGwei(feeData.gasPrice ?? null),
         maxFeePerGasGwei: toGwei(feeData.maxFeePerGas ?? null),
@@ -68,5 +68,23 @@ export async function getGasFees(provider: string): Promise<GasFees> {
             baseFeePerGas: baseFee
         }
     };
+
+    // Provide JSON-safe serialization to avoid "Do not know how to serialize a BigInt"
+    // JSON.stringify will call toJSON if present on the object
+    (result as unknown as { toJSON: () => unknown }).toJSON = () => ({
+        unit: result.unit,
+        gasPriceGwei: result.gasPriceGwei,
+        maxFeePerGasGwei: result.maxFeePerGasGwei,
+        maxPriorityFeePerGasGwei: result.maxPriorityFeePerGasGwei,
+        baseFeePerGasGwei: result.baseFeePerGasGwei,
+        raw: {
+            gasPrice: result.raw.gasPrice != null ? String(result.raw.gasPrice) : null,
+            maxFeePerGas: result.raw.maxFeePerGas != null ? String(result.raw.maxFeePerGas) : null,
+            maxPriorityFeePerGas: result.raw.maxPriorityFeePerGas != null ? String(result.raw.maxPriorityFeePerGas) : null,
+            baseFeePerGas: result.raw.baseFeePerGas != null ? String(result.raw.baseFeePerGas) : null,
+        },
+    });
+
+    return result;
 }
 // ...existing code...
