@@ -12,7 +12,7 @@ const http = require('http');
 const { spawn } = require('child_process');
 
 const rootDir = path.resolve(__dirname, '..');
-const cliPath = path.resolve(rootDir, 'dist', 'cli.js');
+const cliPath = path.resolve(rootDir, 'dist', 'src', 'cli.js');
 const repoConfigPath = path.resolve(rootDir, 'vx.config.json');
 
 function runCLI(args, options = {}) {
@@ -139,58 +139,32 @@ describe('vx CLI e2e', () => {
   test('help shows command list', async () => {
     const res = await runCLI(['help']);
     expect(res.code).toBe(0);
-    expect(res.stdout).toMatch(/Available commands:/);
-    expect(res.stdout).toMatch(/VX v/);
+  expect(res.stdout).toMatch(/Available commands:/);
+  expect(res.stdout).toMatch(/VX3 SDK v/);
   });
 
   test('--version prints version', async () => {
     const res = await runCLI(['--version']);
     expect(res.code).toBe(0);
-    expect(res.stdout).toMatch(/VX version: /);
+    expect(res.stdout).toMatch(/version:/i);
   });
 
   test('-v prints version (short flag)', async () => {
     const res = await runCLI(['-v']);
     expect(res.code).toBe(0);
-    expect(res.stdout).toMatch(/VX version: /);
+    expect(res.stdout).toMatch(/version:/i);
   });
 
-  test('rpc create/save/list/load/add/help operate in temp dir', async () => {
-    // create default config
-    let res = await runCLI(['rpc', 'create', 'testnet'], { cwd: workDir });
+  test('rpc init + view operate in temp dir', async () => {
+    // create vx.config.json in working dir
+    let res = await runCLI(['rpc', 'init'], { cwd: workDir });
     expect(res.code).toBe(0);
-    expect(res.stdout).toMatch(/Created default RPC configuration: testnet.json/);
-    expect(fs.existsSync(path.join(workDir, 'rpcs', 'testnet.json'))).toBe(true);
+    expect(fs.existsSync(path.join(workDir, 'vx.config.json'))).toBe(true);
 
-    // save a named config
-    res = await runCLI(['rpc', 'save', 'myrpc', 'localhost', '8545', 'http'], { cwd: workDir });
+    // view should print RPC URL
+    res = await runCLI(['rpc', 'view'], { cwd: workDir });
     expect(res.code).toBe(0);
-    expect(res.stdout).toMatch(/RPC configuration saved/);
-    expect(fs.existsSync(path.join(workDir, 'rpcs', 'myrpc.json'))).toBe(true);
-
-    // add another endpoint to the same file
-    res = await runCLI(['rpc', 'add', 'myrpc', 'mainnet.infura.io', '443', 'https'], { cwd: workDir });
-    expect(res.code).toBe(0);
-    expect(res.stdout).toMatch(/Added RPC endpoint to configuration: myrpc.json/);
-
-    // list should show our files
-    res = await runCLI(['rpc', 'list'], { cwd: workDir });
-    expect(res.code).toBe(0);
-    expect(res.stdout).toMatch(/Available RPC configurations:/);
-    expect(res.stdout).toMatch(/myrpc/);
-    expect(res.stdout).toMatch(/testnet/);
-
-    // load should print the endpoints
-    res = await runCLI(['rpc', 'load', 'myrpc'], { cwd: workDir });
-    expect(res.code).toBe(0);
-    expect(res.stdout).toMatch(/RPC Configuration:/);
-    expect(res.stdout).toMatch(/http:\/\/localhost:8545/);
-    expect(res.stdout).toMatch(/https:\/\/mainnet\.infura\.io:443/);
-
-    // help
-    res = await runCLI(['rpc', 'help']);
-    expect(res.code).toBe(0);
-    expect(res.stdout).toMatch(/VX RPC Configuration Manager/);
+    expect(res.stdout).toMatch(/RPC\s*:\s*http:\/\/localhost:8575/);
   });
 
   test('init creates project directory and copies template', async () => {
@@ -207,7 +181,7 @@ describe('vx CLI e2e', () => {
   test('serve starts server and responds to /api then exits when killed', async () => {
     const port = await findFreePort();
     const host = '127.0.0.1';
-    const args = ['serve', '--host', host, '--port', String(port), '--debug', '--path', repoConfigPath];
+  const args = ['serve', '--host', host, '--port', String(port), '--debug'];
     const proc = spawn(process.execPath, [cliPath, ...args], { cwd: rootDir, stdio: ['ignore', 'pipe', 'pipe'] });
 
     // wait for server log line

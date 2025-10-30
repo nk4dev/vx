@@ -10,6 +10,8 @@
     <meta property="og:site_name" content="VX3 | nknighta.me projects" />
     <meta property="og:description" content="my web3 project" />
     <meta property="og:url" content="https://nknighta.me/vx" />
+    <link rel="icon" href="https://nknighta.me/assets/img/varius.ico" />
+    <meta name="theme-color" content="#ffffff" />
     <meta property="og:image"
         content="https://ogp-img-gen.vercel.app/api/img-gen?text=VX+SDK&host=nknight.me" />
     <meta property="og:type" content="website" />
@@ -27,10 +29,12 @@
             <nav id="main-nav" class="main-nav" style="font-size:14px">
                 <div id="version-m" style="margin-left:auto;font-size:14px"></div>
                 <a href="#overview">Overview</a> ·
-                <a href="#files">Key Files</a> ·
                 <a href="#commands">Commands</a> ·
-                <a href="#workflows">Workflows</a>
-                <a href="#update">Update</a>
+                <a href="#library">Library</a> ·
+                <a href="#hardhat">Hardhat</a> ·
+                <a href="#rpc-config">RPC Config</a> ·
+                <a href="#debug">Debug</a> ·
+                <a href="#files">Key Files</a>
             </nav>
 
             <div id="version" style="margin-left:auto;font-size:14px"></div>
@@ -67,13 +71,52 @@
             </ul>
         </section>
 
-        <section class="card">
+        <section class="card" id="features">
             <h2>Features</h2>
             <ul>
                 <li>Connect to multiple chains</li>
                 <li>Create and manage wallets</li>
                 <li>Local development chains</li>
                 <li>Deploy smart contracts</li>
+            </ul>
+        </section>
+
+        <section class="card" id="library">
+            <h2>Library usage (default import)</h2>
+            <p>Use the SDK programmatically via the default export; CLI behavior is unchanged.</p>
+            <h3>TypeScript / ESM</h3>
+            <pre><code>import vx from "@nk4dev/vx";
+
+const rpc = vx.getRpcUrl();
+const block = await vx.getBlockNumber(rpc);
+const gas = await vx.getGasFees(rpc);
+</code></pre>
+            <h3>CommonJS</h3>
+            <pre><code>const vx = require("@nk4dev/vx");
+vx.getGasFees("http://127.0.0.1:8545").then(console.log);
+</code></pre>
+            <p>Named exports remain available:</p>
+            <pre><code>import { vx as data, instance } from "@nk4dev/vx";
+await data.getBalance("http://127.0.0.1:8545", "0x...");
+</code></pre>
+        </section>
+
+        <section class="card" id="hardhat">
+            <h2>Hardhat setup</h2>
+            <p>Scaffold Hardhat into the current project using a built-in template.</p>
+            <pre><code>vx3 setup hardhat
+# then install dev dependencies
+npm install -D hardhat @nomicfoundation/hardhat-toolbox
+
+# try scripts
+npm run hh:node
+npm run hh:compile
+npm run hh:deploy
+</code></pre>
+            <ul>
+                <li>Adds scripts: <code>hh</code>, <code>hh:compile</code>, <code>hh:test</code>, <code>hh:node</code>, <code>hh:deploy</code></li>
+                <li>Adds devDependencies: <code>hardhat</code>, <code>@nomicfoundation/hardhat-toolbox</code></li>
+                <li>Copies: <code>hardhat.config.ts</code>, <code>contracts/Sample.sol</code>, <code>scripts/deploy.ts</code></li>
             </ul>
         </section>
 
@@ -121,9 +164,11 @@ Gas fee data:
             <ul>
                 <li><code>npm run build</code> — build TypeScript (<code>rimraf dist && tsc</code>).</li>
                 <li><code>npm run dev</code> — run built CLI (<code>node dist/cli.js</code>).</li>
-                <li><code>npx vx3 init &lt;name&gt;</code> — create a new project from template.</li>
+                <li><code>vx3 create &lt;name&gt;</code> — create a new project from template (non-interactive).</li>
+                <li><code>vx3 create</code> — interactive prompt to create a new project.</li>
                 <li><code>npx vx3 rpc init</code> — create <code>vx.config.json</code> (RPC template).</li>
                 <li><code>npx vx3 serve --debug</code> — start local dev server with debug view.</li>
+                <li><code>vx3 setup hardhat</code> — scaffold Hardhat into the current project.</li>
                 <li><code>npx vx sol hello</code> — example subcommand that prints "hello world".</li>
                 <li>Hardhat: <code>npm run hh:node</code>, <code>npm run hh:compile</code>,
                     <code>npm run hh:deploy</code>.
@@ -142,7 +187,7 @@ Gas fee data:
             </ol>
         </section>
 
-        <section class="card">
+        <section class="card" id="rpc-config">
             <h2>vx.config.json (RPC config)</h2>
             <p>The template written by <code>src/core/rpc/config.ts</code> is an array. Example:</p>
             <pre>[
@@ -157,8 +202,18 @@ Gas fee data:
                 to simplify code.</p>
         </section>
 
-        <section class="card">
-            <h2>Known notes</h2>
+        <section class="card" id="debug">
+            <h2>Debug page (Tailwind UI)</h2>
+            <p><code>vx3 serve --debug</code> serves a Tailwind-powered debug dashboard at <code>/debug</code>.</p>
+            <ul>
+                <li>Shows server host and the latest block number</li>
+                <li>Quick links: <code>/api</code>, <code>/api/block</code></li>
+                <li>Usage section with example fetch calls</li>
+            </ul>
+        </section>
+
+        <section class="card" id="notes">
+            <h2>Notes</h2>
             <ul>
                 <li>The file <code>src/core/rpc/connect.ts</code> was cleaned up after merge-conflict remnants were
                     found.</li>
@@ -168,6 +223,8 @@ Gas fee data:
                 <li>The local server was adjusted to avoid requiring <code>vx.config.json</code> at import time so
                     <code>npx vx3 init</code> doesn't fail when config is missing.
                 </li>
+                <li>Default library import is supported (<code>import vx from "@nk4dev/vx"</code>) while CLI behavior remains unchanged.</li>
+                <li><code>getGasFees</code> returns a JSON-serializable object; bigint fields are stringified via <code>toJSON</code> to avoid serialization errors.</li>
             </ul>
         </section>
 

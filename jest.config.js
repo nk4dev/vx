@@ -4,13 +4,9 @@
  */
 
 const config = {
-
   coverageProvider: "v8",
-
   testEnvironment: "node",
-  transform: {
-    "\\.[jt]sx?$": ["babel-jest", { "excludeJestPreset": true }],
-  },
+  // No transform: tests are plain JS and the CLI is executed via Node
   testMatch: [
     "**/__tests__/**/*.[jt]s?(x)",
     "**/?(*.)+(spec|test).[tj]s?(x)"
