@@ -1,9 +1,9 @@
-import { init } from './pjmake';
 import shellhaldler from './input';
 import localServer from '../server/dev';
 import { rpc } from '../core/rpc/command';
 import { SDK_VERSION, API_VERSION } from '../config';
 import { handleGasCommand } from './gas';
+import { init } from './pjmake';
 const loadversion = SDK_VERSION
 
 const args = process.argv.slice(2);
@@ -23,7 +23,12 @@ export default async function VX() {
         help();
         break;
       case 'create':
-        shellhaldler();
+        // If a name argument is provided, create non-interactively; otherwise prompt
+        if (args[1]) {
+          init(args[1]);
+        } else {
+          shellhaldler();
+        }
         return;
       case 'serve':
         localServer();
@@ -81,31 +86,14 @@ function help() {
   const stage = "dev";
 
   const commandlist = [
-    {
-      command: 'init',
-      description: 'Initialize a new project with default settings.'
-    }, {
-      command: 'create',
-      description: 'Create a new project with the specified name.'
-    }, {
-      command: 'serve',
-      description: 'Start a local development server.'
-    }, {
-      command: 'contract',
-      description: 'Interact with a smart contract (browser-based example).'
-    }, {
-      command: 'dash',
-      description: 'Build and serve the dashboard.'
-    }, {
-      command: 'help',
-      description: 'Display this help message.'
-    }, {
-      command: 'info',
-      description: 'Display information about the current project.'
-    }, {
-      command: 'gas',
-      description: 'Estimate gas fees for transactions.'
-    }
+    { command: 'init', description: 'Initialize a new project with default settings.' },
+    { command: 'create', description: 'Create a new project with the specified name.' },
+    { command: 'serve', description: 'Start a local development server.' },
+    { command: 'contract', description: 'Interact with a smart contract (browser-based example).' },
+    { command: 'dash', description: 'Build and serve the dashboard.' },
+    { command: 'help', description: 'Display this help message.' },
+    { command: 'info', description: 'Display information about the current project.' },
+    { command: 'gas', description: 'Estimate gas fees for transactions.' }
   ]
 
   console.log(`\n🚀 VX3 SDK v${SDK_VERSION} ${stage} for VX ${API_VERSION}`);

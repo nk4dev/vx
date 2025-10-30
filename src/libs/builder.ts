@@ -12,16 +12,15 @@ export function createPackageJson(projectDir: string) {
     "description": "A brief description of your package",
     "main": "index.js",
     "scripts": {
-      "start": "ts-node src/index.ts",
-      "build": "tsc"    
+      "dev": "vx3 serve --debug"
     },
     "author": "Your Name",
     "license": "ISC",
     "dependencies": {
-      "@varius-dev/vx": "^${SDK_VERSION}"
+      "@varius-dev/vx": "https://github.com/nk4dev/vx.git"
     },
     "devDependencies": {
-      "typescript": "^4.0.0",
+      "typescript": "^4.0.0"
     }
 }`;
 

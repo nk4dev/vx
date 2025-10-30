@@ -16,6 +16,5 @@ coverage/
 jest-coverage/
 
 .env
-vx.config.json
 
 config

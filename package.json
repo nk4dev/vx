@@ -3,6 +3,10 @@
   "version": "0.0.18",
   "description": "A CLI tool for smart contracts",
   "main": "dist/index.js",
+  "files": [
+    "dist",
+    "packages/template"
+  ],
   "license": "MIT",
   "keywords": [
     "web3",
@@ -15,8 +19,9 @@
   },
   "scripts": {
     "build": "rimraf dist && tsc",
+    "prepare": "npm run build",
     "clean": "rimraf dist",
-    "dev": "node dist/cli.js",
+    "dev": "node dist/src/cli.js",
     "start": "npm run build && npx vx serve --debug",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",

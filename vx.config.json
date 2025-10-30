@@ -1,0 +1,7 @@
+[
+  {
+    "host": "https://eth.llamarpc.com",
+    "port": 443,
+    "protocol": "https"
+  }
+]
