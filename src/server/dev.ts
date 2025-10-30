@@ -32,56 +32,66 @@ interface ServerOptions {
 }
 
 
-function localWebViewBuilder({ blognum }) {
-    // This function can be used to build a local web view with the provided block number
-    return `<html>
-        <head>
-            <title>VX Local Web View</title>
-        </head>
-        <style>
-            * { 
-                padding: 0; 
-                margin: 0; 
-                font-family: Noto Sans, sans-serif;
-                box-sizing: border-box;    
-            }
+function localWebViewBuilder({ blognum, host, port }) {
+        // TailwindCSS-powered, cleaner debug UI
+        return `<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>VX SDK — Debug</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-slate-50 text-slate-900">
+        <header class="bg-slate-900 text-white">
+            <div class="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
+                <h1 class="text-lg font-semibold">VX SDK Debug</h1>
+                <nav class="ml-auto text-sm opacity-90">
+                    <a class="hover:underline" href="/api">/api</a>
+                    <span class="px-2">·</span>
+                    <a class="hover:underline" href="/api/block">/api/block</a>
+                </nav>
+            </div>
+        </header>
 
-            code {
-                background-color: #f4f4f4;
-                border-radius: 5px;
-                display: block;
-            }
+        <main class="max-w-4xl mx-auto px-4 py-6">
+            <section class="mb-6">
+                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-medium">Server</h2>
+                            <p class="text-slate-500 text-sm">http://${host}:${port}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-semibold">${blognum}</div>
+                            <div class="text-slate-500 text-xs">latest block</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-            pre {
-                background-color: #f4f4f4;
-                left: 0;
-                }
-        </style>
-        <body>
-            <h1 style="text-align: center; color: #333;">VX SDK Local Web View</h1>
-            <p>This is a local web view for VX SDK.</p>
-            <a href="https://vx.varius.technology" target="_">Docs</a>
-            <h2>API sample</h2>
-            <code>
-                <pre>
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <h3 class="font-medium mb-3">Endpoints</h3>
+                    <ul class="text-sm space-y-2">
+                        <li><a class="text-blue-600 hover:underline" href="/api">GET /api</a></li>
+                        <li><a class="text-blue-600 hover:underline" href="/api/block">GET /api/block</a></li>
+                    </ul>
+                </div>
 
-{blognum: ${blognum}}
-                </pre>
-            </code>
-            <h2>Code example</h2>
-            <code>
-                <pre>
-                import vx from '@nknighta/vx';
-                export const vx = new vx.node({});
-                const bn = vx.blocknum();
-            bn.then(
-                    (blockNumber) => res.end(localWebViewBuilder({ blognum: blockNumber }))
-                ).catch(() => res.end(localWebViewBuilder({ blognum: 0 })));
-            
-                </pre>
-            </code>
-        </body>
-    </html>`;
+                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <h3 class="font-medium mb-3">Usage</h3>
+<pre class="text-xs bg-slate-900 text-slate-100 rounded-lg p-3 overflow-auto"><code>fetch('http://${host}:${port}/api').then(r => r.json())
+fetch('http://${host}:${port}/api/block').then(r => r.json())</code></pre>
+                </div>
+            </section>
+        </main>
+
+        <footer class="max-w-4xl mx-auto px-4 py-6 text-slate-500 text-sm">
+            <a class="text-blue-600 hover:underline" href="https://vx.varius.technology" target="_blank">Docs</a>
+        </footer>
+    </body>
+</html>`;
 }
 
 export default function localServer(options?: Partial<ServerOptions>) {
@@ -134,8 +144,8 @@ export default function localServer(options?: Partial<ServerOptions>) {
             if (debug) {
                 res.writeHead(200, { 'Content-Type': 'text/html' });
                 bn.then(
-                    (blockNumber) => res.end(localWebViewBuilder({ blognum: blockNumber }))
-                ).catch(() => res.end(localWebViewBuilder({ blognum: 0 })));
+                    (blockNumber) => res.end(localWebViewBuilder({ blognum: blockNumber, host, port: portNumber }))
+                ).catch(() => res.end(localWebViewBuilder({ blognum: 0, host, port: portNumber })));
             } else {
                 res.writeHead(404, { 'Content-Type': 'text/plain' });
                 res.end("Debug mode is off. No debug information available.\n");
@@ -153,6 +163,7 @@ export default function localServer(options?: Partial<ServerOptions>) {
     server.listen(portNumber, host, () => {
         if (debug) {
             console.log(`Server on http://${host}:${portNumber} with debug mode`);
+            console.log(`http://${host}:${portNumber}/debug`);
             if (chains) {
                 console.log('Available chains:', chains);
             }

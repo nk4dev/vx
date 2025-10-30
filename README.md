@@ -1,16 +1,141 @@
-# VX
-> useful web3 development tools
+# VX - Web3 Development Toolkit for VX3
 
-## features
-- connect to multiple chains
-- create and magage wallets
-- local development chains
-- deploy smart contracts
+Useful web3 development tools for creating projects, connecting to RPCs, checking gas, and running a local dev server.
 
-## commands
-- `vx3 gas` - check gas prices
+Status: active development (not yet released)
 
-```bash
+update here: https://nknighta.me/vx
+vx3: https://nknighta.me/dev/vx3
+
+## Features
+- Connect to multiple chains (ethers v6)
+- Create and manage wallets
+- Local development server with simple APIs
+- Deploy/compile examples (Hardhat samples included)
+
+## Requirements
+- Node.js 18+ (recommended; required for built-in `fetch` usage)
+- npm (or pnpm/yarn)
+
+## Installation (local dev)
+```powershell
+npm install
+npm run build
+# Run the CLI (built output)
+node .\dist\src\cli.js --help
+```
+
+Or link the CLI name for local testing:
+```powershell
+npm link
+vx3 --help
+```
+
+For one-off usage when published: `npx vx3 <command>`
+
+## Quick start
+- Create a new project (non-interactive):
+```powershell
+vx3 create my-app
+```
+- Create a new project (interactive prompt):
+```powershell
+vx3 create
+```
+- Initialize RPC config template:
+```powershell
+vx3 rpc init
+```
+- Start local dev server (with debug view):
+```powershell
+vx3 serve --debug
+```
+- Check gas info:
+```powershell
+vx3 gas
+```
+
+## Library usage (import)
+You can use the SDK programmatically via the default export, while CLI features remain unchanged.
+
+TypeScript/ESM:
+```ts
+import vx from "@nk4dev/vx";
+
+const rpc = vx.getRpcUrl(); // from vx.config.json
+const block = await vx.getBlockNumber(rpc);
+const gas = await vx.getGasFees(rpc);
+```
+
+CommonJS:
+```js
+const vx = require("@nk4dev/vx").default;
+vx.getGasFees("http://127.0.0.1:8545").then(console.log);
+```
+
+Named exports are still available for backward compatibility:
+```ts
+import { vx as data, instance } from "@nk4dev/vx";
+await data.getBalance("http://127.0.0.1:8545", "0x...");
+```
+
+## Project creation (template copy)
+`vx3 create <name>`（または `vx3 init <name>`）は `packages/template` の中身を、カレントディレクトリ直下の `<name>` フォルダに再帰コピーします。コピー先には `package.json` も生成されます。
+
+テンプレート内容の例:
+- `packages/template/sample.js`
+- `packages/template/sample.sol`
+- `packages/template/vmx.config.json`
+- `packages/template/contracts/Sample.sol`
+
+テンプレートディレクトリの解決は以下の候補を順に探索します（開発/配布の差異を吸収）:
+1) `dist` 実行時: `../../packages/template`
+2) TS 実行/構成差異: `../../../packages/template`
+3) リポジトリ直下: `<cwd>/packages/template`
+
+見つからない場合は警告を出しつつ、最小構成（`package.json`）のみを作成します。
+
+## Hardhat setup
+Scaffold Hardhat files into the current project:
+
+```powershell
+vx3 setup hardhat
+# then install dev dependencies
+npm install -D hardhat @nomicfoundation/hardhat-toolbox
+
+# try scripts
+npm run hh:node
+npm run hh:compile
+npm run hh:deploy
+```
+
+This command:
+- Adds/merges scripts: `hh`, `hh:compile`, `hh:test`, `hh:node`, `hh:deploy`
+- Adds devDependencies: `hardhat`, `@nomicfoundation/hardhat-toolbox`
+- Copies templates when available:
+  - `hardhat.config.ts`
+  - `contracts/Sample.sol`
+  - `scripts/deploy.ts`
+
+## RPC 設定（vx.config.json）
+`vx3 rpc init` は RPC 設定テンプレートを作成します。現在のテンプレートは配列で、ローダは先頭のオブジェクトを使用します。
+
+```json
+[
+  { "host": "localhost", "port": 8575, "protocol": "http" }
+]
+```
+
+将来的には単一オブジェクト形式へ標準化する可能性があります。
+
+## Debug page (Tailwind UI)
+`vx3 serve --debug` serves a TailwindCSS-powered debug dashboard at `/debug`:
+- Shows server host and the latest block number
+- Quick links: `/api`, `/api/block`
+- "Usage" section with example fetch calls
+
+### Gas Command Example Output
+```text
 Connecting to RPC: http://localhost:8545
 Gas fee data:
   gasPrice (wei): 20000000000
@@ -21,20 +146,10 @@ Gas fee data:
   maxPriorityFeePerGas (gwei): 1
 ```
 
-## commands
-- `vx3 serve` - start the development server
-```
-npx vx3 serve --debug
-```
-### options
-| Command | Description |
-| --- | --- |
-| --port <port> | Specify the port to run the server on. Default is 8545. |
 
-## libraries
+## Libraries
+- express（デバッグ/ローカルサーバ）
+- ethers.js（RPC/チェーン操作）
 
-- express
-  debug server
-- ethers.js
-
-authoer: [nk4dev](https://nk4dev.github.io/)
+## Author
+Maintainer: [nk4dev](https://nk4dev.github.io/)

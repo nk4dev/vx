@@ -2,10 +2,12 @@
   "name": "@nk4dev/vx",
   "version": "0.0.18",
   "description": "A CLI tool for smart contracts",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "files": [
     "dist",
-    "packages/template"
+    "packages/template",
+    "packages/hardhat"
   ],
   "license": "MIT",
   "keywords": [

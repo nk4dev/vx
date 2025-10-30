@@ -4,6 +4,9 @@ import { rpc } from '../core/rpc/command';
 import { SDK_VERSION, API_VERSION } from '../config';
 import { handleGasCommand } from './gas';
 import { init } from './pjmake';
+// Use require to avoid TS resolution issues in some environments
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { setup } = require('./setup');
 const loadversion = SDK_VERSION
 
 const args = process.argv.slice(2);
@@ -35,6 +38,13 @@ export default async function VX() {
         return;
       case 'rpc':
         rpc();
+        return;
+      case 'setup':
+        if (args[1] === 'hardhat') {
+          await setup('hardhat');
+          return;
+        }
+        console.error('Unknown setup target. Try: vx3 setup hardhat');
         return;
       case 'gas':
         await handleGasCommand(args.slice(1));
@@ -89,6 +99,7 @@ function help() {
     { command: 'init', description: 'Initialize a new project with default settings.' },
     { command: 'create', description: 'Create a new project with the specified name.' },
     { command: 'serve', description: 'Start a local development server.' },
+    { command: 'setup', description: 'Project setup helpers (e.g., hardhat).' },
     { command: 'contract', description: 'Interact with a smart contract (browser-based example).' },
     { command: 'dash', description: 'Build and serve the dashboard.' },
     { command: 'help', description: 'Display this help message.' },
