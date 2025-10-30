@@ -7,6 +7,12 @@ Status: active development (not yet released)
 update here: https://nknighta.me/vx
 vx3: https://nknighta.me/dev/vx3
 
+
+this project using code generation AI tools.
+- GitHub Copilot [GPT-5, Claude sonnet 4, GPT-5 mini, grok code fast]
+- Google Gemini
+- NotebookLM
+
 ## Features
 - Connect to multiple chains (ethers v6)
 - Create and manage wallets
@@ -93,7 +99,7 @@ await data.getBalance("http://127.0.0.1:8545", "0x...");
 2) TS 実行/構成差異: `../../../packages/template`
 3) リポジトリ直下: `<cwd>/packages/template`
 
-見つからない場合は警告を出しつつ、最小構成（`package.json`）のみを作成します。
+when not found, it will issue a warning and create only a minimal setup (`package.json`).
 
 ## Hardhat setup
 Scaffold Hardhat files into the current project:
@@ -117,8 +123,9 @@ This command:
   - `contracts/Sample.sol`
   - `scripts/deploy.ts`
 
-## RPC 設定（vx.config.json）
-`vx3 rpc init` は RPC 設定テンプレートを作成します。現在のテンプレートは配列で、ローダは先頭のオブジェクトを使用します。
+## RPC configuration（vx.config.json）
+
+`vx3 rpc init` creates an RPC configuration template. The current template is an array, and the loader uses the first object.
 
 ```json
 [
@@ -126,7 +133,7 @@ This command:
 ]
 ```
 
-将来的には単一オブジェクト形式へ標準化する可能性があります。
+In the future, we may standardize on a single object format.
 
 ## Debug page (Tailwind UI)
 `vx3 serve --debug` serves a TailwindCSS-powered debug dashboard at `/debug`:
@@ -148,8 +155,14 @@ Gas fee data:
 
 
 ## Libraries
-- express（デバッグ/ローカルサーバ）
-- ethers.js（RPC/チェーン操作）
+- express（debug/local server）
+- ethers.js（RPC/chain operations）
+
+## UI frameworks that will be supported in the future 
+- React
+- Vue.js
+- Svelte
+- Next.js
 
 ## Author
 Maintainer: [nk4dev](https://nk4dev.github.io/)

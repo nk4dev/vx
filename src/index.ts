@@ -20,3 +20,16 @@ const vx = {
 };
 
 export default vx;
+
+// CJS/ESM interop: ensure default import from CJS yields usable object with methods
+// without requiring `.default` access in Node ESM.
+// This merges named exports onto the default object and exposes them via module.exports.
+// Safe no-op in pure ESM contexts.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const module: any | undefined;
+try {
+	if (typeof module !== 'undefined' && module && module.exports) {
+		const named = { default: vx, instance, vx: data };
+		module.exports = Object.assign({}, named, vx);
+	}
+} catch {}
