@@ -6,7 +6,7 @@ const args = process.argv.slice(2);
 
 // set project name from cli tool or shell arguments
 export function init(
-  projectName?
+  projectName?: string
 ) {
   //const createName = args[1] || projectName;
   if (!projectName) {

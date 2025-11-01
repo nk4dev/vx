@@ -24,16 +24,15 @@ function shellInputHandler(index: number) {
 
     rl.question(questions[index] + " ", (answer) => {
       answers.push(answer);
-      shellInputHandler(index + 1);
 
       if (index === questions.length - 1) {
         init(answers[0]);
-      } else {
-        shellInputHandler(index + 1);
       }
+      shellInputHandler(index + 1);
     });
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    const err = error as Error;
+    console.error(`Error: ${err.message}`);
     process.exit(1);
   }
 }

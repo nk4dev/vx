@@ -3,7 +3,7 @@
 
 ## features
 - connect to multiple chains
-- create and magage wallets
+- create and manage wallets
 - local development chains
 - deploy smart contracts
 
@@ -27,7 +27,7 @@ Gas fee data:
   debug server
 - ethers.js
 
-authoer: [nknighta](https://nknighta.github.io/)
+author: [nknighta](https://nknighta.github.io/)
 
 ## license
 MIT

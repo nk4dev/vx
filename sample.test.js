@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { jest, describe, test, expect, beforeEach, afterEach } from '@jest/globals';
+import { describe, test, expect } from '@jest/globals';
 
 describe('VX CLI - Basic Tests', () => {
     test('sample test should pass', () => {
