@@ -39,9 +39,11 @@ export default async function VX() {
       case '--version':
         console.log(`VX CLI version: ${loadversion}`);
         process.exit(0);
+        break;
       case '-v':
         console.log(`VX CLI version: ${loadversion}`);
         process.exit(0);
+        break;
 
       case 'dash':
         console.log('🚀🚀🚀🚀\n');

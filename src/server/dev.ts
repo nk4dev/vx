@@ -32,12 +32,7 @@ interface ServerOptions {
     displaylogs?: boolean;
 }
 
-interface LocalWebViewBuilderOptions {
-    blocknum?: number;
-    // Add other options as needed
-}
-
-function localWebViewBuilder({ blocknum }) {
+function localWebViewBuilder({ blocknum }: { blocknum?: number }) {
     // This function can be used to build a local web view with the provided block number
     return `<html>
         <head>
@@ -97,8 +92,6 @@ export default function localServer(options?: Partial<ServerOptions>) {
     const debug = hasFlag(args, '--debug') || options?.debug || false;
     const displaylogs = hasFlag(args, '--logs') || options?.displaylogs || false;
 
-    const API_ENDTPOINT = ['/api', '/debug'];
-
     const server = createServer((req, res) => {
         // Handle /api endpoint
         try {
@@ -114,7 +107,7 @@ export default function localServer(options?: Partial<ServerOptions>) {
                 let blognum = 0;
                 provider.getBlockNumber().then((blockNumber) => {
                     blognum = blockNumber;
-                }).catch((error) => {
+                }).catch(() => {
                     console.error('! Error fetching block number...');
                 });
                 res.writeHead(200, { 'Content-Type': 'text/html' });

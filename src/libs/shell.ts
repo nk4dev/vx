@@ -1,9 +1,10 @@
+import { spawn } from 'child_process';
+
 export function shell(
   command: string,
   args: string[] = [],
   options: { cwd?: string } = {}
 ) {
-  const { spawn } = require('child_process');
   const child = spawn(command, args, {
     stdio: 'inherit',
     shell: true,
@@ -27,7 +28,6 @@ export const shellAsync = (
   options: { cwd?: string } = {}
 ) => {
   return new Promise((resolve, reject) => {
-    const { spawn } = require('child_process');
     const child = spawn(command, args, {
       stdio: 'inherit',
       shell: true,
