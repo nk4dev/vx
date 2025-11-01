@@ -8,13 +8,25 @@ const config = {
   coverageProvider: "v8",
 
   testEnvironment: "node",
-  transform: {
-    "\\.[jt]sx?$": ["babel-jest", { "excludeJestPreset": true }],
+  
+  extensionsToTreatAsEsm: ['.ts'],
+  
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
+  
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {
+      useESM: true,
+    }],
+  },
+  
   testMatch: [
     "**/__tests__/**/*.[jt]s?(x)",
     "**/?(*.)+(spec|test).[tj]s?(x)"
   ],
+  
+  forceExit: true,
 };
 
 export default config;

@@ -1,6 +1,6 @@
+import { writeFile, existsSync } from 'fs';
 
 export function rpc_create_config() {
-    const fs = require('fs');
     const rpcconfigplacehalder = {
         "rpc": {
             "host": "localhost",
@@ -9,12 +9,12 @@ export function rpc_create_config() {
         }
     };
 
-    fs.writeFile('vx.config.json', JSON.stringify(rpcconfigplacehalder, null, 2), (err) => {
+    writeFile('vx.config.json', JSON.stringify(rpcconfigplacehalder, null, 2), (err) => {
         if (err) {
             console.error('ERR!', err);
             process.exit(1);
         } else {
-            if (!fs.existsSync('vx.config.json')) {
+            if (!existsSync('vx.config.json')) {
                 console.error('vx.config.json does not exist and could not be created.');
                 process.exit(1);
             }

@@ -16,7 +16,7 @@ export function createPackageJson(projectDir: string) {
     "author": "Your Name",
     "license": "ISC",
     "dependencies": {
-      "@nknighta/vx": "^${SDK_VERSION}"
+      "@nk4dev/vx": "^${SDK_VERSION}"
     },
     "devDependencies": {
       "typescript": "^4.0.0",

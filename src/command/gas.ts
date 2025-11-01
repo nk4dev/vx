@@ -23,9 +23,9 @@ export default async function gas(args: string[] = []) {
         const feeData = await provider.getFeeData();
 
         // feeData fields: gasPrice (BigNumber | null), maxFeePerGas, maxPriorityFeePerGas
-        const { gasPrice, maxFeePerGas, maxPriorityFeePerGas } = feeData as any;
+        const { gasPrice, maxFeePerGas, maxPriorityFeePerGas } = feeData;
 
-        const toGwei = (bn: any) => bn ? Number(bn) / 1e9 : null;
+        const toGwei = (bn: bigint | null) => bn ? Number(bn) / 1e9 : null;
 
         console.log('Gas fee data:');
         if (gasPrice) {
@@ -46,8 +46,8 @@ export default async function gas(args: string[] = []) {
         }
 
         process.exit(0);
-    } catch (error: any) {
-        console.error('Failed to fetch gas info:', error && error.message ? error.message : error);
+    } catch (error: unknown) {
+        console.error('Failed to fetch gas info:', error instanceof Error ? error.message : error);
         process.exit(1);
     }
 }
