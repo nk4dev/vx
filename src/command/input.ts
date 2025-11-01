@@ -27,8 +27,10 @@ function shellInputHandler(index: number) {
 
       if (index === questions.length - 1) {
         init(answers[0]);
+        shellInputHandler(index + 1); // This will trigger the completion message
+      } else {
+        shellInputHandler(index + 1);
       }
-      shellInputHandler(index + 1);
     });
   } catch (error) {
     const err = error as Error;
