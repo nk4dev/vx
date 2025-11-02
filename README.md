@@ -5,10 +5,8 @@ Useful web3 development tools for creating projects, connecting to RPCs, checkin
 > [!WARNING]
 > This project is in active development and has not yet been officially released. Use at your own risk.
 
-
 update here: https://nknighta.me/vx
 vx3: https://nknighta.me/dev/vx3
-
 
 this project using code generation AI tools.
 - GitHub Copilot [GPT-5, Claude sonnet 4, GPT-5 mini, grok code fast]

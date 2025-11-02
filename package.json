@@ -7,7 +7,8 @@
   "files": [
     "dist",
     "packages/template",
-    "packages/hardhat"
+    "packages/hardhat",
+    "packages/react-template"
   ],
   "license": "MIT",
   "keywords": [

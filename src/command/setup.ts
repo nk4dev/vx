@@ -78,7 +78,56 @@ export async function setup(target: string) {
     case 'hardhat':
       await setupHardhat();
       break;
+    case 'react':
+      await setupReact();
+      break;
     default:
       throw new Error(`Unknown setup target: ${target}`);
   }
+}
+
+// React template setup
+async function setupReact() {
+  const cwd = process.cwd();
+  const pkgPath = path.join(cwd, 'package.json');
+
+  // 1) add scripts + devDependencies
+  upsertJSON(pkgPath, (pkg) => {
+    pkg.scripts = pkg.scripts || {};
+    pkg.scripts.dev = pkg.scripts.dev || 'vite';
+    pkg.scripts.build = pkg.scripts.build || 'vite build';
+    pkg.scripts.preview = pkg.scripts.preview || 'vite preview';
+
+    pkg.devDependencies = pkg.devDependencies || {};
+    pkg.devDependencies.vite = pkg.devDependencies.vite || '^5.0.0';
+    pkg.devDependencies.typescript = pkg.devDependencies.typescript || '^5.0.0';
+    pkg.devDependencies.tailwindcss = pkg.devDependencies.tailwindcss || '^3.4.0';
+    pkg.devDependencies.postcss = pkg.devDependencies.postcss || '^8.0.0';
+    pkg.devDependencies.autoprefixer = pkg.devDependencies.autoprefixer || '^10.0.0';
+
+    pkg.dependencies = pkg.dependencies || {};
+    pkg.dependencies.react = pkg.dependencies.react || '^18.2.0';
+    pkg.dependencies['react-dom'] = pkg.dependencies['react-dom'] || '^18.2.0';
+    pkg.dependencies['@nk4dev/vx'] = pkg.dependencies['@nk4dev/vx'] || '0.0.18';
+
+    return pkg;
+  });
+
+  // 2) copy template files
+  const candidates = [
+    path.resolve(__dirname, '../../packages/react-template'),
+    path.resolve(__dirname, '../../../packages/react-template'),
+    path.resolve(cwd, 'packages/react-template'),
+  ];
+  const templateRoot = candidates.find((p) => fs.existsSync(p));
+  if (!templateRoot) {
+    console.warn('React template not found. Skipping file copy.');
+  } else {
+    // copy entire template
+    if (fs.existsSync(templateRoot)) copyRecursiveSync(templateRoot, cwd);
+  }
+
+  console.log('React setup complete. Next steps:');
+  console.log('  1) Install dependencies: npm install');
+  console.log('  2) Start dev server: npm run dev');
 }
