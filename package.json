@@ -1,53 +1,65 @@
 {
   "name": "@nk4dev/vx",
-  "version": "0.0.14",
-  "description": "A CLI tool for Varius smart contracts",
-  "main": "dist/index.js",
+  "version": "0.0.18",
+  "description": "A CLI tool for smart contracts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist",
+    "packages/template",
+    "packages/hardhat",
+    "packages/react-template"
+  ],
   "license": "MIT",
   "keywords": [
     "web3",
-    "xnv",
+    "vx3",
     "cli",
     "smart-contracts"
   ],
   "bin": {
-    "vx3": "./dist/cli.js"
+    "vx3": "dist/src/cli.js"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
-  "repository": "https://github.com/nknighta/vx",
   "scripts": {
     "build": "rimraf dist && tsc",
+    "prepare": "npm run build",
     "clean": "rimraf dist",
-    "dev": "node dist/cli.js",
-    "vx": "npm run build  && node dist/cli.js",
-    "start": "npm run build && npx vx serve --debug --logs",
+    "dev": "node dist/src/cli.js",
+    "start": "npm run build && npx vx serve --debug",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --coverage --watchAll=false"
+    "test:ci": "jest --ci --coverage --watchAll=false",
+    "hh": "hardhat",
+    "hh:compile": "hardhat compile",
+    "hh:test": "hardhat test",
+    "hh:node": "hardhat node",
+    "hh:deploy": "hardhat run scripts/deploy.ts --network localhost"
   },
   "dependencies": {
     "@types/node": "^22.16.5",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
     "ethers": "^6.15.0",
+    "minimatch": "^10.0.3",
     "prettier": "^3.5.3",
-    "readlinesync": "^1.4.10",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "solc": "^0.8.30"
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
-    "@types/jest": "^30.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@types/minimatch": "^5.1.2",
     "@types/supertest": "^6.0.3",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.8",
-    "globals": "^16.2.0",
+    "hardhat": "^2.22.0",
     "jest": "^30.0.5",
     "rimraf": "^6.0.1",
-    "ts-jest": "^29.4.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.1"
   }

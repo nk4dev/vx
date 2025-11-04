@@ -24,10 +24,10 @@ function shellInputHandler(index: number) {
 
     rl.question(questions[index] + " ", (answer) => {
       answers.push(answer);
-      shellInputHandler(index + 1);
-
       if (index === questions.length - 1) {
+        // Last answer received; run initializer with provided project name
         init(answers[0]);
+        rl.close();
       } else {
         shellInputHandler(index + 1);
       }

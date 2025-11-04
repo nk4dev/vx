@@ -12,13 +12,10 @@ export function getBlockNumber(provider: string): Promise<number> {
 export function getBalance(provider: string, useraddres: string): Promise<number> {
     let balance;
     const rpcProvider = new ethers.JsonRpcProvider(provider);
-<<<<<<< HEAD
-    
     // Check if address is valid before making the request
     if (!useraddres || useraddres.trim() === '') {
         throw new Error('Invalid address: Address cannot be empty');
     }
-    
     return rpcProvider.getBalance(useraddres).then((userbalance) => {
         balance = userbalance ? parseFloat(ethers.formatEther(userbalance)) : 0;
         return balance;
@@ -58,7 +55,7 @@ export async function getGasFees(provider: string): Promise<GasFees> {
 
     const toGwei = (v?: bigint | null) => (v != null ? ethers.formatUnits(v, 'gwei') : undefined);
 
-    return {
+    const result: GasFees = {
         unit: 'gwei',
         gasPriceGwei: toGwei(feeData.gasPrice ?? null),
         maxFeePerGasGwei: toGwei(feeData.maxFeePerGas ?? null),
@@ -71,10 +68,23 @@ export async function getGasFees(provider: string): Promise<GasFees> {
             baseFeePerGas: baseFee
         }
     };
-=======
-    return rpcProvider.getBalance(useraddres).then((userbalance) => {
-        balance = userbalance ? parseFloat(ethers.formatEther(userbalance)) : 0;
-        return balance;
+
+    // Provide JSON-safe serialization to avoid "Do not know how to serialize a BigInt"
+    // JSON.stringify will call toJSON if present on the object
+    (result as unknown as { toJSON: () => unknown }).toJSON = () => ({
+        unit: result.unit,
+        gasPriceGwei: result.gasPriceGwei,
+        maxFeePerGasGwei: result.maxFeePerGasGwei,
+        maxPriorityFeePerGasGwei: result.maxPriorityFeePerGasGwei,
+        baseFeePerGasGwei: result.baseFeePerGasGwei,
+        raw: {
+            gasPrice: result.raw.gasPrice != null ? String(result.raw.gasPrice) : null,
+            maxFeePerGas: result.raw.maxFeePerGas != null ? String(result.raw.maxFeePerGas) : null,
+            maxPriorityFeePerGas: result.raw.maxPriorityFeePerGas != null ? String(result.raw.maxPriorityFeePerGas) : null,
+            baseFeePerGas: result.raw.baseFeePerGas != null ? String(result.raw.baseFeePerGas) : null,
+        },
     });
->>>>>>> 15746f33bd15bda3764908d2845eb6f7997cc232
+
+    return result;
 }
+// ...existing code...

@@ -1,0 +1,226 @@
+:root {
+    --bg: #fbfbfc;
+    --card: #fff;
+    --muted: #666
+}
+
+.info {
+    background: #ffff99;
+}
+
+#information {
+    background: #000;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+#version-m {
+    display: none;
+}
+#information a {
+    color: #fff;
+    margin-top: 4px;
+}
+
+body {
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: var(--bg);
+    color: #111;
+    margin: 0
+}
+
+header {
+    background: #111;
+    color: #fff;
+    padding: 20px
+}
+
+header a {
+    color: #fff;
+    text-decoration: none
+}
+
+main {
+    max-width: 980px;
+    margin: 28px auto;
+    padding: 20px
+}
+
+h1 {
+    font-size: 28px;
+    margin: 0 0 12px
+}
+
+h2 {
+    font-size: 20px;
+    margin: 20px 0 8px
+}
+
+pre {
+    background: #0f1724;
+    color: #e6eef8;
+    padding: 12px;
+    border-radius: 6px;
+    overflow: auto
+}
+
+code {
+    padding: 2px 6px;
+    border-radius: 4px
+}
+
+section.card {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 12px 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .04)
+}
+
+ul {
+    margin: 8px 0 0 20px
+}
+
+footer {
+    max-width: 980px;
+    margin: 12px auto;
+    padding: 12px;
+    color: var(--muted);
+    font-size: 13px
+}
+
+/* Hamburger button and responsive nav styles */
+.hamburger {
+    display: none;
+    /* shown on small screens */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    margin-left: 8px;
+    width: 38px;
+    height: 28px;
+    padding: 4px;
+    color: inherit;
+}
+
+.hamburger:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.12);
+    outline-offset: 2px
+}
+
+.hamburger-box {
+    display: inline-block;
+    width: 24px;
+    height: 16px;
+    position: relative
+}
+
+.hamburger-inner {
+    display: block;
+    width: 24px;
+    height: 2px;
+    border-radius: 2px;
+    background: #fff;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform .18s ease, background .18s ease
+}
+
+.hamburger-inner::before,
+.hamburger-inner::after {
+    content: "";
+    display: block;
+    width: 24px;
+    height: 2px;
+    border-radius: 2px;
+    background: #fff;
+    position: absolute;
+    left: 0;
+    transition: transform .18s ease, opacity .18s ease
+}
+
+.hamburger-inner::before {
+    top: -8px
+}
+
+.hamburger-inner::after {
+    top: 8px
+}
+
+.hamburger[aria-expanded="true"] .hamburger-inner {
+    background: transparent
+}
+
+.hamburger[aria-expanded="true"] .hamburger-inner::before {
+    transform: translateY(8px) rotate(45deg)
+}
+
+.hamburger[aria-expanded="true"] .hamburger-inner::after {
+    transform: translateY(-8px) rotate(-45deg)
+}
+
+.main-nav {
+    margin-left: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: center
+}
+
+@media (max-width: 720px) {
+    #version {
+        display: none
+    }
+    #version {
+        display: none
+    }
+    #version-m {
+        display: block
+    }
+    .header-inner {
+        display: flex;
+        justify-content: space-between;
+    }
+    .hamburger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center
+    }
+
+    header {
+        padding-bottom: 12px
+    }
+
+    .main-nav {
+        display: none
+    }
+
+    .main-nav.open {
+        display: block;
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        top: 68px;
+        background: #111;
+        color: #fff;
+        padding: 12px;
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        z-index: 1000;
+        font-size: 16px;
+    }
+
+    .main-nav.open a {
+        color: #fff;
+        display: block;
+        padding: 8px 0;
+        text-decoration: none
+    }
+
+    .main-nav.open a+a {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding-top: 10px
+    }
+}

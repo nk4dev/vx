@@ -1,6 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { SDK_VERSION } from '../config';
+import npm_json from '../../package.json';
+
+const SDK_VERSION = npm_json.version;
 
 export function createPackageJson(projectDir: string) {
   const projectname = path.basename(projectDir);
@@ -10,17 +12,15 @@ export function createPackageJson(projectDir: string) {
     "description": "A brief description of your package",
     "main": "index.js",
     "scripts": {
-      "start": "ts-node src/index.ts",
-      "build": "tsc"    
+      "dev": "vx3 serve --debug"
     },
     "author": "Your Name",
     "license": "ISC",
     "dependencies": {
-      "@nknighta/vx": "^${SDK_VERSION}"
+      "@varius-dev/vx": "https://github.com/nk4dev/vx.git"
     },
     "devDependencies": {
-      "typescript": "^4.0.0",
-      "ts-node": "^10.0.0"
+      "typescript": "^4.0.0"
     }
 }`;
 

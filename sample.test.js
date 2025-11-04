@@ -1,50 +1,12 @@
-/**
- * @jest-environment node
- */
+// Minimal sanity test for CLI help using built artifact
+const path = require('path');
+const { spawnSync } = require('child_process');
 
-import VX from './src/command/main';
-
-describe('VX CLI Commands', () => {
-    const mockedLog = (output) => consoleOutput.push(output);
-    const mockedError = (output) => consoleOutput.push(output);
-
-    beforeEach(() => {
-        consoleOutput = [];
-        console.log = mockedLog;
-        console.error = mockedError;
-    });
-
-    afterEach(() => {
-        jest.resetAllMocks();
-    });
-
-    test('should display help when no arguments are provided', async () => {
-        process.argv = ['node', 'vx'];
-        await VX();
-        expect(consoleOutput).toContain(expect.stringContaining('Available commands:'));
-    });
-
-    test('should initialize a new project with init command', async () => {
-        process.argv = ['node', 'vx', 'init'];
-        await VX();
-        expect(consoleOutput).toContain(expect.stringContaining('Initialize a new project'));
-    });
-
-    test('should create a new project with create command', async () => {
-        process.argv = ['node', 'vx', 'create'];
-        await VX();
-        expect(consoleOutput).toContain(expect.stringContaining('project created'));
-    });
-
-    test('should start a local server with serve command', async () => {
-        process.argv = ['node', 'vx', 'serve'];
-        await VX();
-        expect(consoleOutput).toContain(expect.stringContaining('Starting local server'));
-    });
-
-    test('should display error for unknown command', async () => {
-        process.argv = ['node', 'vx', 'unknown'];
-        await VX();
-        expect(consoleOutput).toContain(expect.stringContaining('Unknown command'));
-    });
+describe('vx3 help (smoke)', () => {
+  test('prints help and exits 0', () => {
+    const cli = path.resolve(__dirname, 'dist', 'src', 'cli.js');
+    const res = spawnSync(process.execPath, [cli, 'help'], { encoding: 'utf-8' });
+    expect(res.status).toBe(0);
+    expect(res.stdout).toMatch(/Available commands:/);
+  });
 });

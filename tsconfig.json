@@ -6,6 +6,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
+    ,"skipLibCheck": true
   },
   "include": [
     "src/**/*.ts"
