@@ -2,6 +2,7 @@
 import { createServer } from 'http';
 import { getBlockNumber } from '../core/data';
 import { getRpcUrl } from '../core/contract';
+import { sendPayment } from '../payment/index';
 
 // Helper functions to parse command-line arguments
 function getArgValue(args: string[], flag: string): string | undefined {
@@ -33,8 +34,9 @@ interface ServerOptions {
 
 
 function localWebViewBuilder({ blognum, host, port }) {
-        // TailwindCSS-powered, cleaner debug UI
-        return `<!doctype html>
+    const rpc = getRpcUrl();
+    // TailwindCSS-powered, cleaner debug UI
+    return `<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -61,6 +63,7 @@ function localWebViewBuilder({ blognum, host, port }) {
                         <div>
                             <h2 class="text-base font-medium">Server</h2>
                             <p class="text-slate-500 text-sm">http://${host}:${port}</p>
+                            <p class="text-slate-500 text-sm">Current Rpc URL: <code>${rpc}</code></p>
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-semibold">${blognum}</div>
@@ -81,8 +84,7 @@ function localWebViewBuilder({ blognum, host, port }) {
 
                 <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                     <h3 class="font-medium mb-3">Usage</h3>
-<pre class="text-xs bg-slate-900 text-slate-100 rounded-lg p-3 overflow-auto"><code>fetch('http://${host}:${port}/api').then(r => r.json())
-fetch('http://${host}:${port}/api/block').then(r => r.json())</code></pre>
+<pre class="text-xs bg-slate-900 text-slate-100 rounded-lg p-3 overflow-auto"><code>....</code></pre>
                 </div>
             </section>
         </main>
@@ -111,20 +113,20 @@ export default function localServer(options?: Partial<ServerOptions>) {
     const debug = hasFlag(args, '--debug') || options?.debug || false;
     const displaylogs = hasFlag(args, '--logs') || options?.displaylogs || false;
 
-        // Resolve RPC and block-number lazily to avoid requiring vx.config.json at import time
-        let rpc: string | undefined;
-        try {
-            rpc = getRpcUrl();
-            if (rpc) console.log(`Using RPC URL: ${rpc}`);
-        } catch (e) {
-            // If vx.config.json is missing, log and continue — server endpoints that need RPC will handle errors
-            if (options?.debug) console.warn('RPC config not found; some endpoints may fail until vx.config.json is created.');
-        }
-        const bn = rpc ? getBlockNumber(rpc) : Promise.resolve(0);
+    // Resolve RPC and block-number lazily to avoid requiring vx.config.json at import time
+    let rpc: string | undefined;
+    try {
+        rpc = getRpcUrl();
+        if (rpc) console.log(`Using RPC URL: ${rpc}`);
+    } catch (e) {
+        // If vx.config.json is missing, log and continue — server endpoints that need RPC will handle errors
+        if (options?.debug) console.warn('RPC config not found; some endpoints may fail until vx.config.json is created.');
+    }
+    const bn = rpc ? getBlockNumber(rpc) : Promise.resolve(0);
 
-        const API_ENDTPOINT = ['/api', '/debug'];
+    const API_ENDTPOINT = ['/api', '/debug'];
 
-        const server = createServer((req, res) => {
+    const server = createServer((req, res) => {
         // Handle /api endpoint
         if (req.url === '/api' && req.method === 'GET') {
             res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -150,6 +152,43 @@ export default function localServer(options?: Partial<ServerOptions>) {
                 res.writeHead(404, { 'Content-Type': 'text/plain' });
                 res.end("Debug mode is off. No debug information available.\n");
             }
+        } else if (req.url === '/api/pay' && req.method === 'POST') {
+            // accept JSON body: { to, amountEth, rpcUrl?, key? }
+            const chunks: Uint8Array[] = [];
+            req.on('data', (chunk) => chunks.push(chunk));
+            req.on('end', async () => {
+                try {
+                    const body = Buffer.concat(chunks).toString('utf8');
+                    const data = body ? JSON.parse(body) : {};
+                    const to = data.to;
+                    const amountEth = data.amountEth || data.amount;
+                    const rpcUrl = data.rpcUrl || rpc;
+                    const privateKey = data.key || process.env.PRIVATE_KEY;
+
+                    if (!to || !amountEth) {
+                        res.writeHead(400, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'to and amountEth are required' }));
+                        return;
+                    }
+                    if (!rpcUrl) {
+                        res.writeHead(400, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'rpcUrl not configured. Provide rpcUrl in body or create vx.config.json' }));
+                        return;
+                    }
+                    if (!privateKey) {
+                        res.writeHead(400, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'private key not provided. Set PRIVATE_KEY env or pass key in request body' }));
+                        return;
+                    }
+
+                    const result = await sendPayment({ rpcUrl, privateKey, to, amountEth: String(amountEth) });
+                    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+                    res.end(JSON.stringify({ txHash: result.txHash, receipt: result.receipt }));
+                } catch (err) {
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: (err as Error).message }));
+                }
+            });
         } else {
             // Default response for all other requests
             res.writeHead(404, { 'Content-Type': 'text/plain' });

@@ -1,6 +1,7 @@
 import instance from './core/contract';
 import * as data from './core/data';
 import { getRpcUrl } from './core/contract';
+import * as payment from './payment/index';
 
 // Keep named exports for backward compatibility
 export { instance };
@@ -15,11 +16,14 @@ const vx = {
 	getBlockNumber: data.getBlockNumber,
 	getBalance: data.getBalance,
 	getGasFees: data.getGasFees,
+  // payment API
+  payment,
 	// legacy
 	instance,
 };
 
 export default vx;
+export { payment };
 
 // CJS/ESM interop: ensure default import from CJS yields usable object with methods
 // without requiring `.default` access in Node ESM.

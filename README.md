@@ -165,3 +165,71 @@ Gas fee data:
 
 ## Author
 Maintainer: [nk4dev](https://nk4dev.github.io/)
+
+## Payment module — API and CLI (Bun runtime)
+
+This repository now includes a reusable payment module that can be used both from the CLI and programmatically from your code.
+
+What was added
+- `src/payment/index.ts` — a small helper that exports `sendPayment(options)`.
+- `src/command/pay.ts` — CLI wrapper that calls `sendPayment`.
+- `src/index.ts` — the library entry now exposes the payment namespace so you can call it from code: `vx.payment.sendPayment(...)` or `import { payment } from '@nk4dev/vx'`.
+
+Programmatic usage
+
+TypeScript/ESM example:
+```ts
+import vx from '@nk4dev/vx';
+
+await vx.payment.sendPayment({
+  rpcUrl: 'http://127.0.0.1:8545',
+  privateKey: process.env.PRIVATE_KEY!,
+  to: '0xRecipientAddressHere',
+  amountEth: '0.01'
+});
+```
+
+Named import:
+```ts
+import { payment } from '@nk4dev/vx';
+await payment.sendPayment({ rpcUrl, privateKey, to, amountEth: '0.01' });
+```
+
+CLI usage (recommended: use environment variable for private key):
+```powershell
+#$env:PRIVATE_KEY='0x...'
+vx3 pay 0xRecipientAddress 0.01 --rpc http://127.0.0.1:8545
+```
+
+Run/Build (using Bun)
+
+I ran the project build using the Bun runtime. Recommended steps on your machine:
+
+```powershell
+# install dependencies with Bun
+bun install
+# compile TypeScript
+bun run build
+```
+
+Observed build notes
+- I executed `bun install` and `bun run build` in this repository. TypeScript was invoked via `tsc`.
+- The build surfaced TypeScript diagnostics in the workspace while compiling. Two notable issues were observed during the run:
+  1. TypeScript could not find module declarations for `ethers` (error: "Cannot find module 'ethers' or its corresponding type declarations"). If you encounter this, run:
+     ```powershell
+     bun add ethers
+     # then
+     bun run build
+     ```
+     or install via `npm install` if you prefer.
+  2. `packages/react-template/tsconfig.json` references the `vite/client` type and a deprecated `moduleResolution` option; this may produce an informational TypeScript diagnostic. Install the Vite types or adjust the `tsconfig.json` in that package if you plan to compile the template.
+
+Security notes
+- Avoid passing secrets on the command line. Prefer environment variables (for example `PRIVATE_KEY`) or an external signer.
+- The current `sendPayment` helper expects a raw private key (hex). Consider extending the API to accept a Signer, hardware wallet integration, or a key management provider for production usage.
+
+Next steps and tests
+- Add an integration test that starts a local Hardhat node and runs an end-to-end payment using `payment.sendPayment`.
+- Consider adding typed wrappers using `ethers.parseUnits` for gas values and stronger validation.
+
+If you'd like, I can (a) run the `bun add ethers` and re-run the build here and fix remaining diagnostics, (b) add the README snippet to the docs site, or (c) scaffold an automated integration test using Hardhat.

@@ -7,6 +7,7 @@ import { init } from './pjmake';
 // Use require to avoid TS resolution issues in some environments
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { setup } = require('./setup');
+import { handlePayCommand } from './pay';
 const loadversion = SDK_VERSION
 
 const args = process.argv.slice(2);
@@ -45,6 +46,10 @@ export default async function VX() {
           return;
         }
         console.error('Unknown setup target. Try: vx3 setup hardhat');
+        return;
+      case 'pay':
+        // vx3 pay <to> <amount> [--rpc <url>] [--key <privateKey>]
+        await handlePayCommand(args.slice(1));
         return;
       case 'gas':
         await handleGasCommand(args.slice(1));
@@ -100,7 +105,6 @@ function help() {
     { command: 'create', description: 'Create a new project with the specified name.' },
     { command: 'serve', description: 'Start a local development server.' },
     { command: 'setup', description: 'Project setup helpers (e.g., hardhat).' },
-    { command: 'contract', description: 'Interact with a smart contract (browser-based example).' },
     { command: 'dash', description: 'Build and serve the dashboard.' },
     { command: 'help', description: 'Display this help message.' },
     { command: 'info', description: 'Display information about the current project.' },
