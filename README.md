@@ -5,8 +5,9 @@ Useful web3 development tools for creating projects, connecting to RPCs, checkin
 > [!WARNING]
 > This project is in active development and has not yet been officially released. Use at your own risk.
 
-update here: https://nknighta.me/vx
-vx3: https://nknighta.me/dev/vx3
+- project master : https://github.com/nk4dev/vx3   
+- update here: https://nknighta.me/vx   
+- vx3: https://nknighta.me/dev/vx3   
 
 this project using code generation AI tools.
 - GitHub Copilot [GPT-5, Claude sonnet 4, GPT-5 mini, grok code fast]
@@ -23,20 +24,12 @@ this project using code generation AI tools.
 - Node.js 18+ (recommended; required for built-in `fetch` usage)
 - npm (or pnpm/yarn)
 
-## Installation (local dev)
-```powershell
-npm install
-npm run build
-# Run the CLI (built output)
-node .\dist\src\cli.js --help
-```
+## Installation 
+```bash
+npm i @nk4dev/vx or npm i -g @nk4dev/vx
 
-Or link the CLI name for local testing:
-```powershell
-npm link
-vx3 --help
+vx3 create 
 ```
-
 For one-off usage when published: `npx vx3 <command>`
 
 ## Quick start
@@ -106,21 +99,7 @@ Scaffold Hardhat files into the current project:
 ```powershell
 vx3 setup hardhat
 # then install dev dependencies
-npm install -D hardhat @nomicfoundation/hardhat-toolbox
-
-# try scripts
-npm run hh:node
-npm run hh:compile
-npm run hh:deploy
 ```
-
-This command:
-- Adds/merges scripts: `hh`, `hh:compile`, `hh:test`, `hh:node`, `hh:deploy`
-- Adds devDependencies: `hardhat`, `@nomicfoundation/hardhat-toolbox`
-- Copies templates when available:
-  - `hardhat.config.ts`
-  - `contracts/Sample.sol`
-  - `scripts/deploy.ts`
 
 ## RPC configuration（vx.config.json）
 
@@ -163,8 +142,6 @@ Gas fee data:
 - Svelte
 - Next.js
 
-## Author
-Maintainer: [nk4dev](https://nk4dev.github.io/)
 
 ## Payment module — API and CLI (Bun runtime)
 
@@ -233,3 +210,11 @@ Next steps and tests
 - Consider adding typed wrappers using `ethers.parseUnits` for gas values and stronger validation.
 
 If you'd like, I can (a) run the `bun add ethers` and re-run the build here and fix remaining diagnostics, (b) add the README snippet to the docs site, or (c) scaffold an automated integration test using Hardhat.
+
+## Author
+Maintainer: [nk4dev](https://nk4dev.github.io/)
+
+# License
+MIT License © nk4dev
+
+This project is licensed under the MIT License, see the LICENSE.txt file for details
