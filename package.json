@@ -1,14 +1,14 @@
 {
-  "name": "@nk4dev/vx",
+  "name": "vx3",
   "version": "0.0.19",
-  "description": "A CLI tool for smart contracts",
+  "description": "A CLI tool for vx3 smart contracts platform",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "files": [
     "dist",
     "packages/template",
     "packages/hardhat",
-    "packages/react-template"
+    "packages/components"
   ],
   "license": "MIT",
   "keywords": [
@@ -46,15 +46,15 @@
     "ethers": "^6.15.0",
     "minimatch": "^10.0.3",
     "prettier": "^3.5.3",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "solc": "^0.8.30"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.28.0",
+    "solc": "^0.8.30",
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
     "@types/minimatch": "^5.1.2",
-    "@types/supertest": "^6.0.3",
+    "@types/supertest": "^6.0.3"
+  },
+  "devDependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "@eslint/js": "^9.28.0",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.8",
     "hardhat": "^2.22.0",
