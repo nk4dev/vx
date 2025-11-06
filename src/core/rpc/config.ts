@@ -5,7 +5,19 @@ export function rpc_create_config() {
         {
             "host": "localhost",
             "port": 8575,
-            "protocol": "http"
+            "protocol": "http",
+            "type": "rpc"
+        },
+        {
+            "host": "rpc.example.com",
+            "port": 443,
+            "protocol": "https",
+            "type": "rpc"
+        },
+        {
+            // Example IPFS gateway entry. Either provide a gateway URL or an api object.
+            "type": "ipfs",
+            "gateway": "https://ipfs.io"
         }
     ];
 

@@ -124,15 +124,41 @@ npm run hh:deploy
 
 ## RPC 設定（vx.config.json）
 
-`vx3 rpc init` は RPC 設定のテンプレートを作成します。現在は配列形式で最初の要素を読み取ります。
+`vx3 rpc init` は RPC 設定のテンプレートを作成します。`vx.config.json` は配列形式で複数のエンドポイントを定義できます。
+
+各エントリは標準の RPC（http/https/ws/wss）または IPFS のゲートウェイを表現できます。主なフィールド:
+- `type` (省略可): `rpc`（デフォルト）または `ipfs`
+- RPC: `host`, `port`, `protocol` (`http`/`https`/`ws`/`wss`)
+- IPFS: `gateway`（例: `https://ipfs.io`）または `api` オブジェクト（`host`/`port`/`protocol`）
+
+例:
 
 ```json
 [
-	{ "host": "localhost", "port": 8575, "protocol": "http" }
+	{
+		"host": "localhost",
+		"port": 8575,
+		"protocol": "http",
+		"type": "rpc"
+	},
+	{
+		"host": "rpc.example.com",
+		"port": 443,
+		"protocol": "https",
+		"type": "rpc"
+	},
+	{
+		"type": "ipfs",
+		"gateway": "https://ipfs.io"
+	}
 ]
 ```
 
-将来的には単一オブジェクト形式に統一するかもしれません。
+CLI でテンプレートを生成するには:
+
+```powershell
+vx3 rpc init
+```
 
 ## デバッグページ（Tailwind UI）
 `vx3 serve --debug` は TailwindCSS ベースのデバッグダッシュボードを `/debug` に提供します:

@@ -1,6 +1,6 @@
 {
   "name": "@nk4dev/vx",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "A CLI tool for smart contracts",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",

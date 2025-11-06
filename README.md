@@ -5,216 +5,256 @@ Useful web3 development tools for creating projects, connecting to RPCs, checkin
 > [!WARNING]
 > This project is in active development and has not yet been officially released. Use at your own risk.
 
-- project master : https://github.com/nk4dev/vx3   
-- update here: https://nknighta.me/vx   
-- vx3: https://nknighta.me/dev/vx3   
+## Project Purpose
 
-this project using code generation AI tools.
+VX is a comprehensive Web3 development toolkit designed to simplify and accelerate blockchain development workflows. It provides developers with essential tools for:
+
+- Creating and scaffolding new Web3 projects
+- Managing network connections and RPC endpoints across multiple chains
+- Monitoring gas prices and blockchain data in real-time
+- Local development with an integrated dev server featuring debugging capabilities
+- Deploying and compiling smart contracts with Hardhat integration
+
+**Related Resources:**
+- Project Master: https://github.com/nk4dev/vx3   
+- Documentation: https://nknighta.me/vx   
+- VX3 Info: https://nknighta.me/dev/vx3   
+
+**Development Notes:**
+This project utilizes code generation AI tools for development:
 - GitHub Copilot [GPT-5, Claude sonnet 4, GPT-5 mini, grok code fast]
 - Google Gemini
 - NotebookLM
 
-## Features
-- Connect to multiple chains (ethers v6)
-- Create and manage wallets
-- Local development server with simple APIs
-- Deploy/compile examples (Hardhat samples included)
+## Main Features and Functions
 
-## Requirements
-- Node.js 18+ (recommended; required for built-in `fetch` usage)
-- npm (or pnpm/yarn)
+### Core Features
+- **Multi-chain Support**: Connect to multiple chains using ethers.js v6
+- **Wallet Management**: Create and manage blockchain wallets
+- **Local Development Server**: Integrated dev server with simple APIs and debugging capabilities
+- **Smart Contract Deployment**: Deploy and compile examples with Hardhat integration included
+- **Gas Fee Monitoring**: Real-time gas price information and analysis
+- **RPC Management**: Simplified RPC endpoint configuration and switching
 
-## Installation 
+### Key Commands
+- `vx3 create` - Create new Web3 projects
+- `vx3 rpc init` - Initialize RPC configuration
+- `vx3 serve --debug` - Start local development server with debug dashboard
+- `vx3 gas` - Check current gas fees
+- `vx3 setup hardhat` - Scaffold Hardhat files into your project
+- `vx3 pay` - Send payments/transactions
+
+## Installation Instructions
+
+### Requirements
+- **Node.js:** 18+ (recommended; required for built-in `fetch` usage)
+- **Package Manager:** npm, pnpm, or yarn
+- **Bun (optional):** For running the project build
+
+### As a Global CLI Tool
+
+Install globally for CLI access from anywhere:
 ```bash
-npm i @nk4dev/vx or npm i -g @nk4dev/vx
-
-vx3 create 
+npm install -g @nk4dev/vx
+# or
+npm i -g @nk4dev/vx
 ```
-For one-off usage when published: `npx vx3 <command>`
 
-## Quick start
-- Create a new project (non-interactive):
+Then use the `vx3` command directly:
+```bash
+vx3 create my-app
+vx3 rpc init
+vx3 serve
+```
+
+### As a Local Dependency
+
+Install in your project:
+```bash
+npm install @nk4dev/vx
+```
+
+### For One-off Usage (when published)
+
+```bash
+npx vx3 <command>
+```
+
+### From Source (Development)
+
+Clone and build locally:
+```bash
+git clone https://github.com/nk4dev/vx.git
+cd vx
+npm install
+npm run build
+```
+
+For Bun-based building:
+```bash
+bun install
+bun run build
+```
+
+## Quick Start
+
+### Create a New Project
+**Non-interactive mode:**
 ```powershell
 vx3 create my-app
 ```
-- Create a new project (interactive prompt):
+
+**Interactive mode:**
 ```powershell
 vx3 create
 ```
-- Initialize RPC config template:
+
+### Initialize RPC Configuration
 ```powershell
 vx3 rpc init
 ```
-- Start local dev server (with debug view):
+
+### Start Development Server
 ```powershell
 vx3 serve --debug
 ```
-- Check gas info:
+
+Access the debug dashboard at `http://localhost:3000/debug`
+
+### Check Gas Information
 ```powershell
 vx3 gas
 ```
 
-## Library usage (import)
-You can use the SDK programmatically via the default export, while CLI features remain unchanged.
+## Library Usage (SDK API)
 
-TypeScript/ESM:
+### TypeScript/ESM Import
 ```ts
 import vx from "@nk4dev/vx";
 
-const rpc = vx.getRpcUrl(); // from vx.config.json
+// Get RPC URL from vx.config.json
+const rpc = vx.getRpcUrl();
+
+// Query blockchain data
 const block = await vx.getBlockNumber(rpc);
 const gas = await vx.getGasFees(rpc);
 ```
 
-CommonJS:
+### CommonJS Import
 ```js
 const vx = require("@nk4dev/vx").default;
 vx.getGasFees("http://127.0.0.1:8545").then(console.log);
 ```
 
-Named exports are still available for backward compatibility:
-```ts
-import { vx as data, instance } from "@nk4dev/vx";
-await data.getBalance("http://127.0.0.1:8545", "0x...");
-```
+### Payment Module
 
-## Project creation (template copy)
-`vx3 create <name>` (or `vx3 init <name>`) recursively copies the contents of `packages/template` to the `<name>` folder directly under the current directory. A `package.json` file is also generated in the destination directory.
+Send transactions programmatically:
 
-Template content examples:
-- `packages/template/sample.js`
-- `packages/template/sample.sol`
-- `packages/template/vmx.config.json`
-- `packages/template/contracts/Sample.sol`
-
-Template directory resolution searches the following candidates in order (accommodating development/distribution differences):
-1) When running `dist`: `../../packages/template`
-2) When running TS/config: `../../../packages/template`
-3) Directly under the repository: `<cwd>/packages/template`
-
-If not found, it will issue a warning and create only a minimal setup (`package.json`).
-## Hardhat setup
-Scaffold Hardhat files into the current project:
-
-```powershell
-vx3 setup hardhat
-# then install dev dependencies
-```
-
-## RPC configuration（vx.config.json）
-
-`vx3 rpc init` creates an RPC configuration template. The current template is an array, and the loader uses the first object.
-
-```json
-[
-  { "host": "localhost", "port": 8575, "protocol": "http" }
-]
-```
-
-In the future, we may standardize on a single object format.
-
-## Debug page (Tailwind UI)
-`vx3 serve --debug` serves a TailwindCSS-powered debug dashboard at `/debug`:
-- Shows server host and the latest block number
-- Quick links: `/api`, `/api/block`
-- "Usage" section with example fetch calls
-
-### Gas Command Example Output
-```text
-Connecting to RPC: http://localhost:8545
-Gas fee data:
-  gasPrice (wei): 20000000000
-  gasPrice (gwei): 20
-  maxFeePerGas (wei): 2532616788
-  maxFeePerGas (gwei): 2.532616788
-  maxPriorityFeePerGas (wei): 1000000000
-  maxPriorityFeePerGas (gwei): 1
-```
-
-
-## Libraries
-- express（debug/local server）
-- ethers.js（RPC/chain operations）
-
-## UI frameworks that will be supported in the future 
-- React
-- Vue.js
-- Svelte
-- Next.js
-
-
-## Payment module — API and CLI (Bun runtime)
-
-This repository now includes a reusable payment module that can be used both from the CLI and programmatically from your code.
-
-What was added
-- `src/payment/index.ts` — a small helper that exports `sendPayment(options)`.
-- `src/command/pay.ts` — CLI wrapper that calls `sendPayment`.
-- `src/index.ts` — the library entry now exposes the payment namespace so you can call it from code: `vx.payment.sendPayment(...)` or `import { payment } from '@nk4dev/vx'`.
-
-Programmatic usage
-
-TypeScript/ESM example:
+**TypeScript/ESM:**
 ```ts
 import vx from '@nk4dev/vx';
 
 await vx.payment.sendPayment({
   rpcUrl: 'http://127.0.0.1:8545',
   privateKey: process.env.PRIVATE_KEY!,
-  to: '0xRecipientAddressHere',
+  to: '0xRecipientAddress',
   amountEth: '0.01'
 });
 ```
 
-Named import:
-```ts
-import { payment } from '@nk4dev/vx';
-await payment.sendPayment({ rpcUrl, privateKey, to, amountEth: '0.01' });
-```
-
-CLI usage (recommended: use environment variable for private key):
+**CLI Usage:**
 ```powershell
-#$env:PRIVATE_KEY='0x...'
+$env:PRIVATE_KEY='0x...'
 vx3 pay 0xRecipientAddress 0.01 --rpc http://127.0.0.1:8545
 ```
 
-Run/Build (using Bun)
+> ⚠️ **Security Warning**: Never pass secrets directly on the command line. Always use environment variables or external signers for production use.
 
-I ran the project build using the Bun runtime. Recommended steps on your machine:
+## Project Structure
 
-```powershell
-# install dependencies with Bun
-bun install
-# compile TypeScript
-bun run build
+### Project Creation (Template Copy)
+`vx3 create <name>` recursively copies the contents of `packages/template` to the destination folder.
+
+Template includes:
+- `sample.js` - Sample JavaScript file
+- `sample.sol` - Sample Solidity contract
+- `vx.config.json` - Configuration template
+- `contracts/Sample.sol` - Sample smart contract
+
+### Template Directory Resolution
+Searches in order:
+1. When running `dist`: `../../packages/template`
+2. When running TS/config: `../../../packages/template`
+3. From repository: `<cwd>/packages/template`
+
+## RPC Configuration
+
+The `vx.config.json` file stores RPC and gateway endpoints in an array. Each entry supports either a standard RPC endpoint (http/https/ws/wss) or an IPFS gateway entry.
+
+Supported fields:
+- `type` (optional): `rpc` (default) or `ipfs`.
+- For RPC entries: `host`, `port`, `protocol` (one of `http`/`https`/`ws`/`wss`).
+- For IPFS entries: either `gateway` (a public gateway URL) or an `api` object with `host`, `port`, and `protocol`.
+
+Example `vx.config.json` with HTTP, HTTPS and IPFS entries:
+
+```json
+[
+  {
+    "host": "localhost",
+    "port": 8575,
+    "protocol": "http",
+    "type": "rpc"
+  },
+  {
+    "host": "rpc.example.com",
+    "port": 443,
+    "protocol": "https",
+    "type": "rpc"
+  },
+  {
+    "type": "ipfs",
+    "gateway": "https://ipfs.io"
+  }
+]
 ```
 
-Observed build notes
-- I executed `bun install` and `bun run build` in this repository. TypeScript was invoked via `tsc`.
-- The build surfaced TypeScript diagnostics in the workspace while compiling. Two notable issues were observed during the run:
-  1. TypeScript could not find module declarations for `ethers` (error: "Cannot find module 'ethers' or its corresponding type declarations"). If you encounter this, run:
-     ```powershell
-     bun add ethers
-     # then
-     bun run build
-     ```
-     or install via `npm install` if you prefer.
-  2. `packages/react-template/tsconfig.json` references the `vite/client` type and a deprecated `moduleResolution` option; this may produce an informational TypeScript diagnostic. Install the Vite types or adjust the `tsconfig.json` in that package if you plan to compile the template.
+Generate template with: `vx3 rpc init` (the CLI will create a starter `vx.config.json` in the current directory).
 
-Security notes
-- Avoid passing secrets on the command line. Prefer environment variables (for example `PRIVATE_KEY`) or an external signer.
-- The current `sendPayment` helper expects a raw private key (hex). Consider extending the API to accept a Signer, hardware wallet integration, or a key management provider for production usage.
+## Development Features
 
-Next steps and tests
-- Add an integration test that starts a local Hardhat node and runs an end-to-end payment using `payment.sendPayment`.
-- Consider adding typed wrappers using `ethers.parseUnits` for gas values and stronger validation.
+### Debug Dashboard
+Run `vx3 serve --debug` to access the TailwindCSS-powered debug dashboard at `/debug`:
+- Server host and latest block number
+- Quick API links and example fetch calls
+- Real-time blockchain data
 
-If you'd like, I can (a) run the `bun add ethers` and re-run the build here and fix remaining diagnostics, (b) add the README snippet to the docs site, or (c) scaffold an automated integration test using Hardhat.
+### Hardhat Setup
+Scaffold Hardhat files into your project:
+```powershell
+vx3 setup hardhat
+npm install  # Install dev dependencies
+```
+
+## Dependencies
+
+- **express** - Debug and local development server
+- **ethers.js** - RPC and blockchain operations
+
+## Future UI Framework Support
+
+Planned support for:
+- React
+- Vue.js
+- Svelte
+- Next.js
 
 ## Author
+
 Maintainer: [nk4dev](https://nk4dev.github.io/)
 
-# License
+## License
+
 MIT License © nk4dev
 
-This project is licensed under the MIT License, see the LICENSE.txt file for details
+This project is licensed under the MIT License. See the LICENSE file for details.

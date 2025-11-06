@@ -1,4 +1,4 @@
-import shellhaldler from './input';
+import shellHandler from './input';
 import localServer from '../server/dev';
 import { rpc } from '../core/rpc/command';
 import { SDK_VERSION, API_VERSION } from '../config';
@@ -8,13 +8,12 @@ import { init } from './pjmake';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { setup } = require('./setup');
 import { handlePayCommand } from './pay';
+import { handleIpfsCommand } from './ipfs';
 const loadversion = SDK_VERSION
 
-const args = process.argv.slice(2);
-// epcmager.main();
-
-
 export default async function VX() {
+  const args = process.argv.slice(2);
+
   if (args.length === 0) {
     help();
   }
@@ -31,7 +30,7 @@ export default async function VX() {
         if (args[1]) {
           init(args[1]);
         } else {
-          shellhaldler();
+          shellHandler();
         }
         return;
       case 'serve':
@@ -39,6 +38,9 @@ export default async function VX() {
         return;
       case 'rpc':
         rpc();
+        return;
+      case 'ipfs':
+        await handleIpfsCommand(args.slice(1));
         return;
       case 'setup':
         if (args[1] === 'hardhat') {
@@ -93,6 +95,7 @@ export default async function VX() {
 }
 
 function help() {
+  const args = process.argv.slice(2);
   if (args.includes('--version') || args.includes('-v')) {
     console.log(`XNV version: ${SDK_VERSION}`);
     process.exit(0);
@@ -105,10 +108,14 @@ function help() {
     { command: 'create', description: 'Create a new project with the specified name.' },
     { command: 'serve', description: 'Start a local development server.' },
     { command: 'setup', description: 'Project setup helpers (e.g., hardhat).' },
+    { command: 'rpc', description: 'Manage or query RPC endpoints.' },
+    { command: 'pay', description: 'Send a payment/transaction.' },
+    { command: 'gas', description: 'Estimate gas fees for transactions.' },
+    { command: 'sol', description: 'Solidity helper commands (examples).' },
     { command: 'dash', description: 'Build and serve the dashboard.' },
-    { command: 'help', description: 'Display this help message.' },
     { command: 'info', description: 'Display information about the current project.' },
-    { command: 'gas', description: 'Estimate gas fees for transactions.' }
+    { command: 'help', description: 'Display this help message.' },
+    { command: '--version / -v', description: 'Show SDK version.' }
   ]
 
   console.log(`\n🚀 VX3 SDK v${SDK_VERSION} ${stage} for VX ${API_VERSION}`);

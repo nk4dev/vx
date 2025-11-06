@@ -38,6 +38,6 @@ function shellInputHandler(index: number) {
   }
 }
 
-export default function shellhaldler() {
+export default function shellHandler() {
   shellInputHandler(0);
 }

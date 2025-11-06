@@ -27,6 +27,6 @@ function pjSign(index: number) {
     });
 }
 
-export default function shellhaldler() {
+export default function shellHandler() {
     pjSign(0);
 }

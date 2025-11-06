@@ -3,9 +3,22 @@ import * as path from 'path';
 
 // Type definition for RPC configuration
 export interface RpcConfig {
-    host: string;
-    port: number;
-    protocol: 'http' | 'https' | 'ws' | 'wss';
+    // For standard RPC endpoints (http/https/ws/wss): use host/port/protocol
+    host?: string;
+    port?: number;
+    protocol?: 'http' | 'https' | 'ws' | 'wss';
+
+    // Optional type to allow non-RPC endpoints (for example IPFS gateways)
+    type?: 'rpc' | 'ipfs';
+
+    // IPFS-specific properties (optional). Either provide `gateway` (a URL string)
+    // or an `api` object describing an IPFS API endpoint.
+    gateway?: string;
+    api?: {
+        host: string;
+        port: number;
+        protocol: 'http' | 'https';
+    };
 }
 
 // Type for multiple RPC configurations
@@ -71,10 +84,24 @@ export function loadRpcConfig(
             throw new Error('Configuration must be an array of RPC endpoints');
         }
 
-        // Validate each configuration object
+        // Validate each configuration object. Support both standard RPC entries
+        // and IPFS entries which may use `type: 'ipfs'` and either `gateway` or `api`.
         parsedConfig.forEach((config, index) => {
-            if (!config.host || !config.port || !config.protocol) {
-                throw new Error(`Invalid configuration at index ${index}: missing required fields (host, port, protocol)`);
+            if (config.type === 'ipfs') {
+                if (!config.gateway && !config.api) {
+                    throw new Error(`Invalid IPFS configuration at index ${index}: expected 'gateway' (URL) or 'api' object`);
+                }
+                // if api is present, ensure fields exist
+                if (config.api) {
+                    if (!config.api.host || !config.api.port || !config.api.protocol) {
+                        throw new Error(`Invalid IPFS API configuration at index ${index}: missing api.host/api.port/api.protocol`);
+                    }
+                }
+            } else {
+                // default to RPC validation
+                if (!config.host || !config.port || !config.protocol) {
+                    throw new Error(`Invalid RPC configuration at index ${index}: missing required fields (host, port, protocol)`);
+                }
             }
         });
 
@@ -166,6 +193,16 @@ export function addRpcEndpoint(
 export function displayRpcConfig(config: RpcConfigArray): void {
     console.log('RPC Configuration:');
     config.forEach((rpc, index) => {
-        console.log(`  [${index}] ${rpc.protocol}://${rpc.host}:${rpc.port}`);
+        if (rpc.type === 'ipfs') {
+            if (rpc.gateway) {
+                console.log(`  [${index}] ipfs gateway: ${rpc.gateway}`);
+            } else if (rpc.api) {
+                console.log(`  [${index}] ipfs api: ${rpc.api.protocol}://${rpc.api.host}:${rpc.api.port}`);
+            } else {
+                console.log(`  [${index}] ipfs (invalid entry)`);
+            }
+        } else {
+            console.log(`  [${index}] ${rpc.protocol}://${rpc.host}:${rpc.port}`);
+        }
     });
 }
