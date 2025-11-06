@@ -4,10 +4,12 @@ export type SendPaymentOptions = {
   rpcUrl: string;
   privateKey: string; // hex private key
   to: string; // recipient address
+  from?: string; // sender address (optional)
   amountEth: string; // amount in ETH (string like "0.01")
   maxPriorityFeePerGas?: string; // gwei as string
   maxFeePerGas?: string; // gwei as string
   gasLimit?: number;
+  
 };
 
 export type SendPaymentResult = {

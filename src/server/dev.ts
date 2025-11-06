@@ -98,10 +98,16 @@ function localWebViewBuilder({ blognum, host, port, rpcList = [], rpcUrl = '' })
                     <div id="vx-pay-card" class="mt-4 hidden">
                         <h4 class="text-sm font-medium mb-2">Local chain — test payment</h4>
                         <p class="text-xs text-slate-500 mb-2">This will use the server's configured PRIVATE_KEY or a key pasted below. Only enabled for local RPCs.</p>
+                        <div class="mb-2">
+                            <button id="vx-connect-wallet" class="px-3 py-2 bg-yellow-500 text-white rounded">Connect Wallet</button>
+                            <span id="vx-wallet-address" class="ml-2 text-sm text-slate-600"></span>
+                        </div>
+                        <div class="mb-2 text-xs text-slate-500">Or use server-private-key (env PRIVATE_KEY) for automated tests.</div>
                         <div class="space-y-2">
                             <input id="vx-pay-to" placeholder="to address" class="w-full rounded border px-2 py-1" />
                             <input id="vx-pay-amount" placeholder="amount (ETH) e.g. 0.001" class="w-full rounded border px-2 py-1" />
                             <input id="vx-pay-key" placeholder="(optional) private key (server will use env PRIVATE_KEY if empty)" class="w-full rounded border px-2 py-1 text-xs" />
+                            <label class="flex items-center gap-2 text-sm"><input id="vx-use-wallet" type="checkbox" /> <span>Send using connected wallet (MetaMask)</span></label>
                             <div class="flex gap-2">
                                 <button id="vx-pay-send" class="px-3 py-2 bg-emerald-600 text-white rounded">Send test payment</button>
                                 <div id="vx-pay-status" class="text-sm text-slate-600"></div>
@@ -113,7 +119,7 @@ function localWebViewBuilder({ blognum, host, port, rpcList = [], rpcUrl = '' })
         </main>
 
         <footer class="max-w-4xl mx-auto px-4 py-6 text-slate-500 text-sm">
-            <a class="text-blue-600 hover:underline" href="https://vx.varius.technology" target="_blank">Docs</a>
+            <a class="text-blue-600 hover:underline" href="https://nknighta.me/vx/" target="_blank">Docs</a>
         </footer>
         <script>
             // Embedded RPC list from server
@@ -199,8 +205,32 @@ function localWebViewBuilder({ blognum, host, port, rpcList = [], rpcUrl = '' })
                 const sel = document.getElementById('vx-rpc-select');
                 const rpcUrl = sel ? sel.value : VX_DEFAULT_RPC;
                 const status = document.getElementById('vx-pay-status');
+                const useWallet = document.getElementById('vx-use-wallet') ? document.getElementById('vx-use-wallet').checked : false;
                 status.textContent = 'sending...';
                 try {
+                    // If user selected to use connected wallet and provider exists, send via injected provider
+                    if (useWallet && window.ethereum && window.ethereum.request) {
+                        // ensure wallet is connected
+                        const addrEl = document.getElementById('vx-wallet-address');
+                        const from = addrEl && addrEl.dataset && addrEl.dataset.addr ? addrEl.dataset.addr : null;
+                        if (!from) throw new Error('Wallet not connected');
+                        // small helper: convert ETH decimal string to hex wei
+                        function toHexWei(amountStr) {
+                            const parts = String(amountStr).split('.');
+                            const intPart = parts[0] || '0';
+                            const decPart = parts[1] || '';
+                            const padded = (decPart + '000000000000000000').slice(0,18);
+                            const wei = (BigInt(intPart) * 10n ** 18n) + BigInt(padded);
+                            return '0x' + wei.toString(16);
+                        }
+                        const valueHex = toHexWei(amount || '0');
+                        const txParams = { from, to, value: valueHex };
+                        const txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [txParams] });
+                        status.textContent = 'tx sent: ' + txHash;
+                        return;
+                    }
+
+                    // fallback to server-side signing path
                     const resp = await fetch('/api/pay', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -219,6 +249,45 @@ function localWebViewBuilder({ blognum, host, port, rpcList = [], rpcUrl = '' })
                 document.getElementById('vx-refresh').addEventListener('click', () => refreshBlockOnce());
                 document.getElementById('vx-rpc-select').addEventListener('change', updatePayVisibility);
                 document.getElementById('vx-pay-send').addEventListener('click', sendTestPayment);
+                const connectBtn = document.getElementById('vx-connect-wallet');
+                const addrEl = document.getElementById('vx-wallet-address');
+                if (connectBtn) {
+                    connectBtn.addEventListener('click', async () => {
+                        try {
+                            if (!window.ethereum || !window.ethereum.request) {
+                                alert('No injected Ethereum provider found. Please install MetaMask or another wallet.');
+                                return;
+                            }
+                            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                            if (accounts && accounts[0]) {
+                                if (addrEl) {
+                                    addrEl.textContent = accounts[0];
+                                    addrEl.dataset.addr = accounts[0];
+                                }
+                            }
+                        } catch (err) {
+                            console.debug('wallet connect failed', err);
+                            alert('Wallet connection failed: ' + (err && err.message ? err.message : err));
+                        }
+                    });
+                }
+                // populate if already connected
+                if (window.ethereum && window.ethereum.selectedAddress) {
+                    if (addrEl) {
+                        addrEl.textContent = window.ethereum.selectedAddress;
+                        addrEl.dataset.addr = window.ethereum.selectedAddress;
+                    }
+                }
+                // update on account changes
+                if (window.ethereum && window.ethereum.on) {
+                    window.ethereum.on('accountsChanged', (accounts) => {
+                        if (addrEl) {
+                            addrEl.textContent = (accounts && accounts[0]) ? accounts[0] : '';
+                            addrEl.dataset.addr = (accounts && accounts[0]) ? accounts[0] : '';
+                        }
+                        updatePayVisibility();
+                    });
+                }
                 initSse();
                 // initial fetch
                 refreshBlockOnce();
