@@ -33,17 +33,17 @@ jobs:
           cache: 'npm'
 
       - name: Install SDK dependencies
-        working-directory: ./sdk
+        working-directory: .
         run: |
           # prefer ci if a lockfile exists, fallback to install otherwise
           npm ci --silent || npm install --silent
 
       - name: Build SDK
-        working-directory: ./sdk
+        working-directory: .
         run: npm run build --silent
 
       - name: Run SDK tests
-        working-directory: ./sdk
+        working-directory: .
         run: npm test --silent
 
       - name: Upload test results (optional)
