@@ -12,4 +12,4 @@ const config = {
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[tj]s?(x)'],
 };
 
-export default config;
+module.exports = config;
