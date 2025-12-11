@@ -1,13 +1,13 @@
 node_modules/
 dist/
 runtest/
-package-lock.json
 yarn-error.log
 *.log
 *.bin
 *.tsbuildinfo
 
 bun.lock
+yarn.lock
 .vscode/
 
 # Test artifacts
