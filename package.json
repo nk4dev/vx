@@ -37,7 +37,8 @@
     "hh:compile": "hardhat compile",
     "hh:test": "hardhat test",
     "hh:node": "hardhat node",
-    "hh:deploy": "hardhat run scripts/deploy.ts --network localhost"
+    "hh:deploy": "hardhat run scripts/deploy.ts --network localhost",
+    "docs": "npx serve docs"
   },
   "dependencies": {
     "@types/node": "^22.16.5",

@@ -3,21 +3,21 @@
 This file is an index of documents under `docs/llm` intended to be easily referenced by LLMs and document search agents.
 Paths are relative to the `docs` directory.
 
-- llm/overview.md:
+- https://raw.githubusercontent.com/nk4dev/vx/refs/heads/dev/docs/llm/overview.md:
   - Project overview, purpose, and core features
   - Developer information (Maintainer: @nk4dev)
   - License (MIT)
   - Programming languages (TypeScript, JavaScript, Solidity)
   - Feature summary (multi-chain support, wallet management, local development server, Hardhat integration, gas monitoring, RPC management)
 
-- llm/installation.md:
+- https://raw.githubusercontent.com/nk4dev/vx/refs/heads/dev/docs/llm/installation.md:
   - Installation requirements (Node.js 18+, npm/pnpm/yarn; Bun optional)
   - Global installation steps (`npm install -g @nk4dev/vx`)
   - Local project installation (`npm install @nk4dev/vx`)
   - Build-from-source steps (`git clone`, `npm install`, `npm run build`)
   - One-off usage with `npx` and Bun build examples
 
-- llm/commands.md:
+- https://raw.githubusercontent.com/nk4dev/vx/refs/heads/dev/docs/llm/commands.md:
   - CLI command list and descriptions
   - Detailed usage (options and environment variables)
   - Key commands:
@@ -29,7 +29,7 @@ Paths are relative to the `docs` directory.
     - `vx3 pay` (send payments/transactions)
   - Examples (PowerShell / bash) and recommended best practices
 
-- llm/usage.md:
+- https://raw.githubusercontent.com/nk4dev/vx/refs/heads/dev/docs/llm/usage.md:
   - How to integrate the SDK with code examples
   - TypeScript / ESM and CommonJS import examples
   - Payment module usage for sending transactions programmatically
