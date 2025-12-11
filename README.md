@@ -1,7 +1,7 @@
 # VX - Web3 Development Toolkit for VX3
 
-[![CI](https://github.com/nk4dev/vx3/actions/workflows/ci.yml/badge.svg)](https://github.com/nk4dev/vx3/actions/workflows/ci.yml)
-
+[![CI](https://github.com/nk4dev/vx/actions/workflows/ci.yml/badge.svg)](https://github.com/nk4dev/vx/actions/workflows/ci.yml)
+[![CI](https://github.com/nk4dev/vx/actions/workflows/ci.yml/badge.svg)](https://github.com/nk4dev/vx/actions/workflows/ci.yml/badge.svg?branch=dev)
 
 Useful web3 development tools for creating projects, connecting to RPCs, checking gas, and running a local dev server.
 
@@ -19,7 +19,7 @@ VX is a comprehensive Web3 development toolkit designed to simplify and accelera
 - Deploying and compiling smart contracts with Hardhat integration
 
 **Related Resources:**
-- Project Master: https://github.com/nk4dev/vx3   
+- Project Master: https://github.com/nk4dev/vx   
 - Documentation: https://nknighta.me/vx   
 - VX3 Info: https://nknighta.me/dev/vx3   
 
