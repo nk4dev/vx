@@ -1,5 +1,8 @@
 # VX - Web3 Development Toolkit for VX3
 
+[![CI](https://github.com/nk4dev/vx3/actions/workflows/ci.yml/badge.svg)](https://github.com/nk4dev/vx3/actions/workflows/ci.yml)
+
+
 Useful web3 development tools for creating projects, connecting to RPCs, checking gas, and running a local dev server.
 
 > [!WARNING]

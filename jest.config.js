@@ -4,13 +4,12 @@
  */
 
 const config = {
-  coverageProvider: "v8",
-  testEnvironment: "node",
+  coverageProvider: 'v8',
+  testEnvironment: 'node',
+  // Ignore compiled dist output to avoid haste map collisions
+  modulePathIgnorePatterns: ['<rootDir>/dist/'],
   // No transform: tests are plain JS and the CLI is executed via Node
-  testMatch: [
-    "**/__tests__/**/*.[jt]s?(x)",
-    "**/?(*.)+(spec|test).[tj]s?(x)"
-  ],
+  testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[tj]s?(x)'],
 };
 
 export default config;

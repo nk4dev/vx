@@ -1,0 +1,52 @@
+name: CI - SDK Tests
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test SDK (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        node-version: ['18.x']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install SDK dependencies
+        working-directory: ./sdk
+        run: |
+          # prefer ci if a lockfile exists, fallback to install otherwise
+          npm ci --silent || npm install --silent
+
+      - name: Build SDK
+        working-directory: ./sdk
+        run: npm run build --silent
+
+      - name: Run SDK tests
+        working-directory: ./sdk
+        run: npm test --silent
+
+      - name: Upload test results (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-jest-results
+          path: sdk/test-results || sdk/jest-results || dist
