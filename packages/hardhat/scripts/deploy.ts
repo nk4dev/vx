@@ -1,13 +1,19 @@
-import { ethers } from "hardhat";
+import { ethers } from 'hardhat';
 
-async function main() {
-  const Sample = await ethers.getContractFactory("Sample");
-  const sample = await Sample.deploy("hello");
-  await sample.waitForDeployment();
-  console.log("Sample deployed to:", await sample.getAddress());
-}
+const main = async () => {
+  const fileTimestampContract = await ethers.deployContract('FileTimestamp');
+  await fileTimestampContract.waitForDeployment();
+  console.log('FileTimestamp deployed to:', fileTimestampContract.target);
+};
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+const runMain = async () => {
+  try {
+    await main();
+    process.exit(0);
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+};
+
+runMain();

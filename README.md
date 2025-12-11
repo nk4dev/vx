@@ -1,6 +1,6 @@
 # VX - Web3 Development Toolkit for VX3
 
-[![CI](https://github.com/nk4dev/vx/actions/workflows/ci.yml/badge.svg)](https://github.com/nk4dev/vx/actions/workflows/ci.yml)
+master: [![CI](https://github.com/nk4dev/vx/actions/workflows/ci.yml/badge.svg)](https://github.com/nk4dev/vx/actions/workflows/ci.yml/badge.svg?branch=master)
 
 dev: [![CI](https://github.com/nk4dev/vx/actions/workflows/ci.yml/badge.svg)](https://github.com/nk4dev/vx/actions/workflows/ci.yml/badge.svg?branch=dev)
 
