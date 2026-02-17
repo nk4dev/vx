@@ -160,8 +160,8 @@ CLI でテンプレートを生成するには:
 vx3 rpc init
 ```
 
-## デバッグページ（Tailwind UI）
-`vx3 serve --debug` は TailwindCSS ベースのデバッグダッシュボードを `/debug` に提供します:
+## デバッグページ（シンプルCSS UI）
+`vx3 serve --debug` はシンプルな CSS ベースのデバッグダッシュボードを `/debug` に提供します:
 - サーバホストと最新ブロック番号の表示
 - クイックリンク: `/api`, `/api/block`
 - 使用例（fetch）のセクション

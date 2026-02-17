@@ -101,9 +101,6 @@ async function setupReact() {
     pkg.devDependencies = pkg.devDependencies || {};
     pkg.devDependencies.vite = pkg.devDependencies.vite || '^5.0.0';
     pkg.devDependencies.typescript = pkg.devDependencies.typescript || '^5.0.0';
-    pkg.devDependencies.tailwindcss = pkg.devDependencies.tailwindcss || '^3.4.0';
-    pkg.devDependencies.postcss = pkg.devDependencies.postcss || '^8.0.0';
-    pkg.devDependencies.autoprefixer = pkg.devDependencies.autoprefixer || '^10.0.0';
 
     pkg.dependencies = pkg.dependencies || {};
     pkg.dependencies.react = pkg.dependencies.react || '^18.2.0';

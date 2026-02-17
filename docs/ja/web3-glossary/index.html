@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head prefix="og: https://ogp.me/ns#">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Web3用語集（日本語） | VX SDK Docs</title>
+    <link rel="stylesheet" href="../../index.css" />
+    <meta property="og:title" content="Web3用語集（日本語） | VX SDK Docs" />
+    <meta property="og:site_name" content="VX3 | nknighta.me projects" />
+    <meta property="og:description" content="Web3に関する基本用語を日本語でわかりやすく解説" />
+    <meta property="og:url" content="https://nknighta.me/vx/ja/web3-glossary" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <style>
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .glossary-main {
+            width: 100%;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 6rem 1.5rem 7rem;
+        }
+
+        .glossary-card {
+            background: rgba(0, 0, 0, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .glossary-title {
+            font-size: 1.6rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .glossary-sub {
+            color: #d7ddff;
+            margin-bottom: 1rem;
+        }
+
+        .term {
+            font-size: 1.1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .desc {
+            color: #e9edff;
+            line-height: 1.7;
+        }
+
+        .footer-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.4rem;
+        }
+    </style>
+</head>
+
+<body class="docs-body">
+    <div class="page-content">
+        <canvas id="bg3d" aria-hidden="true"></canvas>
+
+        <header class="top-bar">
+            <a href="/vx/" class="brand-link">VX SDK DOCS</a>
+        </header>
+
+        <main class="glossary-main">
+            <section class="glossary-card">
+                <h1 class="glossary-title">Web3用語集（日本語）</h1>
+                <p class="glossary-sub">VX SDKやブロックチェーン開発でよく使う基本用語をまとめています。</p>
+            </section>
+
+            <section class="glossary-card">
+                <h2 class="term">ウォレット（Wallet）</h2>
+                <p class="desc">暗号資産を管理し、トランザクションに署名するためのアプリや仕組みです。秘密鍵を保持し、送金やdApp接続に使います。</p>
+            </section>
+
+            <section class="glossary-card">
+                <h2 class="term">公開鍵 / 秘密鍵（Public Key / Private Key）</h2>
+                <p class="desc">公開鍵はアドレス生成に使われ、秘密鍵は所有権の証明と署名に使われます。秘密鍵は絶対に他人へ共有してはいけません。</p>
+            </section>
+
+            <section class="glossary-card">
+                <h2 class="term">ガス（Gas）</h2>
+                <p class="desc">ブロックチェーン上で処理を実行するための手数料の概念です。複雑な処理ほど多くのガスを消費します。</p>
+            </section>
+
+            <section class="glossary-card">
+                <h2 class="term">トランザクション（Transaction）</h2>
+                <p class="desc">送金やコントラクト呼び出しなど、チェーン上へ記録される操作単位です。承認後にブロックへ取り込まれます。</p>
+            </section>
+
+            <section class="glossary-card">
+                <h2 class="term">スマートコントラクト（Smart Contract）</h2>
+                <p class="desc">ブロックチェーン上で自動実行されるプログラムです。条件に応じて状態更新やトークン移転を行います。</p>
+            </section>
+
+            <section class="glossary-card">
+                <h2 class="term">RPC（Remote Procedure Call）</h2>
+                <p class="desc">ノードへアクセスするための通信インターフェースです。残高照会、ブロック取得、送信処理などを行います。</p>
+            </section>
+
+            <section class="glossary-card">
+                <h2 class="term">NFT（Non-Fungible Token）</h2>
+                <p class="desc">一意性を持つトークンです。アート、会員証、ゲームアイテムなど、個別識別が必要な資産に利用されます。</p>
+            </section>
+
+            <section class="glossary-card">
+                <h2 class="term">dApp（Decentralized Application）</h2>
+                <p class="desc">分散型アプリケーションのことです。フロントエンドとスマートコントラクトを組み合わせて動作します。</p>
+            </section>
+
+            <section class="glossary-card">
+                <h2 class="term">シードフレーズ（Seed Phrase）</h2>
+                <p class="desc">ウォレット復元に使う単語列です。秘密鍵のバックアップに相当するため、オフラインで厳重管理が必要です。</p>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div class="footer-links">
+                <a href="/vx/docs">Docs Home</a>
+                <a href="/vx/">Project Top</a>
+            </div>
+            <p class="footer-line">&copy; 2021 VX SDK. All rights reserved.</p>
+            <p class="footer-line">Created by <a href="https://nknighta.me" target="_blank" rel="noopener noreferrer">nknighta</a></p>
+        </footer>
+    </div>
+
+    <script type="module" src="../../index.js"></script>
+</body>
+
+</html>

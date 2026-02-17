@@ -37,80 +37,122 @@ interface ServerOptions {
 
 function localWebViewBuilder({ blognum, host, port, rpcList = [], rpcUrl = '' }) {
     const rpc = rpcUrl || getRpcUrl();
-    // TailwindCSS-powered, cleaner debug UI
+    // Simple CSS-powered debug UI
     return `<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>VX SDK — Debug</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            * { box-sizing: border-box; }
+            body { margin: 0; background: #f8fafc; color: #0f172a; font-family: Arial, sans-serif; }
+            a { color: #2563eb; text-decoration: none; }
+            a:hover { text-decoration: underline; }
+            .topbar { background: #0f172a; color: #fff; }
+            .container { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+            .topbar-inner { display: flex; align-items: center; gap: 12px; padding-top: 16px; padding-bottom: 16px; }
+            .title { margin: 0; font-size: 18px; font-weight: 600; }
+            .nav { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 14px; opacity: 0.9; }
+            .main-content { padding-top: 24px; padding-bottom: 24px; }
+            .section-block { margin-bottom: 24px; }
+            .card { border-radius: 12px; border: 1px solid #e2e8f0; background: #fff; padding: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+            .row-between { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+            .section-heading { margin: 0; font-size: 16px; font-weight: 600; }
+            .muted-sm { margin: 4px 0 0; color: #64748b; font-size: 14px; }
+            .block-num { font-size: 30px; font-weight: 600; text-align: right; }
+            .muted-xs { margin: 4px 0 0; color: #64748b; font-size: 12px; }
+            .grid-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+            .card-title { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+            .list { margin: 0; padding-left: 18px; }
+            .list li + li { margin-top: 8px; }
+            .field { margin-bottom: 12px; }
+            .label { display: block; margin-bottom: 4px; color: #64748b; font-size: 12px; }
+            .select,
+            .input { display: block; width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; }
+            .input-small { font-size: 12px; }
+            .stack > * + * { margin-top: 8px; }
+            .inline-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+            .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+            .button { border: 0; border-radius: 6px; color: #fff; padding: 8px 12px; cursor: pointer; }
+            .button-refresh { background: #0284c7; }
+            .button-wallet { background: #eab308; }
+            .button-send { background: #059669; }
+            .status { color: #475569; font-size: 14px; }
+            .wallet-address { color: #475569; font-size: 14px; }
+            .hidden { display: none; }
+            .footer { padding-top: 24px; padding-bottom: 24px; color: #64748b; font-size: 14px; }
+            @media (max-width: 768px) {
+                .grid-two { grid-template-columns: 1fr; }
+                .block-num { text-align: left; }
+            }
+        </style>
     </head>
-    <body class="bg-slate-50 text-slate-900">
-        <header class="bg-slate-900 text-white">
-            <div class="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
-                <h1 class="text-lg font-semibold">VX SDK Debug</h1>
-                <nav class="ml-auto text-sm opacity-90">
-                    <a class="hover:underline" href="/api">/api</a>
-                    <span class="px-2">·</span>
-                    <a class="hover:underline" href="/api/block">/api/block</a>
+    <body>
+        <header class="topbar">
+            <div class="container topbar-inner">
+                <h1 class="title">VX SDK Debug</h1>
+                <nav class="nav">
+                    <a href="/api">/api</a>
+                    <span>·</span>
+                    <a href="/api/block">/api/block</a>
                 </nav>
             </div>
         </header>
 
-        <main class="max-w-4xl mx-auto px-4 py-6">
-            <section class="mb-6">
-                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <div class="flex items-center justify-between">
+        <main class="container main-content">
+            <section class="section-block">
+                <div class="card">
+                    <div class="row-between">
                         <div>
-                            <h2 class="text-base font-medium">Server</h2>
-                            <p class="text-slate-500 text-sm">http://${host}:${port}</p>
-                            <p class="text-slate-500 text-sm">Current Rpc URL: <code>${rpc}</code></p>
+                            <h2 class="section-heading">Server</h2>
+                            <p class="muted-sm">http://${host}:${port}</p>
+                            <p class="muted-sm">Current Rpc URL: <code>${rpc}</code></p>
                         </div>
-                        <div class="text-right">
-                            <div id="vx-block-number" class="text-2xl font-semibold">${blognum}</div>
-                            <div class="text-slate-500 text-xs">latest block</div>
+                        <div>
+                            <div id="vx-block-number" class="block-num">${blognum}</div>
+                            <div class="muted-xs">latest block</div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <h3 class="font-medium mb-3">Endpoints</h3>
-                    <ul class="text-sm space-y-2">
-                        <li><a class="text-blue-600 hover:underline" href="/api">GET /api</a></li>
-                        <li><a class="text-blue-600 hover:underline" href="/api/block">GET /api/block</a></li>
+            <section class="grid-two">
+                <div class="card">
+                    <h3 class="card-title">Endpoints</h3>
+                    <ul class="list">
+                        <li><a href="/api">GET /api</a></li>
+                        <li><a href="/api/block">GET /api/block</a></li>
                     </ul>
                 </div>
 
-                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <h3 class="font-medium mb-3">Usage</h3>
-                    <div class="mb-3">
-                        <label class="block text-xs text-slate-500">RPC / Chain</label>
-                        <select id="vx-rpc-select" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></select>
+                <div class="card">
+                    <h3 class="card-title">Usage</h3>
+                    <div class="field">
+                        <label class="label">RPC / Chain</label>
+                        <select id="vx-rpc-select" class="select"></select>
                     </div>
 
-                    <div class="mb-3">
-                        <button id="vx-refresh" class="px-3 py-2 bg-sky-600 text-white rounded">Manual refresh block</button>
+                    <div class="field">
+                        <button id="vx-refresh" class="button button-refresh">Manual refresh block</button>
                     </div>
 
-                    <div id="vx-pay-card" class="mt-4 hidden">
-                        <h4 class="text-sm font-medium mb-2">Local chain — test payment</h4>
-                        <p class="text-xs text-slate-500 mb-2">This will use the server's configured PRIVATE_KEY or a key pasted below. Only enabled for local RPCs.</p>
-                        <div class="mb-2">
-                            <button id="vx-connect-wallet" class="px-3 py-2 bg-yellow-500 text-white rounded">Connect Wallet</button>
-                            <span id="vx-wallet-address" class="ml-2 text-sm text-slate-600"></span>
+                    <div id="vx-pay-card" class="hidden">
+                        <h4 class="card-title">Local chain — test payment</h4>
+                        <p class="muted-xs">This will use the server's configured PRIVATE_KEY or a key pasted below. Only enabled for local RPCs.</p>
+                        <div class="field inline-row">
+                            <button id="vx-connect-wallet" class="button button-wallet">Connect Wallet</button>
+                            <span id="vx-wallet-address" class="wallet-address"></span>
                         </div>
-                        <div class="mb-2 text-xs text-slate-500">Or use server-private-key (env PRIVATE_KEY) for automated tests.</div>
-                        <div class="space-y-2">
-                            <input id="vx-pay-to" placeholder="to address" class="w-full rounded border px-2 py-1" />
-                            <input id="vx-pay-amount" placeholder="amount (ETH) e.g. 0.001" class="w-full rounded border px-2 py-1" />
-                            <input id="vx-pay-key" placeholder="(optional) private key (server will use env PRIVATE_KEY if empty)" class="w-full rounded border px-2 py-1 text-xs" />
-                            <label class="flex items-center gap-2 text-sm"><input id="vx-use-wallet" type="checkbox" /> <span>Send using connected wallet (MetaMask)</span></label>
-                            <div class="flex gap-2">
-                                <button id="vx-pay-send" class="px-3 py-2 bg-emerald-600 text-white rounded">Send test payment</button>
-                                <div id="vx-pay-status" class="text-sm text-slate-600"></div>
+                        <div class="muted-xs">Or use server-private-key (env PRIVATE_KEY) for automated tests.</div>
+                        <div class="stack">
+                            <input id="vx-pay-to" placeholder="to address" class="input" />
+                            <input id="vx-pay-amount" placeholder="amount (ETH) e.g. 0.001" class="input" />
+                            <input id="vx-pay-key" placeholder="(optional) private key (server will use env PRIVATE_KEY if empty)" class="input input-small" />
+                            <label class="checkbox-label"><input id="vx-use-wallet" type="checkbox" /> <span>Send using connected wallet (MetaMask)</span></label>
+                            <div class="inline-row">
+                                <button id="vx-pay-send" class="button button-send">Send test payment</button>
+                                <div id="vx-pay-status" class="status"></div>
                             </div>
                         </div>
                     </div>
@@ -118,8 +160,8 @@ function localWebViewBuilder({ blognum, host, port, rpcList = [], rpcUrl = '' })
             </section>
         </main>
 
-        <footer class="max-w-4xl mx-auto px-4 py-6 text-slate-500 text-sm">
-            <a class="text-blue-600 hover:underline" href="https://nknighta.me/vx/" target="_blank">Docs</a>
+        <footer class="container footer">
+            <a href="https://nknighta.me/vx/" target="_blank">Docs</a>
         </footer>
         <script>
             // Embedded RPC list from server
