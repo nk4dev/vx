@@ -1,8 +1,8 @@
 [
   {
-    "host": "localhost",
-    "port": 8545,
-    "protocol": "http",
+    "host": "eth.llamarpc.com",
+    "port": 443,
+    "protocol": "https",
     "type": "rpc"
   }
 ]

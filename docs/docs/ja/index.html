@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 
 <head prefix="og: https://ogp.me/ns#">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>VX SDK — Documentation</title>
+  <title>VX SDK — ドキュメント</title>
   <link rel="icon" href="https://nknighta.me/assets/img/varius.ico" />
   <meta name="theme-color" content="#0f0a3f" />
-  <meta property="og:title" content="VX SDK Docs | VX3 - Web3 Development Platform" />
+  <meta property="og:title" content="VX SDK ドキュメント | VX3 - Web3 開発プラットフォーム" />
   <meta property="og:site_name" content="VX3 | nknighta.me projects" />
-  <meta property="og:description" content="VX3 is a Web3 SDK/CLI for building dApps — smart contract integration, wallet management, multi-chain RPC, and a cryptocurrency payment API." />
-  <meta property="og:url" content="https://nknighta.me/vx/docs" />
-  <meta property="og:image" content="https://ogp-img-gen.vercel.app/api/img-gen?text=VX+SDK+Docs&host=nknighta.me" />
+  <meta property="og:description" content="VX3 は dApps を構築するための Web3 SDK/CLI です。スマートコントラクト統合・ウォレット管理・マルチチェーン RPC・暗号通貨決済 API を提供します。" />
+  <meta property="og:url" content="https://nknighta.me/vx/docs/ja" />
+  <meta property="og:image" content="https://ogp-img-gen.vercel.app/api/img-gen?text=VX+SDK+%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88&host=nknighta.me" />
   <meta property="og:type" content="website" />
   <meta name="twitter:site" content="@nk4dev" />
   <meta name="twitter:creator" content="@nk4dev" />
@@ -139,16 +139,16 @@
   <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 z-30 flex flex-col -translate-x-full lg:translate-x-0 transition-transform duration-200">
     <div class="flex items-center gap-2 px-4 py-4 border-b border-purple-900/30">
       <a href="/vx/" class="text-white font-bold text-sm tracking-wide hover:text-brand-accent transition-colors">← VX SDK</a>
-      <a href="/vx/docs/ja/" class="ml-auto text-xs text-slate-500 hover:text-brand-accent transition-colors">日本語</a>
+      <a href="/vx/docs/" class="ml-auto text-xs text-slate-500 hover:text-brand-accent transition-colors">EN</a>
     </div>
     <nav class="flex-1 overflow-y-auto py-2 px-1">
-      <div class="nav-section-title">Getting Started</div>
-      <a href="#overview" class="nav-link">Overview</a>
-      <a href="#install" class="nav-link">Installation</a>
-      <a href="#quickstart" class="nav-link">Quick Start</a>
+      <div class="nav-section-title">はじめに</div>
+      <a href="#overview" class="nav-link">概要 (Overview)</a>
+      <a href="#install" class="nav-link">インストール</a>
+      <a href="#quickstart" class="nav-link">クイックスタート</a>
       <a href="#config" class="nav-link">vx.config.json</a>
 
-      <div class="nav-section-title">CLI Reference</div>
+      <div class="nav-section-title">CLI リファレンス</div>
       <a href="#cli-create" class="nav-link">create / init</a>
       <a href="#cli-setup" class="nav-link">setup hardhat</a>
       <a href="#cli-rpc" class="nav-link">rpc</a>
@@ -159,20 +159,20 @@
       <a href="#cli-info" class="nav-link">info / version</a>
 
       <div class="nav-section-title">SDK API</div>
-      <a href="#api-overview" class="nav-link">API Overview</a>
+      <a href="#api-overview" class="nav-link">API 概要</a>
       <a href="#api-getblockNumber" class="nav-link">getBlockNumber()</a>
       <a href="#api-getbalance" class="nav-link">getBalance()</a>
       <a href="#api-getgasfees" class="nav-link">getGasFees()</a>
       <a href="#api-sendpayment" class="nav-link">sendPayment()</a>
       <a href="#api-getrpcurl" class="nav-link">getRpcUrl()</a>
 
-      <div class="nav-section-title">React Components</div>
+      <div class="nav-section-title">React コンポーネント</div>
       <a href="#react-payment" class="nav-link">Payment</a>
       <a href="#react-hooks" class="nav-link">Hooks</a>
 
-      <div class="nav-section-title">Other</div>
-      <a href="#hardhat" class="nav-link">Hardhat Integration</a>
-      <a href="#license" class="nav-link">License</a>
+      <div class="nav-section-title">その他</div>
+      <a href="#hardhat" class="nav-link">Hardhat 統合</a>
+      <a href="#license" class="nav-link">ライセンス</a>
     </nav>
     <div class="px-4 py-3 border-t border-purple-900/30 text-xs text-slate-500">
       <a href="https://github.com/nk4dev/vx" class="hover:text-brand-accent transition-colors" target="_blank" rel="noopener">GitHub</a>
@@ -187,7 +187,7 @@
       <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white transition-colors" aria-label="Toggle menu">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
-      <span class="font-bold text-white text-sm tracking-wide">VX SDK — Documentation</span>
+      <span class="font-bold text-white text-sm tracking-wide">VX SDK — ドキュメント</span>
       <a href="https://github.com/nk4dev/vx" target="_blank" rel="noopener" class="ml-auto flex items-center gap-1.5 text-xs text-slate-400 hover:text-brand-accent transition-colors">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.73.5.75 5.48.75 11.75c0 4.93 3.19 9.11 7.61 10.58.56.1.76-.24.76-.53 0-.26-.01-.95-.01-1.86-3.09.67-3.74-1.49-3.74-1.49-.5-1.28-1.22-1.62-1.22-1.62-.99-.68.08-.67.08-.67 1.1.08 1.67 1.13 1.67 1.13.97 1.66 2.55 1.18 3.17.9.1-.71.38-1.18.69-1.45-2.47-.28-5.07-1.24-5.07-5.52 0-1.22.43-2.22 1.13-3.01-.11-.28-.49-1.41.11-2.95 0 0 .92-.29 3.02 1.15a10.46 10.46 0 0 1 2.75-.37c.93 0 1.87.12 2.75.37 2.09-1.44 3.01-1.15 3.01-1.15.61 1.54.23 2.67.12 2.95.7.79 1.13 1.79 1.13 3.01 0 4.29-2.61 5.24-5.09 5.52.39.34.73 1.02.73 2.06 0 1.49-.01 2.69-.01 3.05 0 .29.2.64.77.53C19.06 20.86 22.25 16.68 22.25 11.75 22.25 5.48 17.27.5 12 .5z"/></svg>
         GitHub
@@ -199,33 +199,33 @@
       <!-- Pre-beta warning -->
       <div class="warn-banner flex items-start gap-2">
         <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
-        <span><strong>⚠️ Pre-Beta:</strong> This project is currently in development and has not been officially released. APIs and specifications may change without notice.</span>
+        <span><strong>⚠️ Pre-Beta:</strong> このプロジェクトは現在開発中であり、まだ正式リリースされていません。API や仕様は予告なく変更される場合があります。</span>
       </div>
 
       <!-- Overview -->
       <section id="overview">
-        <h2 class="text-2xl font-bold text-white mb-4">Overview</h2>
+        <h2 class="text-2xl font-bold text-white mb-4">概要 (Overview)</h2>
         <p class="text-slate-300 leading-relaxed mb-4">
-          <strong class="text-brand-accent">VX SDK (<code>@nk4dev/vx</code> / <code>vx3</code>)</strong> is a
-          TypeScript CLI tool and SDK designed to accelerate Web3 application (dApp) development.
-          It provides smart contract integration, wallet management, multi-chain RPC connectivity, and a cryptocurrency payment API.
+          <strong class="text-brand-accent">VX SDK (<code>@nk4dev/vx</code> / <code>vx3</code>)</strong> は、
+          Web3 アプリケーション（dApps）の開発を加速するための TypeScript 製 CLI ツール兼 SDK です。
+          スマートコントラクト統合・ウォレット管理・マルチチェーン RPC 接続・暗号通貨決済 API を提供します。
         </p>
         <div class="grid sm:grid-cols-2 gap-3 mt-5">
           <div class="rounded-lg border border-purple-700/30 bg-purple-900/10 p-4">
-            <div class="text-brand-purple font-semibold text-sm mb-1">🔗 RPC Connectivity</div>
-            <p class="text-slate-400 text-sm">Manage HTTP/WS RPC connections to Ethereum-compatible chains via config file</p>
+            <div class="text-brand-purple font-semibold text-sm mb-1">🔗 RPC 接続</div>
+            <p class="text-slate-400 text-sm">Ethereum 互換チェーンへの HTTP/WS RPC 接続を設定ファイルで管理</p>
           </div>
           <div class="rounded-lg border border-sky-700/30 bg-sky-900/10 p-4">
-            <div class="text-brand-accent font-semibold text-sm mb-1">💸 Payment API</div>
-            <p class="text-slate-400 text-sm">Built-in ETH transfer and Payment component for React/Vue</p>
+            <div class="text-brand-accent font-semibold text-sm mb-1">💸 決済 API</div>
+            <p class="text-slate-400 text-sm">ETH 送金・ React/Vue 向け Payment コンポーネントを内蔵</p>
           </div>
           <div class="rounded-lg border border-purple-700/30 bg-purple-900/10 p-4">
-            <div class="text-brand-purple font-semibold text-sm mb-1">⛏️ Hardhat Integration</div>
-            <p class="text-slate-400 text-sm">Scaffold a full Hardhat development environment with a single command</p>
+            <div class="text-brand-purple font-semibold text-sm mb-1">⛏️ Hardhat 統合</div>
+            <p class="text-slate-400 text-sm">1 コマンドで Hardhat 開発環境をスキャフォールディング</p>
           </div>
           <div class="rounded-lg border border-sky-700/30 bg-sky-900/10 p-4">
             <div class="text-brand-accent font-semibold text-sm mb-1">📦 IPFS</div>
-            <p class="text-slate-400 text-sm">Fetch IPFS content directly from the CLI</p>
+            <p class="text-slate-400 text-sm">CLI から直接 IPFS コンテンツを取得</p>
           </div>
         </div>
         <div class="mt-4 flex flex-wrap gap-3 text-sm">
@@ -241,8 +241,8 @@
 
       <!-- Install -->
       <section id="install">
-        <h2 class="text-2xl font-bold text-white mb-4">Installation</h2>
-        <p class="text-slate-300 text-sm mb-3">Install via npm, pnpm, yarn, or Bun.</p>
+        <h2 class="text-2xl font-bold text-white mb-4">インストール</h2>
+        <p class="text-slate-300 text-sm mb-3">npm、pnpm、yarn、または Bun のいずれかでインストールできます。</p>
 
         <h3 class="text-base font-semibold text-slate-200 mb-2">npm</h3>
         <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">npm install -g @nk4dev/vx</code></pre>
@@ -253,10 +253,10 @@
         <h3 class="text-base font-semibold text-slate-200 mt-4 mb-2">Bun</h3>
         <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">bun add -g @nk4dev/vx</code></pre>
 
-        <h3 class="text-base font-semibold text-slate-200 mt-4 mb-2">Add as a local project dependency</h3>
+        <h3 class="text-base font-semibold text-slate-200 mt-4 mb-2">ローカルプロジェクト依存として追加</h3>
         <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">npm install @nk4dev/vx</code></pre>
 
-        <p class="text-slate-400 text-sm mt-4">After installation, verify the version:</p>
+        <p class="text-slate-400 text-sm mt-4">インストール後、バージョンを確認：</p>
         <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 --version</code></pre>
       </section>
 
@@ -264,19 +264,19 @@
 
       <!-- Quick Start -->
       <section id="quickstart">
-        <h2 class="text-2xl font-bold text-white mb-4">Quick Start</h2>
+        <h2 class="text-2xl font-bold text-white mb-4">クイックスタート</h2>
         <div class="space-y-4">
           <div>
-            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">1.</span> Create a new project:</p>
+            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">1.</span> 新規プロジェクトを作成：</p>
             <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 create my-dapp</code></pre>
           </div>
           <div>
-            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">2.</span> Navigate into the directory and set up Hardhat (optional):</p>
+            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">2.</span> ディレクトリに移動し、Hardhat をセットアップ（任意）：</p>
             <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">cd my-dapp
 vx3 setup hardhat</code></pre>
           </div>
           <div>
-            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">3.</span> Use the SDK programmatically:</p>
+            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">3.</span> SDK をプログラムから使用：</p>
             <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import vx from '@nk4dev/vx';
 
 const blockNumber = await vx.getBlockNumber('https://eth.llamarpc.com');
@@ -291,8 +291,8 @@ console.log('Block:', blockNumber);</code></pre>
       <section id="config">
         <h2 class="text-2xl font-bold text-white mb-2">vx.config.json</h2>
         <p class="text-slate-300 text-sm mb-4">
-          Place a <code>vx.config.json</code> in your project root to manage RPC endpoints and IPFS settings.
-          Define multiple endpoints using array format.
+          プロジェクトルートに <code>vx.config.json</code> を配置することで、RPC エンドポイントや IPFS 設定を管理します。
+          配列形式で複数エンドポイントを定義できます。
         </p>
         <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-yellow-200">[
   {
@@ -312,14 +312,14 @@ console.log('Block:', blockNumber);</code></pre>
           <table class="w-full text-sm">
             <thead>
               <tr class="border-b border-slate-700">
-                <th class="text-left py-2 pr-4 text-slate-400 font-medium">Field</th>
-                <th class="text-left py-2 pr-4 text-slate-400 font-medium">Type</th>
-                <th class="text-left py-2 text-slate-400 font-medium">Description</th>
+                <th class="text-left py-2 pr-4 text-slate-400 font-medium">フィールド</th>
+                <th class="text-left py-2 pr-4 text-slate-400 font-medium">型</th>
+                <th class="text-left py-2 text-slate-400 font-medium">説明</th>
               </tr>
             </thead>
             <tbody class="text-slate-300">
-              <tr class="border-b border-slate-800"><td class="py-2 pr-4"><code>host</code></td><td class="pr-4">string</td><td>RPC hostname or IP address</td></tr>
-              <tr class="border-b border-slate-800"><td class="py-2 pr-4"><code>port</code></td><td class="pr-4">number</td><td>Port number</td></tr>
+              <tr class="border-b border-slate-800"><td class="py-2 pr-4"><code>host</code></td><td class="pr-4">string</td><td>RPC ホスト名または IP アドレス</td></tr>
+              <tr class="border-b border-slate-800"><td class="py-2 pr-4"><code>port</code></td><td class="pr-4">number</td><td>ポート番号</td></tr>
               <tr class="border-b border-slate-800"><td class="py-2 pr-4"><code>protocol</code></td><td class="pr-4">string</td><td><code>http</code> | <code>https</code> | <code>ws</code> | <code>wss</code></td></tr>
               <tr><td class="py-2 pr-4"><code>type</code></td><td class="pr-4">string</td><td><code>rpc</code> | <code>ipfs</code></td></tr>
             </tbody>
@@ -331,86 +331,86 @@ console.log('Block:', blockNumber);</code></pre>
 
       <!-- CLI Reference -->
       <section>
-        <h2 class="text-2xl font-bold text-white mb-6">CLI Reference</h2>
+        <h2 class="text-2xl font-bold text-white mb-6">CLI リファレンス</h2>
 
         <div id="cli-create" class="mb-10">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 create &lt;name&gt;</h3>
-          <p class="text-slate-300 text-sm mb-3">Create a new VX project from a template. Omitting <code>name</code> enters interactive mode.</p>
+          <p class="text-slate-300 text-sm mb-3">テンプレートから新しい VX プロジェクトを作成します。<code>name</code> を省略するとインタラクティブモードに入ります。</p>
           <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 create my-dapp
 # または対話モード
 vx3 create</code></pre>
-          <p class="text-slate-400 text-xs mt-2">Alias: <code>vx3 init</code></p>
+          <p class="text-slate-400 text-xs mt-2">エイリアス: <code>vx3 init</code></p>
         </div>
 
         <div id="cli-setup" class="mb-10">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 setup hardhat</h3>
-          <p class="text-slate-300 text-sm mb-3">Scaffold a Hardhat development environment into the current project (<code>hardhat.config.ts</code>, sample contracts, deploy scripts, etc.).</p>
+          <p class="text-slate-300 text-sm mb-3">Hardhat 開発環境を現在のプロジェクトにスキャフォールディングします（<code>hardhat.config.ts</code>、サンプルコントラクト、デプロイスクリプト等）。</p>
           <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 setup hardhat</code></pre>
         </div>
 
         <div id="cli-rpc" class="mb-10">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 rpc</h3>
-          <p class="text-slate-300 text-sm mb-3">Subcommands for managing RPC configuration.</p>
-          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 rpc list                        # List all configurations
-vx3 rpc create                      # Create a new configuration
-vx3 rpc add                         # Add an endpoint
+          <p class="text-slate-300 text-sm mb-3">RPC 設定の管理を行うサブコマンド群です。</p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 rpc list                        # 設定一覧を表示
+vx3 rpc create                      # 新しい設定を作成
+vx3 rpc add                         # エンドポイントを追加
 vx3 rpc save --host &lt;h&gt; --port &lt;p&gt; --protocol &lt;p&gt;
-vx3 rpc load                        # Load configuration
-vx3 rpc help                        # Show help</code></pre>
+vx3 rpc load                        # 設定を読み込み
+vx3 rpc help                        # ヘルプを表示</code></pre>
         </div>
 
         <div id="cli-gas" class="mb-10">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 gas</h3>
-          <p class="text-slate-300 text-sm mb-3">Fetches and displays the current gas fees from an RPC endpoint.</p>
-          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300"># Uses the first entry from vx.config.json
+          <p class="text-slate-300 text-sm mb-3">RPC エンドポイントから現在のガス代を取得して表示します。</p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300"># vx.config.json の最初のエントリを使用
 vx3 gas
 
-# Specify RPC directly
+# RPC を直接指定
 vx3 gas --rpc https://eth.llamarpc.com
 
-# Specify config file path
+# 設定ファイルのパスを指定
 vx3 gas --path ./vx.config.json</code></pre>
-          <p class="text-slate-400 text-xs mt-2">Output: <code>baseFeePerGas</code>, <code>maxPriorityFeePerGas</code>, <code>maxFeePerGas</code>, <code>gasPrice (legacy)</code> displayed in gwei</p>
+          <p class="text-slate-400 text-xs mt-2">出力: <code>baseFeePerGas</code>、<code>maxPriorityFeePerGas</code>、<code>maxFeePerGas</code>、<code>gasPrice (legacy)</code> を gwei 単位で表示</p>
         </div>
 
         <div id="cli-pay" class="mb-10">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 pay &lt;to&gt; &lt;amount&gt;</h3>
-          <p class="text-slate-300 text-sm mb-3">Send ETH to a specified address. The private key is read from the <code>PRIVATE_KEY</code> environment variable.</p>
-          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300"># Basic usage (RPC loaded from vx.config.json)
+          <p class="text-slate-300 text-sm mb-3">指定アドレスへ ETH を送金します。秘密鍵は環境変数 <code>PRIVATE_KEY</code> から読み込まれます。</p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300"># 基本的な使用法 (vx.config.json から RPC 取得)
 vx3 pay 0xRecipientAddress 0.01
 
-# Specify RPC and private key directly
+# RPC と秘密鍵を直接指定
 vx3 pay 0xRecipient 0.01 --rpc https://eth.llamarpc.com --key 0xYourPrivateKey
 
-# Short flags
+# ショートフラグ
 vx3 pay 0xRecipient 0.05 -r http://localhost:8545 -k 0xPrivateKey</code></pre>
           <div class="warn-banner mt-3 text-xs">
-            ⚠️ <strong>Security:</strong> It is strongly recommended to manage your private key via the <code>PRIVATE_KEY</code> environment variable or a <code>.env</code> file rather than the <code>--key</code> flag.
+            ⚠️ <strong>セキュリティ:</strong> 秘密鍵は <code>--key</code> フラグではなく <code>PRIVATE_KEY</code> 環境変数または <code>.env</code> ファイルで管理することを強く推奨します。
           </div>
         </div>
 
         <div id="cli-ipfs" class="mb-10">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 ipfs fetch &lt;cid&gt;</h3>
-          <p class="text-slate-300 text-sm mb-3">Fetch content by IPFS CID. A custom gateway URL can also be specified.</p>
-          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300"># Use default gateway
+          <p class="text-slate-300 text-sm mb-3">IPFS CID を指定してコンテンツを取得します。カスタムゲートウェイ URL も指定可能です。</p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300"># デフォルトゲートウェイを使用
 vx3 ipfs fetch QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG
 
-# Specify a custom gateway
+# カスタムゲートウェイを指定
 vx3 ipfs fetch &lt;cid&gt; https://cloudflare-ipfs.com/ipfs/</code></pre>
         </div>
 
         <div id="cli-serve" class="mb-10">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 serve</h3>
-          <p class="text-slate-300 text-sm mb-3">Start a local development server.</p>
+          <p class="text-slate-300 text-sm mb-3">ローカル開発サーバーを起動します。</p>
           <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 serve</code></pre>
         </div>
 
         <div id="cli-info" class="mb-2">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 info &nbsp;/&nbsp; --version</h3>
-          <p class="text-slate-300 text-sm mb-3">Check the SDK version and project information.</p>
-          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 --version   # Local version
+          <p class="text-slate-300 text-sm mb-3">SDK バージョンやプロジェクト情報を確認します。</p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 --version   # ローカルバージョン
 vx3 -v
-vx3 info        # Fetch version info from remote API</code></pre>
+vx3 info        # リモート API からバージョン情報を取得</code></pre>
         </div>
       </section>
 
@@ -418,9 +418,9 @@ vx3 info        # Fetch version info from remote API</code></pre>
 
       <!-- SDK API -->
       <section>
-        <h2 id="api-overview" class="text-2xl font-bold text-white mb-4">SDK API Reference</h2>
+        <h2 id="api-overview" class="text-2xl font-bold text-white mb-4">SDK API リファレンス</h2>
         <p class="text-slate-300 text-sm mb-6">
-          Import <code>@nk4dev/vx</code> to use it programmatically. Both ESM and CJS are supported.
+          <code>@nk4dev/vx</code> をインポートしてプログラムから利用できます。ESM / CJS 両方に対応しています。
         </p>
         <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">// ESM default import
 import vx from '@nk4dev/vx';
@@ -433,31 +433,31 @@ const vx = require('@nk4dev/vx');</code></pre>
 
         <div id="api-getblockNumber" class="mt-10">
           <h3 class="text-lg font-semibold text-brand-purple mb-1">vx.getBlockNumber(provider)</h3>
-          <p class="text-slate-300 text-sm mb-3">Gets the latest block number from the specified RPC provider.</p>
+          <p class="text-slate-300 text-sm mb-3">指定した RPC プロバイダーから最新のブロック番号を取得します。</p>
           <div class="overflow-x-auto mb-3">
             <table class="w-full text-sm">
-              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">Parameter</th><th class="text-left py-2 pr-4 text-slate-400">Type</th><th class="text-left py-2 text-slate-400">Description</th></tr></thead>
-              <tbody class="text-slate-300"><tr><td class="py-1.5 pr-4"><code>provider</code></td><td class="pr-4">string</td><td>RPC endpoint URL</td></tr></tbody>
+              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">パラメータ</th><th class="text-left py-2 pr-4 text-slate-400">型</th><th class="text-left py-2 text-slate-400">説明</th></tr></thead>
+              <tbody class="text-slate-300"><tr><td class="py-1.5 pr-4"><code>provider</code></td><td class="pr-4">string</td><td>RPC エンドポイント URL</td></tr></tbody>
             </table>
           </div>
-          <p class="text-slate-400 text-xs mb-2">Returns: <code>Promise&lt;number&gt;</code></p>
+          <p class="text-slate-400 text-xs mb-2">戻り値: <code>Promise&lt;number&gt;</code></p>
           <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">const block = await vx.getBlockNumber('https://eth.llamarpc.com');
 console.log('Latest block:', block);</code></pre>
         </div>
 
         <div id="api-getbalance" class="mt-10">
           <h3 class="text-lg font-semibold text-brand-purple mb-1">vx.getBalance(provider, address)</h3>
-          <p class="text-slate-300 text-sm mb-3">Gets the ETH balance of the specified address (returned as a <code>number</code> in ETH units).</p>
+          <p class="text-slate-300 text-sm mb-3">指定アドレスの ETH 残高を取得します（ETH 単位の <code>number</code>）。</p>
           <div class="overflow-x-auto mb-3">
             <table class="w-full text-sm">
-              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">Parameter</th><th class="text-left py-2 pr-4 text-slate-400">Type</th><th class="text-left py-2 text-slate-400">Description</th></tr></thead>
+              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">パラメータ</th><th class="text-left py-2 pr-4 text-slate-400">型</th><th class="text-left py-2 text-slate-400">説明</th></tr></thead>
               <tbody class="text-slate-300 text-xs">
-                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>provider</code></td><td class="pr-4">string</td><td>RPC endpoint URL</td></tr>
-                <tr><td class="py-1.5 pr-4"><code>address</code></td><td class="pr-4">string</td><td>Ethereum address (0x...)</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>provider</code></td><td class="pr-4">string</td><td>RPC エンドポイント URL</td></tr>
+                <tr><td class="py-1.5 pr-4"><code>address</code></td><td class="pr-4">string</td><td>Ethereum アドレス (0x...)</td></tr>
               </tbody>
             </table>
           </div>
-          <p class="text-slate-400 text-xs mb-2">Returns: <code>Promise&lt;number&gt;</code> (in ETH units)</p>
+          <p class="text-slate-400 text-xs mb-2">戻り値: <code>Promise&lt;number&gt;</code> (ETH 単位)</p>
           <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">const balance = await vx.getBalance(
   'https://eth.llamarpc.com',
   '0xYourAddress'
@@ -467,14 +467,14 @@ console.log(`Balance: ${balance} ETH`);</code></pre>
 
         <div id="api-getgasfees" class="mt-10">
           <h3 class="text-lg font-semibold text-brand-purple mb-1">vx.getGasFees(provider)</h3>
-          <p class="text-slate-300 text-sm mb-3">Fetches EIP-1559 gas fee information. Falls back to legacy <code>gasPrice</code> for unsupported networks.</p>
+          <p class="text-slate-300 text-sm mb-3">EIP-1559 対応のガス代情報を取得します。未対応ネットワークではレガシー <code>gasPrice</code> にフォールバックします。</p>
           <div class="overflow-x-auto mb-3">
             <table class="w-full text-sm">
-              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">Parameter</th><th class="text-left py-2 pr-4 text-slate-400">Type</th><th class="text-left py-2 text-slate-400">Description</th></tr></thead>
-              <tbody class="text-slate-300"><tr><td class="py-1.5 pr-4"><code>provider</code></td><td class="pr-4">string</td><td>RPC endpoint URL</td></tr></tbody>
+              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">パラメータ</th><th class="text-left py-2 pr-4 text-slate-400">型</th><th class="text-left py-2 text-slate-400">説明</th></tr></thead>
+              <tbody class="text-slate-300"><tr><td class="py-1.5 pr-4"><code>provider</code></td><td class="pr-4">string</td><td>RPC エンドポイント URL</td></tr></tbody>
             </table>
           </div>
-          <p class="text-slate-400 text-xs mb-2">Returns: <code>Promise&lt;GasFees&gt;</code></p>
+          <p class="text-slate-400 text-xs mb-2">戻り値: <code>Promise&lt;GasFees&gt;</code></p>
           <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-yellow-200">type GasFees = {
   unit: 'gwei' | 'wei';
   gasPriceGwei?: string;
@@ -495,22 +495,22 @@ console.log('maxFee :', fees.maxFeePerGasGwei, 'gwei');</code></pre>
 
         <div id="api-sendpayment" class="mt-10">
           <h3 class="text-lg font-semibold text-brand-purple mb-1">vx.payment.sendPayment(opts)</h3>
-          <p class="text-slate-300 text-sm mb-3">Builds a transaction and sends ETH to the specified address. Waits for confirmation and returns the receipt.</p>
+          <p class="text-slate-300 text-sm mb-3">トランザクションを構築し指定アドレスへ ETH を送金します。確認まで待機して Receipt を返します。</p>
           <div class="overflow-x-auto mb-3">
             <table class="w-full text-sm">
-              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">Option</th><th class="text-left py-2 pr-4 text-slate-400">Type</th><th class="text-left py-2 pr-4 text-slate-400">Required</th><th class="text-left py-2 text-slate-400">Description</th></tr></thead>
+              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">オプション</th><th class="text-left py-2 pr-4 text-slate-400">型</th><th class="text-left py-2 pr-4 text-slate-400">必須</th><th class="text-left py-2 text-slate-400">説明</th></tr></thead>
               <tbody class="text-slate-300 text-xs">
-                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>rpcUrl</code></td><td class="pr-4">string</td><td class="text-green-400 pr-4">✓</td><td>RPC endpoint URL</td></tr>
-                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>privateKey</code></td><td class="pr-4">string</td><td class="text-green-400 pr-4">✓</td><td>Sender's private key (hex)</td></tr>
-                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>to</code></td><td class="pr-4">string</td><td class="text-green-400 pr-4">✓</td><td>Recipient address</td></tr>
-                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>amountEth</code></td><td class="pr-4">string</td><td class="text-green-400 pr-4">✓</td><td>Amount to send (ETH units, e.g. "0.01")</td></tr>
-                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>maxFeePerGas</code></td><td class="pr-4">string</td><td class="text-slate-500 pr-4">-</td><td>Max gas fee (gwei string)</td></tr>
-                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>maxPriorityFeePerGas</code></td><td class="pr-4">string</td><td class="text-slate-500 pr-4">-</td><td>Priority fee (gwei string)</td></tr>
-                <tr><td class="py-1.5 pr-4"><code>gasLimit</code></td><td class="pr-4">number</td><td class="text-slate-500 pr-4">-</td><td>Gas limit</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>rpcUrl</code></td><td class="pr-4">string</td><td class="text-green-400 pr-4">✓</td><td>RPC エンドポイント URL</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>privateKey</code></td><td class="pr-4">string</td><td class="text-green-400 pr-4">✓</td><td>送信者の秘密鍵 (hex)</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>to</code></td><td class="pr-4">string</td><td class="text-green-400 pr-4">✓</td><td>受信者アドレス</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>amountEth</code></td><td class="pr-4">string</td><td class="text-green-400 pr-4">✓</td><td>送金額 (ETH 単位, 例: "0.01")</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>maxFeePerGas</code></td><td class="pr-4">string</td><td class="text-slate-500 pr-4">-</td><td>最大ガス代 (gwei 文字列)</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>maxPriorityFeePerGas</code></td><td class="pr-4">string</td><td class="text-slate-500 pr-4">-</td><td>優先ガス代 (gwei 文字列)</td></tr>
+                <tr><td class="py-1.5 pr-4"><code>gasLimit</code></td><td class="pr-4">number</td><td class="text-slate-500 pr-4">-</td><td>ガスリミット</td></tr>
               </tbody>
             </table>
           </div>
-          <p class="text-slate-400 text-xs mb-2">Returns: <code>Promise&lt;&#123; txHash: string; receipt?: any &#125;&gt;</code></p>
+          <p class="text-slate-400 text-xs mb-2">戻り値: <code>Promise&lt;&#123; txHash: string; receipt?: any &#125;&gt;</code></p>
           <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import vx from '@nk4dev/vx';
 import 'dotenv/config';
 
@@ -527,8 +527,8 @@ console.log('Block:', result.receipt?.blockNumber);</code></pre>
 
         <div id="api-getrpcurl" class="mt-10">
           <h3 class="text-lg font-semibold text-brand-purple mb-1">vx.getRpcUrl()</h3>
-          <p class="text-slate-300 text-sm mb-3">Reads <code>vx.config.json</code> and builds an RPC URL string from the first entry.</p>
-          <p class="text-slate-400 text-xs mb-2">Returns: <code>string</code></p>
+          <p class="text-slate-300 text-sm mb-3"><code>vx.config.json</code> を読み込み、最初のエントリから RPC URL 文字列を構築して返します。</p>
+          <p class="text-slate-400 text-xs mb-2">戻り値: <code>string</code></p>
           <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import vx from '@nk4dev/vx';
 
 const url = vx.getRpcUrl();
@@ -540,11 +540,11 @@ const url = vx.getRpcUrl();
 
       <!-- React Components -->
       <section>
-        <h2 class="text-2xl font-bold text-white mb-4">React Components</h2>
+        <h2 class="text-2xl font-bold text-white mb-4">React コンポーネント</h2>
 
         <div id="react-payment" class="mb-10">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">&lt;Payment /&gt;</h3>
-          <p class="text-slate-300 text-sm mb-3">A React component for one-click ETH payments.</p>
+          <p class="text-slate-300 text-sm mb-3">ワンクリック ETH 決済を実現する React コンポーネントです。</p>
           <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import { Payment } from '@nk4dev/vx';
 
 export default function App() {
@@ -560,13 +560,13 @@ export default function App() {
 }</code></pre>
           <div class="mt-4 overflow-x-auto">
             <table class="w-full text-sm">
-              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">Props</th><th class="text-left py-2 pr-4 text-slate-400">Type</th><th class="text-left py-2 text-slate-400">Description</th></tr></thead>
+              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">Props</th><th class="text-left py-2 pr-4 text-slate-400">型</th><th class="text-left py-2 text-slate-400">説明</th></tr></thead>
               <tbody class="text-slate-300 text-xs">
-                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>to</code></td><td class="pr-4">string</td><td>Recipient Ethereum address</td></tr>
-                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>amount</code></td><td class="pr-4">string</td><td>Amount to send (ETH units)</td></tr>
-                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>currency</code></td><td class="pr-4">string</td><td>Currency (e.g. <code>"ETH"</code>)</td></tr>
-                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>onSuccess</code></td><td class="pr-4">() =&gt; void</td><td>Callback on payment success</td></tr>
-                <tr><td class="py-1.5 pr-4"><code>onError</code></td><td class="pr-4">(err: Error) =&gt; void</td><td>Callback on error</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>to</code></td><td class="pr-4">string</td><td>受信者 Ethereum アドレス</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>amount</code></td><td class="pr-4">string</td><td>送金額 (ETH 単位)</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>currency</code></td><td class="pr-4">string</td><td>通貨 (例: <code>"ETH"</code>)</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>onSuccess</code></td><td class="pr-4">() =&gt; void</td><td>決済成功時コールバック</td></tr>
+                <tr><td class="py-1.5 pr-4"><code>onError</code></td><td class="pr-4">(err: Error) =&gt; void</td><td>エラー時コールバック</td></tr>
               </tbody>
             </table>
           </div>
@@ -574,7 +574,7 @@ export default function App() {
 
         <div id="react-hooks">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">React Hooks</h3>
-          <p class="text-slate-300 text-sm mb-3">Use hooks for more granular control.</p>
+          <p class="text-slate-300 text-sm mb-3">より細かい制御が必要な場合は Hooks を使用します。</p>
           <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import { usePayment, usePaymentStatus, usePaymentDialog } from '@nk4dev/vx';
 
 export default function DonateButton() {
@@ -601,29 +601,29 @@ export default function DonateButton() {
 
       <!-- Hardhat Integration -->
       <section id="hardhat">
-        <h2 class="text-2xl font-bold text-white mb-4">Hardhat Integration</h2>
+        <h2 class="text-2xl font-bold text-white mb-4">Hardhat 統合</h2>
         <p class="text-slate-300 text-sm mb-4">
-          Running <code>vx3 setup hardhat</code> automatically generates the following files:
+          <code>vx3 setup hardhat</code> を実行すると、以下のファイルが自動生成されます：
         </p>
         <ul class="list-disc list-inside text-slate-300 text-sm space-y-1 mb-5">
           <li><code>packages/hardhat/hardhat.config.ts</code></li>
-          <li><code>packages/hardhat/contract/</code> — sample contracts</li>
-          <li><code>packages/hardhat/scripts/deploy.ts</code> — deploy script</li>
-          <li><code>packages/hardhat/typechain-types/</code> — type definitions</li>
+          <li><code>packages/hardhat/contract/</code> — サンプルコントラクト</li>
+          <li><code>packages/hardhat/scripts/deploy.ts</code> — デプロイスクリプト</li>
+          <li><code>packages/hardhat/typechain-types/</code> — 型定義</li>
         </ul>
-        <h3 class="text-base font-semibold text-slate-200 mb-2">Hardhat Commands</h3>
-        <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300"># Compile
+        <h3 class="text-base font-semibold text-slate-200 mb-2">Hardhat コマンド</h3>
+        <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300"># コンパイル
 npm run hh:compile
 
-# Start local node
+# ローカルノード起動
 npm run hh:node
 
-# Deploy (localhost)
+# デプロイ (localhost)
 npm run hh:deploy
 
-# Run tests
+# テスト実行
 npm run hh:test</code></pre>
-        <h3 class="text-base font-semibold text-slate-200 mt-5 mb-2">Fix ethers type errors in Bun environment</h3>
+        <h3 class="text-base font-semibold text-slate-200 mt-5 mb-2">Bun 環境での ethers 型エラー対処</h3>
         <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">bun add ethers</code></pre>
       </section>
 
@@ -631,7 +631,7 @@ npm run hh:test</code></pre>
 
       <!-- License -->
       <section id="license">
-        <h2 class="text-2xl font-bold text-white mb-3">License</h2>
+        <h2 class="text-2xl font-bold text-white mb-3">ライセンス</h2>
         <p class="text-slate-300 text-sm">
           MIT License — © 2021 VX SDK / <a href="https://nknighta.me" class="text-brand-accent hover:underline" target="_blank" rel="noopener">nknighta</a>
         </p>

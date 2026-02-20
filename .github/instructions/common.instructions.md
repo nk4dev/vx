@@ -1,7 +1,7 @@
 ---
 mode: 'agent'
 description: 'nodejsを使用したWeb3 SDKの開発に関する支援を提供します。'
-model: 'GPT-5 mini'
+model: 'Claude Sonnet 4.6'
 tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'problems', 'fetch', 'todos']
 ---
 
