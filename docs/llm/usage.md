@@ -41,13 +41,21 @@ await vx.payment.sendPayment({
 
 ## Component Generation
 
-The SDK supports generating payment components for React and Vue.
+The SDK supports generating payment components for React.
 
-### Template Generation Command
+### Setup Command
 
 ```bash
-npx vx3 generate component Payment --framework react
+vx3 setup react
 ```
+
+This scaffolds a complete React + Vite + TypeScript project with:
+- `<Payment>` component supporting `mode="api"` (backend proxy) and `mode="wallet"` (MetaMask direct)
+- `usePayment()` hook for programmatic payment execution
+- `usePaymentStatus()` hook for transaction state tracking
+- `usePaymentDialog()` hook for dialog/modal control
+
+See [React Payment Components](../react-payment.md) for full documentation.
 
 ## React Component Examples
 

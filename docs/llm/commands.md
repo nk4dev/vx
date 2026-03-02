@@ -11,6 +11,7 @@ This document outlines the available commands in the VX CLI tool (`vx3`).
 | `vx3 serve` | Start local development server |
 | `vx3 gas` | Check current gas fees |
 | `vx3 setup hardhat` | Scaffold Hardhat files into your project |
+| `vx3 setup react` | Scaffold React Payment components |
 | `vx3 pay` | Send payments/transactions |
 
 ## Command Usage Details
@@ -68,6 +69,18 @@ Scaffolds Hardhat configuration and files into the current project.
 vx3 setup hardhat
 ```
 *Note: You may need to run `npm install` afterwards to install dev dependencies.*
+
+### React Setup
+Scaffold a React + Vite + TypeScript project with Payment components.
+
+**Syntax:**
+```bash
+vx3 setup react
+```
+
+Generates `<Payment>` component, `usePayment`, `usePaymentStatus`, and `usePaymentDialog` hooks into `src/components/`. Supports two payment modes: `api` (backend proxy) and `wallet` (MetaMask direct).
+
+*See [React Payment Components](../react-payment.md) for full documentation.*
 
 ### Payments
 Send cryptocurrency payments or transactions.

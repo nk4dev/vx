@@ -205,7 +205,7 @@ Gas fee data:
 
 ## Planned UI Framework Support
 
-- React
+- React => [react-payment.md](docs/react-payment.md)
 - Vue.js
 - Svelte
 - Next.js

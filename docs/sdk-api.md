@@ -185,3 +185,55 @@ console.log("Data:", result.data);
 | **ethers.js** | v6 | RPC 接続・ブロックチェーン操作 |
 | **minimatch** | v10 | ファイルパターンマッチング |
 | **solc** | v0.8 | Solidity コンパイラ |
+
+---
+
+## React 支払いコンポーネント
+
+React 向けの Payment コンポーネントとフックを提供しています。
+
+### インポート
+
+```tsx
+import { Payment, usePayment, usePaymentStatus, usePaymentDialog } from '@nk4dev/vx';
+```
+
+### `<Payment>` コンポーネント
+
+```tsx
+<Payment
+  to="0x1234567890abcdef1234567890abcdef12345678"
+  amount="0.01"
+  currency="ETH"
+  mode="wallet"
+  onSuccess={(result) => console.log(result.txHash)}
+  onError={(err) => console.error(err)}
+/>
+```
+
+| Prop | 型 | デフォルト | 説明 |
+| :--- | :--- | :--- | :--- |
+| `to` | `string` | *必須* | 送金先アドレス |
+| `amount` | `string` | *必須* | 送金額（ETH） |
+| `currency` | `string` | `"ETH"` | 通貨ラベル |
+| `mode` | `"api" \| "wallet"` | `"api"` | `"api"`: バックエンド経由 / `"wallet"`: MetaMask 直接 |
+| `onSuccess` | `(result) => void` | — | 支払い成功時コールバック |
+| `onError` | `(error) => void` | — | 支払い失敗時コールバック |
+
+### フック
+
+| フック | 説明 |
+| :--- | :--- |
+| `usePayment()` | 支払いを実行する非同期関数と状態を返す |
+| `usePaymentStatus()` | トランザクション状態を追跡 |
+| `usePaymentDialog()` | ダイアログの開閉状態を管理 |
+
+> 詳細は [React 支払いコンポーネント](./react-payment.md) を参照してください。
+
+### CLI によるセットアップ
+
+```bash
+vx3 setup react
+npm install
+npm run dev
+```

@@ -25,6 +25,21 @@ const vx = {
 export default vx;
 export { payment };
 
+// React component, hooks & types
+export { Payment } from './front_api/payment';
+export { usePayment } from './front_api/hooks/use-payment';
+export { usePaymentStatus } from './front_api/hooks/use-payment-status';
+export { usePaymentDialog } from './front_api/hooks/use-payment-dialog';
+export type {
+  PaymentMode,
+  PaymentStatus,
+  PaymentResult,
+  PaymentOptions,
+  PaymentProps,
+  PaymentState,
+  PaymentDialogControl,
+} from './types/payment';
+
 // CJS/ESM interop: ensure default import from CJS yields usable object with methods
 // without requiring `.default` access in Node ESM.
 // This merges named exports onto the default object and exposes them via module.exports.

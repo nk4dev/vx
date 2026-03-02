@@ -122,6 +122,40 @@ npm run hh:deploy
 	- `contracts/Sample.sol`
 	- `scripts/deploy.ts`
 
+## React セットアップ（支払いコンポーネント）
+
+React + Vite + TypeScript プロジェクトを Payment コンポーネント付きでスキャフォールドします:
+
+```powershell
+vx3 setup react
+npm install
+npm run dev
+```
+
+このコマンドは:
+- `package.json` に `react`, `react-dom`, `ethers`, `@nk4dev/vx` 等の依存関係を追加します
+- `<Payment>` コンポーネント、`usePayment`、`usePaymentStatus`、`usePaymentDialog` フックを生成します
+- Vite + TypeScript のビルド設定ファイルを追加します
+- デモアプリケーション（`src/App.tsx`）を生成します
+
+2 つの支払いモードをサポート:
+- **`mode="api"`**: バックエンド API 経由（秘密鍵はサーバー側で管理）
+- **`mode="wallet"`**: MetaMask 等のブラウザウォレットで直接署名
+
+```tsx
+import { Payment } from './components/Payment';
+
+<Payment
+  to="0x1234..."
+  amount="0.01"
+  currency="ETH"
+  mode="wallet"
+  onSuccess={(r) => console.log(r.txHash)}
+/>
+```
+
+> 詳細は [React 支払いコンポーネントドキュメント](./ja/react-payment.md) を参照してください。
+
 ## RPC 設定（vx.config.json）
 
 `vx3 rpc init` は RPC 設定のテンプレートを作成します。`vx.config.json` は配列形式で複数のエンドポイントを定義できます。
@@ -183,7 +217,6 @@ Gas fee data:
 - ethers.js（RPC／ブロックチェーン操作）
 
 ## 将来サポート予定の UI フレームワーク
-- React
 - Vue.js
 - Svelte
 - Next.js

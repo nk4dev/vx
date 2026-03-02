@@ -12,6 +12,7 @@ VX3 は、スマートコントラクト開発を加速させる Web3 開発ツ�
 | [Getting Started](./getting-started.md) | インストール・クイックスタートガイド |
 | [CLI リファレンス](./cli-reference.md) | 全 CLI コマンドの詳細リファレンス |
 | [SDK API リファレンス](./sdk-api.md) | プログラムから SDK を利用する方法 |
+| [React 支払いコンポーネント](./react-payment.md) | React 向け Payment コンポーネント・フック |
 | [設定ファイル](./configuration.md) | `vx.config.json` 等の設定解説 |
 | [アーキテクチャ](./architecture.md) | ディレクトリ構成とモジュール設計 |
 | [開発ガイド](./development.md) | ビルド・テスト・CI・コントリビューション |

@@ -91,40 +91,63 @@ async function setupReact() {
   const cwd = process.cwd();
   const pkgPath = path.join(cwd, 'package.json');
 
-  // 1) add scripts + devDependencies
+  // 1) add scripts + dependencies
   upsertJSON(pkgPath, (pkg) => {
     pkg.scripts = pkg.scripts || {};
     pkg.scripts.dev = pkg.scripts.dev || 'vite';
-    pkg.scripts.build = pkg.scripts.build || 'vite build';
+    pkg.scripts.build = pkg.scripts.build || 'tsc && vite build';
     pkg.scripts.preview = pkg.scripts.preview || 'vite preview';
 
-    pkg.devDependencies = pkg.devDependencies || {};
-    pkg.devDependencies.vite = pkg.devDependencies.vite || '^5.0.0';
-    pkg.devDependencies.typescript = pkg.devDependencies.typescript || '^5.0.0';
-
     pkg.dependencies = pkg.dependencies || {};
-    pkg.dependencies.react = pkg.dependencies.react || '^18.2.0';
-    pkg.dependencies['react-dom'] = pkg.dependencies['react-dom'] || '^18.2.0';
-    pkg.dependencies['@nk4dev/vx'] = pkg.dependencies['@nk4dev/vx'] || '0.0.18';
+    pkg.dependencies.react = pkg.dependencies.react || '^19.0.0';
+    pkg.dependencies['react-dom'] = pkg.dependencies['react-dom'] || '^19.0.0';
+    pkg.dependencies.ethers = pkg.dependencies.ethers || '^6.15.0';
+    pkg.dependencies['@nk4dev/vx'] = pkg.dependencies['@nk4dev/vx'] || '0.0.19';
+
+    pkg.devDependencies = pkg.devDependencies || {};
+    pkg.devDependencies.vite = pkg.devDependencies.vite || '^6.0.0';
+    pkg.devDependencies['@vitejs/plugin-react'] = pkg.devDependencies['@vitejs/plugin-react'] || '^4.4.0';
+    pkg.devDependencies.typescript = pkg.devDependencies.typescript || '^5.8.0';
+    pkg.devDependencies['@types/react'] = pkg.devDependencies['@types/react'] || '^19.2.0';
+    pkg.devDependencies['@types/react-dom'] = pkg.devDependencies['@types/react-dom'] || '^19.2.0';
 
     return pkg;
   });
 
-  // 2) copy template files
+  // 2) locate the bundled react-template directory
   const candidates = [
     path.resolve(__dirname, '../../packages/react-template'),
     path.resolve(__dirname, '../../../packages/react-template'),
     path.resolve(cwd, 'packages/react-template'),
   ];
   const templateRoot = candidates.find((p) => fs.existsSync(p));
+
   if (!templateRoot) {
-    console.warn('React template not found. Skipping file copy.');
+    console.warn('⚠  React template directory not found. Skipping file copy.');
+    console.warn('   Expected at: packages/react-template/');
   } else {
-    // copy entire template
-    if (fs.existsSync(templateRoot)) copyRecursiveSync(templateRoot, cwd);
+    // Copy template files (index.html, vite.config.ts, tsconfig.json, src/)
+    const entries = ['index.html', 'vite.config.ts', 'tsconfig.json', 'src'];
+    for (const entry of entries) {
+      const src = path.join(templateRoot, entry);
+      const dest = path.join(cwd, entry);
+      if (fs.existsSync(src)) {
+        copyRecursiveSync(src, dest);
+      }
+    }
+    console.log('✔  Copied React template files (Payment component, hooks, demo app).');
   }
 
-  console.log('React setup complete. Next steps:');
-  console.log('  1) Install dependencies: npm install');
-  console.log('  2) Start dev server: npm run dev');
+  console.log('\n🎉 React setup complete!\n');
+  console.log('Generated files:');
+  console.log('  src/components/Payment.tsx          – Payment UI component');
+  console.log('  src/components/hooks/use-payment.ts  – usePayment hook');
+  console.log('  src/components/hooks/use-payment-status.ts');
+  console.log('  src/components/hooks/use-payment-dialog.ts');
+  console.log('  src/App.tsx                         – Demo application');
+  console.log('  vite.config.ts / tsconfig.json       – Build configuration');
+  console.log('\nNext steps:');
+  console.log('  1) Install dependencies : npm install');
+  console.log('  2) Start dev server     : npm run dev');
+  console.log('  3) Edit src/App.tsx to customise the payment recipient and amount.\n');
 }

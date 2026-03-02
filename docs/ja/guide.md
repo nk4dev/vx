@@ -22,10 +22,11 @@
 6. [設定ファイル（vx.config.json）](#設定ファイルvxconfigjson)
 7. [SDK API リファレンス](#sdk-api-リファレンス)
 8. [Payment モジュール](#payment-モジュール)
-9. [IPFS モジュール](#ipfs-モジュール)
-10. [Hardhat 連携](#hardhat-連携)
-11. [セキュリティのベストプラクティス](#セキュリティのベストプラクティス)
-12. [トラブルシューティング](#トラブルシューティング)
+9. [React 支払いコンポーネント](#react-支払いコンポーネント)
+10. [IPFS モジュール](#ipfs-モジュール)
+11. [Hardhat 連携](#hardhat-連携)
+12. [セキュリティのベストプラクティス](#セキュリティのベストプラクティス)
+13. [トラブルシューティング](#トラブルシューティング)
 
 ---
 
@@ -45,6 +46,7 @@ VX（パッケージ名: `@nk4dev/vx`）は、Web3 dApps バックエンドや�
 | **ローカル開発サーバ** | デバッグダッシュボード付きの Express サーバ |
 | **プロジェクト生成** | テンプレートからの新規プロジェクト作成 |
 | **Hardhat 連携** | スマートコントラクト開発環境のスキャフォールディング |
+| **React 支払いコンポーネント** | `<Payment>` コンポーネントとフックの自動生成 |
 
 ### 使用ライブラリ
 
@@ -223,6 +225,52 @@ vx3 setup hardhat
 # devDependencies を追加でインストール
 npm install -D hardhat @nomicfoundation/hardhat-toolbox
 ```
+
+---
+
+### `vx3 setup react`
+
+React + Vite + TypeScript プロジェクトを Payment コンポーネント付きでスキャフォールドします。
+
+```powershell
+vx3 setup react
+npm install
+npm run dev
+```
+
+生成されるファイル:
+
+| ファイル | 説明 |
+| :--- | :--- |
+| `src/components/Payment.tsx` | 支払い UI コンポーネント |
+| `src/components/hooks/use-payment.ts` | `usePayment` フック |
+| `src/components/hooks/use-payment-status.ts` | `usePaymentStatus` フック |
+| `src/components/hooks/use-payment-dialog.ts` | `usePaymentDialog` フック |
+| `src/App.tsx` | デモアプリケーション |
+| `vite.config.ts` / `tsconfig.json` | ビルド設定 |
+
+2 つの支払いモードをサポート:
+- **`mode="api"`**（デフォルト）: バックエンド API 経由（秘密鍵はサーバー側で管理）
+- **`mode="wallet"`**: MetaMask 等のブラウザウォレットで直接署名
+
+```tsx
+import { Payment } from './components/Payment';
+
+export default function App() {
+  return (
+    <Payment
+      to="0x1234567890abcdef1234567890abcdef12345678"
+      amount="0.01"
+      currency="ETH"
+      mode="wallet"
+      onSuccess={(r) => alert('支払い完了! Tx: ' + r.txHash)}
+      onError={(err) => alert('支払い失敗: ' + err.message)}
+    />
+  );
+}
+```
+
+> 詳細は [React 支払いコンポーネント](./react-payment.md) を参照してください。
 
 追加されるファイル・スクリプト:
 
@@ -554,6 +602,100 @@ bun run scripts/transfer.ts
 
 ---
 
+## React 支払いコンポーネント
+
+React アプリケーション向けの仮想通貨支払いコンポーネントとフックを提供します。`vx3 setup react` コマンドで自動生成できます。
+
+### セットアップ
+
+```powershell
+vx3 setup react
+npm install
+npm run dev
+```
+
+### `<Payment>` コンポーネント
+
+宣言的な支払いフォームコンポーネントです。
+
+```tsx
+import { Payment } from './components/Payment';
+// または SDK から: import { Payment } from '@nk4dev/vx';
+
+export default function App() {
+  return (
+    <Payment
+      to="0x1234567890abcdef1234567890abcdef12345678"
+      amount="0.01"
+      currency="ETH"
+      mode="wallet"
+      onSuccess={(result) => alert('完了! Tx: ' + result.txHash)}
+      onError={(err) => alert('失敗: ' + err.message)}
+    />
+  );
+}
+```
+
+| Prop | 型 | デフォルト | 説明 |
+| :--- | :--- | :--- | :--- |
+| `to` | `string` | *必須* | 送金先アドレス |
+| `amount` | `string` | *必須* | 送金額（ETH） |
+| `currency` | `string` | `"ETH"` | 通貨ラベル |
+| `mode` | `"api" \| "wallet"` | `"api"` | 支払いモード |
+| `onSuccess` | `(result) => void` | — | 成功時コールバック |
+| `onError` | `(error) => void` | — | 失敗時コールバック |
+
+### 支払いモード
+
+- **`mode="api"`**: バックエンド API（`/api/pay`）経由。秘密鍵はサーバー側で管理。
+- **`mode="wallet"`**: MetaMask 等のブラウザウォレットで直接署名。秘密鍵不要。
+
+### フック
+
+```tsx
+import { usePayment, usePaymentStatus, usePaymentDialog } from './components/hooks';
+```
+
+| フック | 説明 |
+| :--- | :--- |
+| `usePayment()` | 支払い実行関数 `pay()` と状態 `state` を返す |
+| `usePaymentStatus()` | トランザクション状態（`idle` / `pending` / `success` / `error`）を追跡 |
+| `usePaymentDialog()` | ダイアログの `isOpen` / `open()` / `close()` / `toggle()` を管理 |
+
+#### `usePayment()` の使用例
+
+```tsx
+const { pay, state } = usePayment();
+
+const handleDonate = async () => {
+  try {
+    const result = await pay({ to: '0x...', amount: '0.01', mode: 'wallet' });
+    console.log('Tx:', result.txHash);
+  } catch (err) {
+    console.error(err);
+  }
+};
+```
+
+#### `usePaymentDialog()` の使用例
+
+```tsx
+const dialog = usePaymentDialog();
+
+return (
+  <>
+    <button onClick={dialog.open}>支払う</button>
+    {dialog.isOpen && (
+      <Payment to="0x..." amount="0.01" mode="wallet" onSuccess={() => dialog.close()} />
+    )}
+  </>
+);
+```
+
+> 詳細なドキュメントは [React 支払いコンポーネント](./react-payment.md) を参照してください。
+
+---
+
 ## IPFS モジュール
 
 `vx.config.json` に設定された IPFS ゲートウェイからコンテンツを取得します。
@@ -716,7 +858,7 @@ const rawGasPrice = fees.raw.gasPrice?.toString();
 
 ## 将来サポート予定
 
-- React / Vue.js / Svelte / Next.js 向け Payment コンポーネント
+- Vue.js / Svelte / Next.js 向け Payment コンポーネント
 - NFT 作成・OpenSea 公開機能
 - ウォレット接続ダイアログ（マルチチェーン対応）
 - Hardhat を使った統合テスト（E2E）

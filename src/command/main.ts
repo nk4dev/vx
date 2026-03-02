@@ -4,6 +4,7 @@ import { rpc } from '../core/rpc/command';
 import { SDK_VERSION, API_VERSION } from '../config';
 import { handleGasCommand } from './gas';
 import { init } from './pjmake';
+import { NAME } from '../config';
 // Use require to avoid TS resolution issues in some environments
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { setup } = require('./setup');
@@ -47,7 +48,11 @@ export default async function VX() {
           await setup('hardhat');
           return;
         }
-        console.error('Unknown setup target. Try: vx3 setup hardhat');
+        if (args[1] === 'react') {
+          await setup('react');
+          return;
+        }
+        console.error('Unknown setup target. Available: hardhat, react');
         return;
       case 'pay':
         // vx3 pay <to> <amount> [--rpc <url>] [--key <privateKey>]
@@ -67,10 +72,10 @@ export default async function VX() {
         }
         return;
       case '--version':
-        console.log(`XNV version: ${loadversion}`);
+        console.log(`${NAME} version: ${loadversion}`);
         process.exit(0);
       case '-v':
-        console.log(`XNV version: ${loadversion}`);
+        console.log(`${NAME} version: ${loadversion}`);
         process.exit(0);
       case 'info':
         console.log('Checking project...');
@@ -97,7 +102,7 @@ export default async function VX() {
 function help() {
   const args = process.argv.slice(2);
   if (args.includes('--version') || args.includes('-v')) {
-    console.log(`XNV version: ${SDK_VERSION}`);
+    console.log(`${NAME} version: ${SDK_VERSION}`);
     process.exit(0);
   }
 
@@ -107,7 +112,7 @@ function help() {
     { command: 'init', description: 'Initialize a new project with default settings.' },
     { command: 'create', description: 'Create a new project with the specified name.' },
     { command: 'serve', description: 'Start a local development server.' },
-    { command: 'setup', description: 'Project setup helpers (e.g., hardhat).' },
+    { command: 'setup', description: 'Project setup helpers (hardhat, react).' },
     { command: 'rpc', description: 'Manage or query RPC endpoints.' },
     { command: 'pay', description: 'Send a payment/transaction.' },
     { command: 'gas', description: 'Estimate gas fees for transactions.' },
@@ -118,7 +123,7 @@ function help() {
     { command: '--version / -v', description: 'Show SDK version.' }
   ]
 
-  console.log(`\n🚀 VX3 SDK v${SDK_VERSION} ${stage} for VX ${API_VERSION}`);
+  console.log(`\n🚀 ${NAME} SDK v${SDK_VERSION} ${stage} for VX ${API_VERSION}`);
   console.log('Available commands:');
   commandlist.forEach(cmd => {
     console.log(`  ${cmd.command.padEnd(10)} - ${cmd.description}`);
