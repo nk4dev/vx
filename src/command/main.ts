@@ -70,7 +70,6 @@ export default async function VX() {
           console.error('Unknown sol subcommand');
           process.exit(1);
         }
-        return;
       case '--version':
         console.log(`${NAME} version: ${loadversion}`);
         process.exit(0);

@@ -1,4 +1,4 @@
-# VX — Web3 Development Toolkit for VX3
+# VX — Web3 Development Toolkit for [VX3](https://github.com/nk4dev/vx3)
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Ethereum](https://img.shields.io/badge/Ethereum-3C3C3D?style=for-the-badge&logo=ethereum&logoColor=white)
@@ -98,6 +98,52 @@ Named exports are also available for backward compatibility:
 ```ts
 import { vx as data, instance } from "@nk4dev/vx";
 await data.getBalance("http://127.0.0.1:8545", "0x...");
+```
+
+## Import Relationship (Mermaid)
+
+Main internal import relationships are shown below.
+
+```mermaid
+flowchart LR
+  subgraph CLI[CLI Flow]
+    cli[src/cli.ts] --> main[src/command/main.ts]
+    main --> input[src/command/input.ts]
+    main --> server[src/server/dev.ts]
+    main --> rpcCmd[src/core/rpc/command.ts]
+    main --> gasCmd[src/command/gas.ts]
+    main --> pjmake[src/command/pjmake.ts]
+    main --> payCmd[src/command/pay.ts]
+    main --> ipfsCmd[src/command/ipfs.ts]
+    main --> setup[src/command/setup.ts]
+
+    gasCmd --> data[src/core/data/index.ts]
+    gasCmd --> rpcConnect[src/core/rpc/connect.ts]
+    payCmd --> contract[src/core/contract.ts]
+    payCmd --> payment[src/payment/index.ts]
+    ipfsCmd --> ipfs[src/core/ipfs.ts]
+    server --> data
+    server --> contract
+    server --> payment
+    contract --> rpcConnect
+  end
+```
+
+```mermaid
+flowchart LR
+  subgraph SDK[SDK Export Flow]
+    index[src/index.ts] --> contract[src/core/contract.ts]
+    index --> data[src/core/data/index.ts]
+    index --> payment[src/payment/index.ts]
+    index --> frontPayment[src/front_api/payment.ts]
+    index --> hookPay[src/front_api/hooks/use-payment.ts]
+    index --> hookStatus[src/front_api/hooks/use-payment-status.ts]
+    index --> hookDialog[src/front_api/hooks/use-payment-dialog.ts]
+    frontPayment --> paymentTypes[src/types/payment.ts]
+    hookPay --> paymentTypes
+    hookStatus --> paymentTypes
+    hookDialog --> paymentTypes
+  end
 ```
 
 ## Project Creation (Template Copy)
