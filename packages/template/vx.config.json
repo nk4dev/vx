@@ -6,12 +6,6 @@
     "type": "rpc"
   },
   {
-    "host": "rpc.example.com",
-    "port": 443,
-    "protocol": "https",
-    "type": "rpc"
-  },
-  {
     "type": "ipfs",
     "gateway": "https://ipfs.io"
   }
