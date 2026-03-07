@@ -9,7 +9,8 @@
     "packages/template",
     "packages/hardhat",
     "packages/components",
-    "packages/react-template"
+    "packages/react-template",
+    "packages/vue-template"
   ],
   "license": "MIT",
   "keywords": [

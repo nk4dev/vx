@@ -10,6 +10,7 @@ import { NAME } from '../config';
 const { setup } = require('./setup');
 import { handlePayCommand } from './pay';
 import { handleIpfsCommand } from './ipfs';
+import { handleGenerateCommand } from './generate';
 const loadversion = SDK_VERSION
 
 export default async function VX() {
@@ -61,6 +62,9 @@ export default async function VX() {
       case 'gas':
         await handleGasCommand(args.slice(1));
         return;
+      case 'generate':
+        await handleGenerateCommand(args.slice(1));
+        return;
 
       case 'sol':
         if (args[1] === 'hello') {
@@ -95,7 +99,7 @@ export default async function VX() {
   } catch (error) {
     console.error(`Error: ${error.message}`);
     process.exit(1);
-  }
+  } 
 }
 
 function help() {
@@ -115,6 +119,7 @@ function help() {
     { command: 'rpc', description: 'Manage or query RPC endpoints.' },
     { command: 'pay', description: 'Send a payment/transaction.' },
     { command: 'gas', description: 'Estimate gas fees for transactions.' },
+    { command: 'generate', description: 'Generate templates (react, vue) and list options.' },
     { command: 'sol', description: 'Solidity helper commands (examples).' },
     { command: 'dash', description: 'Build and serve the dashboard.' },
     { command: 'info', description: 'Display information about the current project.' },

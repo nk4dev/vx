@@ -17,7 +17,6 @@ export function createPackageJson(projectDir: string) {
     "author": "Your Name",
     "license": "ISC",
     "dependencies": {
-      "@varius-dev/vx": "https://github.com/nk4dev/vx.git"
     },
     "devDependencies": {
       "typescript": "^4.0.0"

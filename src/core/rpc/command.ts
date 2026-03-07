@@ -26,7 +26,7 @@ export function rpc() {
 }
 
 function help() {
-    console.log('Usage: rpc <command>');
+    console.log('Usage: vx3 rpc <command>');
     console.log('Commands:');
     console.log('  init    Initialize RPC configuration');
     console.log('  list    List RPC configurations');

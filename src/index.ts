@@ -3,7 +3,10 @@ import * as data from './core/data';
 import { getRpcUrl } from './core/contract';
 import * as payment from './payment/index';
 
+// owner by @nk4dev
+// this file is vx sdk entry point.
 // Keep named exports for backward compatibility
+
 export { instance };
 export { data as vx };
 
