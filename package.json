@@ -1,9 +1,10 @@
 {
-  "name": "vx3",
-  "version": "0.0.19",
+  "name": "@vx3/vx",
+  "version": "0.0.2",
   "description": "A CLI tool for vx3 smart contracts platform",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
+  "author": "Nknight AMAMIYA@nk4dev <nknighta@varius.technology>",
   "files": [
     "dist",
     "packages/template",
