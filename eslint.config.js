@@ -1,38 +1,32 @@
 import globals from "globals";
 import js from "@eslint/js";
+import tseslint from "typescript-eslint";
 import prettierConfig from "eslint-config-prettier";
 
 export default [
   {
-    ignores: ["node_modules/", "dist/", "build/"],
+    ignores: ["node_modules/", "dist/", "build/", ".env", ".env.example"],
   },
+  js.configs.recommended,
   {
+    files: ["**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
       globals: {
+        ...globals.browser,
         ...globals.node,
+        ...globals.jest,
       },
     },
-    rules: {
-    },
+    rules: {},
   },
-  js.configs.recommended,
-  prettierConfig,
   {
-    env: {
-      node: true,
-      jest: true, // Add Jest environment
+    files: ["**/*.{ts,mts,cts,tsx}"],
+    languageOptions: {
+      parser: tseslint.parser,
     },
-    extends: [
-      'eslint:recommended',
-    ],
-    parserOptions: {
-      ecmaVersion: 2020,
-      sourceType: 'module',
-    },
-    rules: {
-      // Add custom rules if needed
-    },
+    rules: {},
   },
+  prettierConfig,
 ];

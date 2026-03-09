@@ -52,6 +52,7 @@
     "@types/react-dom": "^19.2.2",
     "@types/supertest": "^6.0.3",
     "ethers": "^6.15.0",
+    "globals": "^17.4.0",
     "minimatch": "^10.0.3",
     "prettier": "^3.5.3",
     "solc": "^0.8.30"
