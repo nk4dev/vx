@@ -20,7 +20,7 @@ VX3 は、スマートコントラクト開発を加速させる Web3 開発ツ�
 ## リンク
 
 - **リポジトリ**: [github.com/nk4dev/vx3](https://github.com/nk4dev/vx3)
-- **npm パッケージ**: [`@nk4dev/vx`](https://www.npmjs.com/package/@nk4dev/vx)
+- **npm パッケージ**: [`@vx3/vx`](https://www.npmjs.com/package/@vx3/vx)
 - **プロジェクトサイト**: [nknighta.me/vx](https://nknighta.me/vx)
 - **メンテナ**: [nk4dev](https://nk4dev.github.io/)
 - **ライセンス**: MIT

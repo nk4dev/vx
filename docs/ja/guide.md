@@ -32,7 +32,7 @@
 
 ## 概要
 
-VX（パッケージ名: `@nk4dev/vx`）は、Web3 dApps バックエンドやスクリプト環境を素早く構築するためのツールキットです。
+VX（パッケージ名: `@vx3/vx`）は、Web3 dApps バックエンドやスクリプト環境を素早く構築するためのツールキットです。
 
 ### 主な機能
 
@@ -72,14 +72,14 @@ VX（パッケージ名: `@nk4dev/vx`）は、Web3 dApps バックエンドや�
 ### グローバルインストール（CLI として使う場合）
 
 ```bash
-npm install -g @nk4dev/vx
+npm install -g @vx3/vx
 vx3 --help
 ```
 
 ### ローカルインストール（SDK として使う場合）
 
 ```bash
-npm install @nk4dev/vx
+npm install @vx3/vx
 ```
 
 ### 開発用（リポジトリをクローンして使う場合）
@@ -369,19 +369,19 @@ vx3 pay 0xRecipientAddress 0.01 --rpc http://127.0.0.1:8545
 #### デフォルトエクスポート（推奨）
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 ```
 
 #### 名前付きエクスポート
 
 ```ts
-import { vx as data, instance, payment } from "@nk4dev/vx";
+import { vx as data, instance, payment } from "@vx3/vx";
 ```
 
 #### CommonJS
 
 ```js
-const vx = require("@nk4dev/vx").default;
+const vx = require("@vx3/vx").default;
 ```
 
 ---
@@ -391,7 +391,7 @@ const vx = require("@nk4dev/vx").default;
 `vx.config.json` から最初の RPC エントリの URL を生成して返します。
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 const rpcUrl = vx.getRpcUrl();
 console.log(rpcUrl); // => "http://localhost:8545"
@@ -404,7 +404,7 @@ console.log(rpcUrl); // => "http://localhost:8545"
 指定 RPC から最新のブロック番号を取得します。
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 const block = await vx.getBlockNumber("http://localhost:8545");
 console.log("Latest block:", block);
@@ -417,7 +417,7 @@ console.log("Latest block:", block);
 指定アドレスの ETH 残高を取得します（ETH 単位の浮動小数点数）。
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 const balance = await vx.getBalance(
   "http://localhost:8545",
@@ -433,7 +433,7 @@ console.log("Balance:", balance, "ETH");
 EIP-1559 対応のガス料金情報を取得します。
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 const fees = await vx.getGasFees("http://localhost:8545");
 console.log("Base fee:", fees.baseFeePerGasGwei, "gwei");
@@ -468,7 +468,7 @@ type GasFees = {
 ### RPC と組み合わせた実用例
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 async function main() {
   const rpc = vx.getRpcUrl();
@@ -518,7 +518,7 @@ type SendPaymentResult = {
 #### デフォルトエクスポートから使う
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 const result = await vx.payment.sendPayment({
   rpcUrl: "http://127.0.0.1:8545",
@@ -534,7 +534,7 @@ console.log("Block:", result.receipt?.blockNumber);
 #### 名前付きエクスポートから使う
 
 ```ts
-import { payment } from "@nk4dev/vx";
+import { payment } from "@vx3/vx";
 
 const result = await payment.sendPayment({
   rpcUrl: process.env.RPC_URL!,
@@ -548,7 +548,7 @@ const result = await payment.sendPayment({
 
 ```ts
 import "dotenv/config";
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 async function transfer() {
   const rpcUrl = process.env.RPC_URL ?? vx.getRpcUrl();
@@ -620,7 +620,7 @@ npm run dev
 
 ```tsx
 import { Payment } from './components/Payment';
-// または SDK から: import { Payment } from '@nk4dev/vx';
+// または SDK から: import { Payment } from '@vx3/vx';
 
 export default function App() {
   return (
@@ -703,7 +703,7 @@ return (
 ### `fetchCid(cid: string, gateway?: string): Promise<{ source: string; data: string | Uint8Array }>`
 
 ```ts
-import { fetchCid } from "@nk4dev/vx/core/ipfs";
+import { fetchCid } from "@vx3/vx/core/ipfs";
 
 const result = await fetchCid("QmExampleCID");
 console.log("Source:", result.source);
@@ -763,7 +763,7 @@ main().catch((err) => {
 ### VX SDK と組み合わせた Hardhat 活用例
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 // Hardhat のローカルノードに接続
 const rpc = "http://127.0.0.1:8545";
@@ -866,4 +866,4 @@ const rawGasPrice = fees.raw.gasPrice?.toString();
 
 ---
 
-*このドキュメントは `@nk4dev/vx` SDK の日本語ガイドです。英語版は [README.md](../README.md) を参照してください。*
+*このドキュメントは `@vx3/vx` SDK の日本語ガイドです。英語版は [README.md](../README.md) を参照してください。*

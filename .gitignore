@@ -1,7 +1,9 @@
+
 node_modules/
 dist/
 runtest/
 cache/
+slug/
 
 yarn-error.log
 *.log

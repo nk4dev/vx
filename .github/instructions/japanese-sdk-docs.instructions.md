@@ -10,14 +10,14 @@ tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'problems'
 現在、Web3開発ツールキット「VX (VX3)」を利用して、新規のdAppsバックエンド（またはスクリプト）環境を構築・拡張するタスクを担当しています。
 
 # 前提条件とコンテキスト (Context & Prerequisites)
-- **ツール**: VX（`@nk4dev/vx`）は、プロジェクト作成、RPC接続、Hardhat連携、および支払い処理を簡略化するCLI兼SDKです。
+- **ツール**: VX（`@vx3/vx`）は、プロジェクト作成、RPC接続、Hardhat連携、および支払い処理を簡略化するCLI兼SDKです。
 - **言語/フレームワーク**: TypeScript, Node.js (v18+推奨), ethers.js v6, Hardhat
 - **パッケージマネージャ**: npm, pnpm, yarn, または Bun を使用可能です（プロジェクトではBunの利用もサポート・検証されています）。
 - **ドキュメントの要点**:
   - `vx3 create <name>` でテンプレートからプロジェクトを作成可能。
   - `vx3 setup hardhat` でHardhat環境（`hardhat.config.ts`, `Sample.sol`, E2Eスクリプト等）をスキャフォールディング可能。
   - `vx.config.json` にRPC（http/ws）やIPFSの設定を配列で定義する。
-  - プログラムからは `import vx from "@nk4dev/vx";` または `import { payment } from "@nk4dev/vx";` のようにSDKを利用可能。
+  - プログラムからは `import vx from "@vx3/vx";` または `import { payment } from "@vx3/vx";` のようにSDKを利用可能。
 
 # 開発タスク指示 (Task Instructions)
 AIエージェントとしてユーザーからタスクを依頼された際は、以下の要件を満たすコードと手順を生成してください。
@@ -31,7 +31,7 @@ AIエージェントとしてユーザーからタスクを依頼された際は
 - ローカルネットワーク（http://127.0.0.1:8545）と、任意のテストネット（例: Sepolia）のエンドポイントを含む `vx.config.json` の設定例を作成してください。
 
 ## 3. 送金スクリプトの実装 (TypeScript)
-- `@nk4dev/vx` のSDKを利用して、指定したアドレスへETHを送金するスクリプト (`scripts/transfer.ts`) を作成してください。
+- `@vx3/vx` のSDKを利用して、指定したアドレスへETHを送金するスクリプト (`scripts/transfer.ts`) を作成してください。
 - `payment.sendPayment` API を利用し、`rpcUrl`, `privateKey` (環境変数から取得), `to`, `amountEth` を適切に設定してください。
 - **セキュリティのベストプラクティス**: ソースコード内に秘密鍵を直接ハードコードせず、`dotenv` などを利用して読み込む形にしてください。
 

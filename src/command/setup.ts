@@ -102,7 +102,7 @@ async function setupReact() {
     pkg.dependencies.react = pkg.dependencies.react || '^19.0.0';
     pkg.dependencies['react-dom'] = pkg.dependencies['react-dom'] || '^19.0.0';
     pkg.dependencies.ethers = pkg.dependencies.ethers || '^6.15.0';
-    pkg.dependencies['@nk4dev/vx'] = pkg.dependencies['@nk4dev/vx'] || '0.0.19';
+    pkg.dependencies['@vx3/vx'] = pkg.dependencies['@vx3/vx'] || '0.0.19';
 
     pkg.devDependencies = pkg.devDependencies || {};
     pkg.devDependencies.vite = pkg.devDependencies.vite || '^6.0.0';

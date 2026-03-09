@@ -12,8 +12,8 @@ Paths are relative to the `docs` directory.
 
 - https://raw.githubusercontent.com/nk4dev/vx/refs/heads/dev/docs/llm/installation.md:
   - Installation requirements (Node.js 18+, npm/pnpm/yarn; Bun optional)
-  - Global installation steps (`npm install -g @nk4dev/vx`)
-  - Local project installation (`npm install @nk4dev/vx`)
+  - Global installation steps (`npm install -g @vx3/vx`)
+  - Local project installation (`npm install @vx3/vx`)
   - Build-from-source steps (`git clone`, `npm install`, `npm run build`)
   - One-off usage with `npx` and Bun build examples
 

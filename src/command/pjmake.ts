@@ -22,7 +22,7 @@ function copyRecursiveSync(src: string, dest: string) {
     try {
       fs.copyFileSync(src, dest);
     } catch (e) {
-      // ignore unsupported file types
+      console.warn(`Warning: Unable to copy ${src} to ${dest}: ${(e as Error).message}`);
     }
   }
 }
@@ -73,8 +73,10 @@ export function init(projectName?: string) {
         console.warn('Warning: template directory not found; created minimal project with package.json only.');
       }
       console.log(`Directory created at: ${projectDirPath}`);
+      process.exit(0);
     } else {
       console.log(`Directory already exists at: ${projectDirPath}`);
+      process.exit(1);
     }
   } catch (error) {
     console.error(`Failed to initialize project: ${(error as Error).message}`);

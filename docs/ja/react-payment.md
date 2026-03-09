@@ -112,7 +112,7 @@ export default function App() {
 ```tsx
 'use client';
 
-import { Payment } from '@nk4dev/vx';
+import { Payment } from '@vx3/vx';
 
 export default function PayPage() {
   return (
@@ -248,10 +248,10 @@ interface PaymentDialogControl {
 
 ## SDK からのインポート
 
-VX3 を npm パッケージ（`@nk4dev/vx`）として使用する場合、コンポーネントとフックを直接インポートできます:
+VX3 を npm パッケージ（`@vx3/vx`）として使用する場合、コンポーネントとフックを直接インポートできます:
 
 ```tsx
-import { Payment, usePayment, usePaymentStatus, usePaymentDialog } from '@nk4dev/vx';
+import { Payment, usePayment, usePaymentStatus, usePaymentDialog } from '@vx3/vx';
 ```
 
 ### 型のエクスポート
@@ -265,7 +265,7 @@ import type {
   PaymentProps,
   PaymentState,
   PaymentDialogControl,
-} from '@nk4dev/vx';
+} from '@vx3/vx';
 ```
 
 ---
@@ -279,7 +279,7 @@ React + Vite + TypeScript プロジェクトを Payment コンポーネント付
 **実行内容:**
 
 1. `package.json` に依存関係とスクリプトを追加
-   - **dependencies**: `react`, `react-dom`, `ethers`, `@nk4dev/vx`
+   - **dependencies**: `react`, `react-dom`, `ethers`, `@vx3/vx`
    - **devDependencies**: `vite`, `@vitejs/plugin-react`, `typescript`, `@types/react`, `@types/react-dom`
    - **scripts**: `dev`, `build`, `preview`
 2. バンドルされた `packages/react-template/` ディレクトリからテンプレートファイルをコピー

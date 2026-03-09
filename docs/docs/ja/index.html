@@ -177,7 +177,7 @@
     <div class="px-4 py-3 border-t border-purple-900/30 text-xs text-slate-500">
       <a href="https://github.com/nk4dev/vx" class="hover:text-brand-accent transition-colors" target="_blank" rel="noopener">GitHub</a>
       <span class="mx-1">·</span>
-      <a href="https://www.npmjs.com/package/@nk4dev/vx" class="hover:text-brand-accent transition-colors" target="_blank" rel="noopener">npm</a>
+      <a href="https://www.npmjs.com/package/@vx3/vx" class="hover:text-brand-accent transition-colors" target="_blank" rel="noopener">npm</a>
     </div>
   </aside>
 
@@ -206,7 +206,7 @@
       <section id="overview">
         <h2 class="text-2xl font-bold text-white mb-4">概要 (Overview)</h2>
         <p class="text-slate-300 leading-relaxed mb-4">
-          <strong class="text-brand-accent">VX SDK (<code>@nk4dev/vx</code> / <code>vx3</code>)</strong> は、
+          <strong class="text-brand-accent">VX SDK (<code>@vx3/vx</code> / <code>vx3</code>)</strong> は、
           Web3 アプリケーション（dApps）の開発を加速するための TypeScript 製 CLI ツール兼 SDK です。
           スマートコントラクト統合・ウォレット管理・マルチチェーン RPC 接続・暗号通貨決済 API を提供します。
         </p>
@@ -233,7 +233,7 @@
           <span class="text-slate-600">·</span>
           <a href="https://github.com/nk4dev/vx3" class="text-brand-accent hover:underline" target="_blank" rel="noopener">GitHub (vx3 parent)</a>
           <span class="text-slate-600">·</span>
-          <a href="https://www.npmjs.com/package/@nk4dev/vx" class="text-brand-accent hover:underline" target="_blank" rel="noopener">npm: @nk4dev/vx</a>
+          <a href="https://www.npmjs.com/package/@vx3/vx" class="text-brand-accent hover:underline" target="_blank" rel="noopener">npm: @vx3/vx</a>
         </div>
       </section>
 
@@ -245,16 +245,16 @@
         <p class="text-slate-300 text-sm mb-3">npm、pnpm、yarn、または Bun のいずれかでインストールできます。</p>
 
         <h3 class="text-base font-semibold text-slate-200 mb-2">npm</h3>
-        <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">npm install -g @nk4dev/vx</code></pre>
+        <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">npm install -g @vx3/vx</code></pre>
 
         <h3 class="text-base font-semibold text-slate-200 mt-4 mb-2">pnpm</h3>
-        <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">pnpm add -g @nk4dev/vx</code></pre>
+        <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">pnpm add -g @vx3/vx</code></pre>
 
         <h3 class="text-base font-semibold text-slate-200 mt-4 mb-2">Bun</h3>
-        <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">bun add -g @nk4dev/vx</code></pre>
+        <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">bun add -g @vx3/vx</code></pre>
 
         <h3 class="text-base font-semibold text-slate-200 mt-4 mb-2">ローカルプロジェクト依存として追加</h3>
-        <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">npm install @nk4dev/vx</code></pre>
+        <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">npm install @vx3/vx</code></pre>
 
         <p class="text-slate-400 text-sm mt-4">インストール後、バージョンを確認：</p>
         <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 --version</code></pre>
@@ -277,7 +277,7 @@ vx3 setup hardhat</code></pre>
           </div>
           <div>
             <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">3.</span> SDK をプログラムから使用：</p>
-            <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import vx from '@nk4dev/vx';
+            <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import vx from '@vx3/vx';
 
 const blockNumber = await vx.getBlockNumber('https://eth.llamarpc.com');
 console.log('Block:', blockNumber);</code></pre>
@@ -420,16 +420,16 @@ vx3 info        # リモート API からバージョン情報を取得</code></
       <section>
         <h2 id="api-overview" class="text-2xl font-bold text-white mb-4">SDK API リファレンス</h2>
         <p class="text-slate-300 text-sm mb-6">
-          <code>@nk4dev/vx</code> をインポートしてプログラムから利用できます。ESM / CJS 両方に対応しています。
+          <code>@vx3/vx</code> をインポートしてプログラムから利用できます。ESM / CJS 両方に対応しています。
         </p>
         <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">// ESM default import
-import vx from '@nk4dev/vx';
+import vx from '@vx3/vx';
 
 // Named imports
-import { payment } from '@nk4dev/vx';
+import { payment } from '@vx3/vx';
 
 // CJS
-const vx = require('@nk4dev/vx');</code></pre>
+const vx = require('@vx3/vx');</code></pre>
 
         <div id="api-getblockNumber" class="mt-10">
           <h3 class="text-lg font-semibold text-brand-purple mb-1">vx.getBlockNumber(provider)</h3>
@@ -511,7 +511,7 @@ console.log('maxFee :', fees.maxFeePerGasGwei, 'gwei');</code></pre>
             </table>
           </div>
           <p class="text-slate-400 text-xs mb-2">戻り値: <code>Promise&lt;&#123; txHash: string; receipt?: any &#125;&gt;</code></p>
-          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import vx from '@nk4dev/vx';
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import vx from '@vx3/vx';
 import 'dotenv/config';
 
 const result = await vx.payment.sendPayment({
@@ -529,7 +529,7 @@ console.log('Block:', result.receipt?.blockNumber);</code></pre>
           <h3 class="text-lg font-semibold text-brand-purple mb-1">vx.getRpcUrl()</h3>
           <p class="text-slate-300 text-sm mb-3"><code>vx.config.json</code> を読み込み、最初のエントリから RPC URL 文字列を構築して返します。</p>
           <p class="text-slate-400 text-xs mb-2">戻り値: <code>string</code></p>
-          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import vx from '@nk4dev/vx';
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import vx from '@vx3/vx';
 
 const url = vx.getRpcUrl();
 // => "https://eth.llamarpc.com:443"</code></pre>
@@ -545,7 +545,7 @@ const url = vx.getRpcUrl();
         <div id="react-payment" class="mb-10">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">&lt;Payment /&gt;</h3>
           <p class="text-slate-300 text-sm mb-3">ワンクリック ETH 決済を実現する React コンポーネントです。</p>
-          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import { Payment } from '@nk4dev/vx';
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import { Payment } from '@vx3/vx';
 
 export default function App() {
   return (
@@ -575,7 +575,7 @@ export default function App() {
         <div id="react-hooks">
           <h3 class="text-lg font-semibold text-brand-accent mb-1">React Hooks</h3>
           <p class="text-slate-300 text-sm mb-3">より細かい制御が必要な場合は Hooks を使用します。</p>
-          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import { usePayment, usePaymentStatus, usePaymentDialog } from '@nk4dev/vx';
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import { usePayment, usePaymentStatus, usePaymentDialog } from '@vx3/vx';
 
 export default function DonateButton() {
   const initiatePayment = usePayment();

@@ -7,7 +7,7 @@ This guide explains how to integrate the VX SDK into your applications.
 ### TypeScript / ESM Import
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 // Get RPC URL from vx.config.json
 const rpc = vx.getRpcUrl();
@@ -20,7 +20,7 @@ const gas = await vx.getGasFees(rpc);
 ### CommonJS Import
 
 ```js
-const vx = require("@nk4dev/vx").default;
+const vx = require("@vx3/vx").default;
 vx.getGasFees("http://127.0.0.1:8545").then(console.log);
 ```
 
@@ -29,7 +29,7 @@ vx.getGasFees("http://127.0.0.1:8545").then(console.log);
 You can send transactions programmatically using the payment module.
 
 ```ts
-import vx from '@nk4dev/vx';
+import vx from '@vx3/vx';
 
 await vx.payment.sendPayment({
   rpcUrl: 'http://127.0.0.1:8545',
@@ -62,7 +62,7 @@ See [React Payment Components](../react-payment.md) for full documentation.
 ### Basic Payment Component
 
 ```tsx
-import { Payment } from '@nk4dev/vx';
+import { Payment } from '@vx3/vx';
 
 export default function App() {
   return (
@@ -83,7 +83,7 @@ export default function App() {
 
 ```tsx
 import { useRouter } from 'next/router';
-import { Payment } from '@nk4dev/vx';
+import { Payment } from '@vx3/vx';
 
 export default function App() {
     const router = useRouter();
@@ -105,7 +105,7 @@ export default function App() {
 ### Donation Example (Hooks)
 
 ```tsx
-import { usePayment, usePaymentStatus, usePaymentDialog } from '@nk4dev/vx';
+import { usePayment, usePaymentStatus, usePaymentDialog } from '@vx3/vx';
 
 export default function App() {
   const initiatePayment = usePayment();

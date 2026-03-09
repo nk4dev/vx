@@ -8,6 +8,8 @@ tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'problems'
 # Project Overview
 This project is an SDK developed for vx3, a platform for cryptocurrencies and decentralized systems.
 
+npm pkg name: @vx3/vx
+
 The goals of this SDK tool are:
 
 - Payment and payment dialogs for React and Vue
@@ -40,7 +42,7 @@ npx vx3 generate component Payment --framework react
 
 ## Payment Component Example
 ```tsx
-import { Payment } from '@nk4dev/vx';
+import { Payment } from '@vx3/vx';
 
 export default function App() {
   return (
@@ -80,7 +82,7 @@ export default function App() {
 
 ## Donation example
 ```tsx
-import { usePayment, usePaymentStatus, usePaymentDialog } from '@nk4dev/vx';
+import { usePayment, usePaymentStatus, usePaymentDialog } from '@vx3/vx';
 
 export default function App() {
   const initiatePayment = usePayment();

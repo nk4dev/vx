@@ -65,7 +65,7 @@ vx3 gas
 
 TypeScript/ESM:
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 const rpc = vx.getRpcUrl(); // vx.config.json から読み取る
 const block = await vx.getBlockNumber(rpc);
@@ -74,13 +74,13 @@ const gas = await vx.getGasFees(rpc);
 
 CommonJS:
 ```js
-const vx = require("@nk4dev/vx").default;
+const vx = require("@vx3/vx").default;
 vx.getGasFees("http://127.0.0.1:8545").then(console.log);
 ```
 
 後方互換のための名前付きエクスポートも利用可能です:
 ```ts
-import { vx as data, instance } from "@nk4dev/vx";
+import { vx as data, instance } from "@vx3/vx";
 await data.getBalance("http://127.0.0.1:8545", "0x...");
 ```
 
@@ -133,7 +133,7 @@ npm run dev
 ```
 
 このコマンドは:
-- `package.json` に `react`, `react-dom`, `ethers`, `@nk4dev/vx` 等の依存関係を追加します
+- `package.json` に `react`, `react-dom`, `ethers`, `@vx3/vx` 等の依存関係を追加します
 - `<Payment>` コンポーネント、`usePayment`、`usePaymentStatus`、`usePaymentDialog` フックを生成します
 - Vite + TypeScript のビルド設定ファイルを追加します
 - デモアプリケーション（`src/App.tsx`）を生成します
@@ -231,13 +231,13 @@ Gas fee data:
 追加された内容
 - `src/payment/index.ts` — `sendPayment(options)` をエクスポートするヘルパー
 - `src/command/pay.ts` — `sendPayment` を呼び出す CLI ラッパー
-- `src/index.ts` — ライブラリエントリが `payment` 名前空間を公開します（`vx.payment.sendPayment(...)` または `import { payment } from '@nk4dev/vx'`）
+- `src/index.ts` — ライブラリエントリが `payment` 名前空間を公開します（`vx.payment.sendPayment(...)` または `import { payment } from '@vx3/vx'`）
 
 プログラムからの使い方
 
 TypeScript/ESM 例:
 ```ts
-import vx from '@nk4dev/vx';
+import vx from '@vx3/vx';
 
 await vx.payment.sendPayment({
 	rpcUrl: 'http://127.0.0.1:8545',
@@ -249,7 +249,7 @@ await vx.payment.sendPayment({
 
 名前付きインポート:
 ```ts
-import { payment } from '@nk4dev/vx';
+import { payment } from '@vx3/vx';
 await payment.sendPayment({ rpcUrl, privateKey, to, amountEth: '0.01' });
 ```
 

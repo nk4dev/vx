@@ -11,16 +11,16 @@
 Install globally for CLI access from anywhere:
 
 ```bash
-npm install -g @nk4dev/vx
+npm install -g @vx3/vx
 # or
-npm i -g @nk4dev/vx
+npm i -g @vx3/vx
 ```
 
 ### As a Local Dependency
 Install in your project:
 
 ```bash
-npm install @nk4dev/vx
+npm install @vx3/vx
 ```
 
 ### For One-off Usage

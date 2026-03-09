@@ -7,7 +7,7 @@ VX3 SDK をプログラムからインポートして利用する方法を解説
 ### デフォルトエクスポート（推奨）
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 ```
 
 `vx` オブジェクトには以下のメソッド・プロパティが含まれます:
@@ -25,13 +25,13 @@ import vx from "@nk4dev/vx";
 ### 名前付きエクスポート
 
 ```ts
-import { vx as data, instance, payment } from "@nk4dev/vx";
+import { vx as data, instance, payment } from "@vx3/vx";
 ```
 
 ### CommonJS
 
 ```js
-const vx = require("@nk4dev/vx").default;
+const vx = require("@vx3/vx").default;
 ```
 
 ---
@@ -43,7 +43,7 @@ const vx = require("@nk4dev/vx").default;
 指定した RPC から最新のブロック番号を取得します。
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 const blockNumber = await vx.getBlockNumber("http://localhost:8545");
 console.log("Latest block:", blockNumber);
@@ -112,7 +112,7 @@ ETH 送金トランザクションを送信するためのモジュールです�
 ### `sendPayment(opts: SendPaymentOptions): Promise<SendPaymentResult>`
 
 ```ts
-import vx from "@nk4dev/vx";
+import vx from "@vx3/vx";
 
 const result = await vx.payment.sendPayment({
   rpcUrl: "http://127.0.0.1:8545",
@@ -152,7 +152,7 @@ type SendPaymentResult = {
 ### 名前付きインポート
 
 ```ts
-import { payment } from "@nk4dev/vx";
+import { payment } from "@vx3/vx";
 
 await payment.sendPayment({ rpcUrl, privateKey, to, amountEth: "0.01" });
 ```
@@ -169,7 +169,7 @@ await payment.sendPayment({ rpcUrl, privateKey, to, amountEth: "0.01" });
 ### `fetchCid(cid: string, gateway?: string): Promise<{source: string, data: string | Uint8Array}>`
 
 ```ts
-import { fetchCid } from "@nk4dev/vx/core/ipfs";
+import { fetchCid } from "@vx3/vx/core/ipfs";
 
 const result = await fetchCid("QmExampleCID");
 console.log("Source:", result.source);
@@ -195,7 +195,7 @@ React 向けの Payment コンポーネントとフックを提供していま�
 ### インポート
 
 ```tsx
-import { Payment, usePayment, usePaymentStatus, usePaymentDialog } from '@nk4dev/vx';
+import { Payment, usePayment, usePaymentStatus, usePaymentDialog } from '@vx3/vx';
 ```
 
 ### `<Payment>` コンポーネント

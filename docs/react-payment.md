@@ -112,7 +112,7 @@ The backend can be the built-in VX3 dev server (`vx3 serve`), which exposes `/ap
 ```tsx
 'use client';
 
-import { Payment } from '@nk4dev/vx';
+import { Payment } from '@vx3/vx';
 
 export default function PayPage() {
   return (
@@ -248,10 +248,10 @@ interface PaymentDialogControl {
 
 ## SDK Import
 
-When using VX3 as an npm package (`@nk4dev/vx`), you can import the component and hooks directly:
+When using VX3 as an npm package (`@vx3/vx`), you can import the component and hooks directly:
 
 ```tsx
-import { Payment, usePayment, usePaymentStatus, usePaymentDialog } from '@nk4dev/vx';
+import { Payment, usePayment, usePaymentStatus, usePaymentDialog } from '@vx3/vx';
 ```
 
 ### Type Exports
@@ -265,7 +265,7 @@ import type {
   PaymentProps,
   PaymentState,
   PaymentDialogControl,
-} from '@nk4dev/vx';
+} from '@vx3/vx';
 ```
 
 ---
@@ -279,7 +279,7 @@ Scaffolds a React + Vite + TypeScript project with Payment components into the c
 **What it does:**
 
 1. Updates `package.json` with dependencies and scripts:
-   - **dependencies**: `react`, `react-dom`, `ethers`, `@nk4dev/vx`
+   - **dependencies**: `react`, `react-dom`, `ethers`, `@vx3/vx`
    - **devDependencies**: `vite`, `@vitejs/plugin-react`, `typescript`, `@types/react`, `@types/react-dom`
    - **scripts**: `dev`, `build`, `preview`
 2. Copies template files from the bundled `packages/react-template/` directory

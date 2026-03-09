@@ -17,6 +17,7 @@ type GenerateOptions = {
   debugLocal: boolean;
 };
 
+// generate package.json template for react and vue projects, with options to link local SDK for development
 const TEMPLATE_SPECS: Record<TemplateName, TemplateSpec> = {
   react: {
     templateDir: 'react-template',
@@ -31,7 +32,7 @@ const TEMPLATE_SPECS: Record<TemplateName, TemplateSpec> = {
       react: '^19.0.0',
       'react-dom': '^19.0.0',
       ethers: '^6.15.0',
-      '@nk4dev/vx': '0.0.19',
+      '@vx3/vx': '0.0.19',
     },
     devDependencies: {
       vite: '^6.0.0',
@@ -53,7 +54,7 @@ const TEMPLATE_SPECS: Record<TemplateName, TemplateSpec> = {
     dependencies: {
       vue: '^3.5.13',
       ethers: '^6.15.0',
-      '@nk4dev/vx': '0.0.19',
+      '@vx3/vx': '0.0.19',
     },
     devDependencies: {
       vite: '^6.0.0',
@@ -65,6 +66,7 @@ const TEMPLATE_SPECS: Record<TemplateName, TemplateSpec> = {
   },
 };
 
+// Utility functions for file operations and template generation
 function ensureDir(dirPath: string): void {
   fs.mkdirSync(dirPath, { recursive: true });
 }
@@ -199,8 +201,7 @@ function generateTemplate(templateName: TemplateName, options: GenerateOptions):
     nextPkg.dependencies = { ...spec.dependencies, ...dependencies };
     nextPkg.devDependencies = { ...spec.devDependencies, ...devDependencies };
 
-    // Debug mode links generated app to local SDK source for faster iteration.
-    nextPkg.dependencies['@nk4dev/vx'] = sdkDependency;
+    nextPkg.dependencies['@vx3/vx'] = sdkDependency;
 
     return nextPkg;
   });
@@ -229,6 +230,7 @@ function parseGenerateOptions(rawArgs: string[]): GenerateOptions {
   };
 
   for (const arg of rawArgs) {
+    // Local source code loading for library debugging
     if (arg === '--debug') {
       options.debugLocal = true;
       continue;
@@ -254,7 +256,8 @@ export async function handleGenerateCommand(args: string[]): Promise<void> {
     listGeneratableLibraries();
     process.exit(0);
   }
-
+  
+  // unknown subcommand, must be in form of template/<name>
   if (!action.startsWith('template/')) {
     throw new Error(`Unknown generate subcommand: ${action}`);
   }
