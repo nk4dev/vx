@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import type { PaymentProps, PaymentResult, PaymentMode } from '../types/payment';
+import type {
+  PaymentProps,
+  PaymentResult,
+  PaymentMode,
+} from '../types/payment';
 
 /* ------------------------------------------------------------------ */
 /*  Internal styles (inline CSS objects — no external CSS dependency)  */
@@ -17,7 +21,12 @@ const styles: Record<string, React.CSSProperties> = {
   },
   title: { fontSize: '1.125rem', fontWeight: 600, marginBottom: '1rem' },
   row: { marginBottom: '0.75rem' },
-  label: { display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem', color: '#374151' },
+  label: {
+    display: 'block',
+    fontSize: '0.875rem',
+    marginBottom: '0.25rem',
+    color: '#374151',
+  },
   input: {
     width: '100%',
     padding: '0.375rem 0.5rem',
@@ -59,7 +68,7 @@ async function payViaApi(
   amount: string,
   currency: string,
   apiEndpoint: string,
-  rpcUrl?: string,
+  rpcUrl?: string
 ): Promise<PaymentResult> {
   const resp = await fetch(apiEndpoint, {
     method: 'POST',
@@ -67,23 +76,37 @@ async function payViaApi(
     body: JSON.stringify({ to, amountEth: amount, rpcUrl, currency }),
   });
   const data = await resp.json();
-  if (!resp.ok) throw new Error(data?.error ?? `Payment failed (${resp.status})`);
+  if (!resp.ok)
+    throw new Error(data?.error ?? `Payment failed (${resp.status})`);
   return { txHash: data.txHash, receipt: data.receipt };
 }
 
-async function payViaWallet(to: string, amount: string): Promise<PaymentResult> {
+async function payViaWallet(
+  to: string,
+  amount: string
+): Promise<PaymentResult> {
   const ethereum = (globalThis as Record<string, unknown>).ethereum as
-    | { request: (a: { method: string; params?: unknown[] }) => Promise<unknown> }
+    | {
+        request: (a: {
+          method: string;
+          params?: unknown[];
+        }) => Promise<unknown>;
+      }
     | undefined;
 
   if (!ethereum) {
-    throw new Error('No wallet provider found. Please install MetaMask or a compatible wallet.');
+    throw new Error(
+      'No wallet provider found. Please install MetaMask or a compatible wallet.'
+    );
   }
 
-  const accounts = (await ethereum.request({ method: 'eth_requestAccounts' })) as string[];
+  const accounts = (await ethereum.request({
+    method: 'eth_requestAccounts',
+  })) as string[];
   if (!accounts?.length) throw new Error('No accounts available.');
 
-  const valueHex = '0x' + BigInt(Math.floor(parseFloat(amount) * 1e18)).toString(16);
+  const valueHex =
+    '0x' + BigInt(Math.floor(parseFloat(amount) * 1e18)).toString(16);
 
   const txHash = (await ethereum.request({
     method: 'eth_sendTransaction',
@@ -175,7 +198,7 @@ export function Payment(props: PaymentProps): React.ReactElement {
           style: { ...styles.input, background: '#f9fafb' },
           value: to,
           readOnly: true,
-        }),
+        })
       ),
 
       // Amount
@@ -187,8 +210,9 @@ export function Payment(props: PaymentProps): React.ReactElement {
           style: styles.input,
           type: 'text',
           value: amount,
-          onChange: (ev: React.ChangeEvent<HTMLInputElement>) => setAmount(ev.target.value),
-        }),
+          onChange: (ev: React.ChangeEvent<HTMLInputElement>) =>
+            setAmount(ev.target.value),
+        })
       ),
 
       // Mode selector
@@ -205,8 +229,8 @@ export function Payment(props: PaymentProps): React.ReactElement {
               setMode(ev.target.value as PaymentMode),
           },
           h('option', { value: 'api' }, 'Backend API'),
-          h('option', { value: 'wallet' }, 'Browser Wallet (MetaMask)'),
-        ),
+          h('option', { value: 'wallet' }, 'Browser Wallet (MetaMask)')
+        )
       ),
 
       // Submit
@@ -218,11 +242,13 @@ export function Payment(props: PaymentProps): React.ReactElement {
           {
             type: 'submit',
             disabled: loading,
-            style: loading ? { ...styles.btn, ...styles.btnDisabled } : styles.btn,
+            style: loading
+              ? { ...styles.btn, ...styles.btnDisabled }
+              : styles.btn,
           },
-          loading ? 'Sending…' : `Pay ${amount} ${currency}`,
-        ),
-      ),
+          loading ? 'Sending…' : `Pay ${amount} ${currency}`
+        )
+      )
     ),
 
     // Success
@@ -231,11 +257,11 @@ export function Payment(props: PaymentProps): React.ReactElement {
         'div',
         { style: styles.success },
         h('div', null, '✓ Payment sent'),
-        h('div', { style: styles.txHash }, result.txHash),
+        h('div', { style: styles.txHash }, result.txHash)
       ),
 
     // Error
-    error && h('div', { style: styles.error }, `Error: ${error}`),
+    error && h('div', { style: styles.error }, `Error: ${error}`)
   );
 }
 

@@ -1,4 +1,4 @@
-import { load_rpc_config } from "./rpc/connect";
+import { load_rpc_config } from './rpc/connect';
 
 function intstance(configPath: string) {
   const config = load_rpc_config(configPath);
@@ -6,7 +6,9 @@ function intstance(configPath: string) {
 
   const rpcUrl = `${parsedContent[0].protocol}://${parsedContent[0].host}:${parsedContent[0].port}`;
   if (!config) {
-    console.error("No configuration found. Please run 'vx rpc init' to create a configuration.");
+    console.error(
+      "No configuration found. Please run 'vx rpc init' to create a configuration."
+    );
     process.exit(1);
   }
   console.log(rpcUrl);
@@ -17,7 +19,9 @@ export function getRpcUrl() {
   const configPath = 'vx.config.json';
   const config = load_rpc_config(configPath);
   if (!config) {
-    console.error("No configuration found. Please run 'vx rpc init' to create a configuration.");
+    console.error(
+      "No configuration found. Please run 'vx rpc init' to create a configuration."
+    );
     process.exit(1);
   }
   return `${config.protocol}://${config.host}:${config.port}`;

@@ -87,11 +87,17 @@ function copyRecursiveSync(src: string, dest: string): void {
   }
 }
 
-function upsertJSON(filePath: string, updater: (obj: Record<string, unknown>) => Record<string, unknown>): void {
+function upsertJSON(
+  filePath: string,
+  updater: (obj: Record<string, unknown>) => Record<string, unknown>
+): void {
   let current: Record<string, unknown> = {};
   if (fs.existsSync(filePath)) {
     try {
-      current = JSON.parse(fs.readFileSync(filePath, 'utf8')) as Record<string, unknown>;
+      current = JSON.parse(fs.readFileSync(filePath, 'utf8')) as Record<
+        string,
+        unknown
+      >;
     } catch {
       current = {};
     }
@@ -101,7 +107,11 @@ function upsertJSON(filePath: string, updater: (obj: Record<string, unknown>) =>
   fs.writeFileSync(filePath, `${JSON.stringify(next, null, 2)}\n`, 'utf8');
 }
 
-function resolveTemplateRoot(templateDir: string, cwd: string, preferLocal: boolean): string | null {
+function resolveTemplateRoot(
+  templateDir: string,
+  cwd: string,
+  preferLocal: boolean
+): string | null {
   const localCandidate = path.resolve(cwd, `packages/${templateDir}`);
   const bundledCandidates = [
     path.resolve(__dirname, `../../packages/${templateDir}`),
@@ -114,7 +124,10 @@ function resolveTemplateRoot(templateDir: string, cwd: string, preferLocal: bool
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
 }
 
-function resolveLocalSdkDependency(outputDir: string, cwd: string): string | null {
+function resolveLocalSdkDependency(
+  outputDir: string,
+  cwd: string
+): string | null {
   const candidates = [
     cwd,
     path.resolve(__dirname, '..', '..', '..'),
@@ -128,7 +141,9 @@ function resolveLocalSdkDependency(outputDir: string, cwd: string): string | nul
     }
 
     try {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as { name?: string };
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as {
+        name?: string;
+      };
       if (pkg.name !== 'vx3') {
         continue;
       }
@@ -154,22 +169,33 @@ function listGeneratableLibraries(): void {
   }
 }
 
-function generateTemplate(templateName: TemplateName, options: GenerateOptions): void {
+function generateTemplate(
+  templateName: TemplateName,
+  options: GenerateOptions
+): void {
   const cwd = process.cwd();
   const spec = TEMPLATE_SPECS[templateName];
   const outputDir = path.resolve(cwd, options.targetDirArg ?? '.');
 
-  const templateRoot = resolveTemplateRoot(spec.templateDir, cwd, options.debugLocal);
+  const templateRoot = resolveTemplateRoot(
+    spec.templateDir,
+    cwd,
+    options.debugLocal
+  );
   if (!templateRoot) {
-    throw new Error(`Template directory not found: packages/${spec.templateDir}`);
+    throw new Error(
+      `Template directory not found: packages/${spec.templateDir}`
+    );
   }
 
   const sdkDependency = options.debugLocal
-    ? resolveLocalSdkDependency(outputDir, cwd) ?? '0.0.19'
+    ? (resolveLocalSdkDependency(outputDir, cwd) ?? '0.0.19')
     : '0.0.19';
 
   if (options.debugLocal && sdkDependency === '0.0.19') {
-    console.warn('Debug mode enabled, but local vx3 package was not found. Falling back to published version 0.0.19.');
+    console.warn(
+      'Debug mode enabled, but local vx3 package was not found. Falling back to published version 0.0.19.'
+    );
   }
 
   ensureDir(outputDir);
@@ -187,7 +213,11 @@ function generateTemplate(templateName: TemplateName, options: GenerateOptions):
     const nextPkg = { ...pkg };
 
     if (!nextPkg.name) {
-      nextPkg.name = path.basename(outputDir).toLowerCase().replace(/[^a-z0-9-]/g, '-') || `vx-${templateName}-app`;
+      nextPkg.name =
+        path
+          .basename(outputDir)
+          .toLowerCase()
+          .replace(/[^a-z0-9-]/g, '-') || `vx-${templateName}-app`;
     }
     if (!nextPkg.private) {
       nextPkg.private = true;
@@ -195,7 +225,10 @@ function generateTemplate(templateName: TemplateName, options: GenerateOptions):
 
     const scripts = (nextPkg.scripts ?? {}) as Record<string, string>;
     const dependencies = (nextPkg.dependencies ?? {}) as Record<string, string>;
-    const devDependencies = (nextPkg.devDependencies ?? {}) as Record<string, string>;
+    const devDependencies = (nextPkg.devDependencies ?? {}) as Record<
+      string,
+      string
+    >;
 
     nextPkg.scripts = { ...spec.scripts, ...scripts };
     nextPkg.dependencies = { ...spec.dependencies, ...dependencies };
@@ -256,7 +289,7 @@ export async function handleGenerateCommand(args: string[]): Promise<void> {
     listGeneratableLibraries();
     process.exit(0);
   }
-  
+
   // unknown subcommand, must be in form of template/<name>
   if (!action.startsWith('template/')) {
     throw new Error(`Unknown generate subcommand: ${action}`);
@@ -264,7 +297,9 @@ export async function handleGenerateCommand(args: string[]): Promise<void> {
 
   const templateName = action.slice('template/'.length) as TemplateName;
   if (!(templateName in TEMPLATE_SPECS)) {
-    throw new Error(`Unknown template: ${templateName}. Use "vx3 generate list" to see available options.`);
+    throw new Error(
+      `Unknown template: ${templateName}. Use "vx3 generate list" to see available options.`
+    );
   }
 
   const options = parseGenerateOptions(args.slice(1));

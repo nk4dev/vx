@@ -21,7 +21,11 @@ function copyRecursiveSync(src: string, dest: string) {
 function upsertJSON(filePath: string, updater: (obj: any) => any) {
   let current: any = {};
   if (fs.existsSync(filePath)) {
-    try { current = JSON.parse(fs.readFileSync(filePath, 'utf8')); } catch { current = {}; }
+    try {
+      current = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch {
+      current = {};
+    }
   }
   const next = updater(current) ?? current;
   fs.writeFileSync(filePath, JSON.stringify(next, null, 2));
@@ -38,11 +42,14 @@ async function setupHardhat() {
     pkg.scripts['hh:compile'] = pkg.scripts['hh:compile'] || 'hardhat compile';
     pkg.scripts['hh:test'] = pkg.scripts['hh:test'] || 'hardhat test';
     pkg.scripts['hh:node'] = pkg.scripts['hh:node'] || 'hardhat node';
-    pkg.scripts['hh:deploy'] = pkg.scripts['hh:deploy'] || 'hardhat run scripts/deploy.ts --network localhost';
+    pkg.scripts['hh:deploy'] =
+      pkg.scripts['hh:deploy'] ||
+      'hardhat run scripts/deploy.ts --network localhost';
 
     pkg.devDependencies = pkg.devDependencies || {};
     pkg.devDependencies.hardhat = pkg.devDependencies.hardhat || '^2.22.0';
-    pkg.devDependencies['@nomicfoundation/hardhat-toolbox'] = pkg.devDependencies['@nomicfoundation/hardhat-toolbox'] || '^3.0.0';
+    pkg.devDependencies['@nomicfoundation/hardhat-toolbox'] =
+      pkg.devDependencies['@nomicfoundation/hardhat-toolbox'] || '^3.0.0';
     return pkg;
   });
 
@@ -69,8 +76,12 @@ async function setupHardhat() {
   }
 
   console.log('Hardhat setup complete. Next steps:');
-  console.log('  1) Install dev deps: npm install -D hardhat @nomicfoundation/hardhat-toolbox');
-  console.log('  2) Try: npm run hh:node | npm run hh:compile | npm run hh:deploy');
+  console.log(
+    '  1) Install dev deps: npm install -D hardhat @nomicfoundation/hardhat-toolbox'
+  );
+  console.log(
+    '  2) Try: npm run hh:node | npm run hh:compile | npm run hh:deploy'
+  );
 }
 
 export async function setup(target: string) {
@@ -106,10 +117,13 @@ async function setupReact() {
 
     pkg.devDependencies = pkg.devDependencies || {};
     pkg.devDependencies.vite = pkg.devDependencies.vite || '^6.0.0';
-    pkg.devDependencies['@vitejs/plugin-react'] = pkg.devDependencies['@vitejs/plugin-react'] || '^4.4.0';
+    pkg.devDependencies['@vitejs/plugin-react'] =
+      pkg.devDependencies['@vitejs/plugin-react'] || '^4.4.0';
     pkg.devDependencies.typescript = pkg.devDependencies.typescript || '^5.8.0';
-    pkg.devDependencies['@types/react'] = pkg.devDependencies['@types/react'] || '^19.2.0';
-    pkg.devDependencies['@types/react-dom'] = pkg.devDependencies['@types/react-dom'] || '^19.2.0';
+    pkg.devDependencies['@types/react'] =
+      pkg.devDependencies['@types/react'] || '^19.2.0';
+    pkg.devDependencies['@types/react-dom'] =
+      pkg.devDependencies['@types/react-dom'] || '^19.2.0';
 
     return pkg;
   });
@@ -135,7 +149,9 @@ async function setupReact() {
         copyRecursiveSync(src, dest);
       }
     }
-    console.log('✔  Copied React template files (Payment component, hooks, demo app).');
+    console.log(
+      '✔  Copied React template files (Payment component, hooks, demo app).'
+    );
   }
 
   console.log('\n🎉 React setup complete!\n');
@@ -149,5 +165,7 @@ async function setupReact() {
   console.log('\nNext steps:');
   console.log('  1) Install dependencies : npm install');
   console.log('  2) Start dev server     : npm run dev');
-  console.log('  3) Edit src/App.tsx to customise the payment recipient and amount.\n');
+  console.log(
+    '  3) Edit src/App.tsx to customise the payment recipient and amount.\n'
+  );
 }

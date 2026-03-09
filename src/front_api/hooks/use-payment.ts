@@ -1,5 +1,9 @@
 import { useState, useCallback } from 'react';
-import type { PaymentOptions, PaymentResult, PaymentState } from '../../types/payment';
+import type {
+  PaymentOptions,
+  PaymentResult,
+  PaymentState,
+} from '../../types/payment';
 
 /**
  * Send a payment via the backend API (`/api/pay` by default).
@@ -29,15 +33,24 @@ async function payViaApi(opts: PaymentOptions): Promise<PaymentResult> {
  */
 async function payViaWallet(opts: PaymentOptions): Promise<PaymentResult> {
   const ethereum = (globalThis as Record<string, unknown>).ethereum as
-    | { request: (args: { method: string; params?: unknown[] }) => Promise<unknown> }
+    | {
+        request: (args: {
+          method: string;
+          params?: unknown[];
+        }) => Promise<unknown>;
+      }
     | undefined;
 
   if (!ethereum) {
-    throw new Error('No wallet provider found. Please install MetaMask or a compatible wallet.');
+    throw new Error(
+      'No wallet provider found. Please install MetaMask or a compatible wallet.'
+    );
   }
 
   // Request account access
-  const accounts = (await ethereum.request({ method: 'eth_requestAccounts' })) as string[];
+  const accounts = (await ethereum.request({
+    method: 'eth_requestAccounts',
+  })) as string[];
   if (!accounts || accounts.length === 0) {
     throw new Error('No accounts available. Please unlock your wallet.');
   }
@@ -68,19 +81,27 @@ async function payViaWallet(opts: PaymentOptions): Promise<PaymentResult> {
 export function usePayment() {
   const [state, setState] = useState<PaymentState>({ status: 'idle' });
 
-  const pay = useCallback(async (opts: PaymentOptions): Promise<PaymentResult> => {
-    setState({ status: 'pending' });
-    try {
-      const mode = opts.mode ?? 'api';
-      const result = mode === 'wallet' ? await payViaWallet(opts) : await payViaApi(opts);
-      setState({ status: 'success', txHash: result.txHash, receipt: result.receipt });
-      return result;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      setState({ status: 'error', error });
-      throw error;
-    }
-  }, []);
+  const pay = useCallback(
+    async (opts: PaymentOptions): Promise<PaymentResult> => {
+      setState({ status: 'pending' });
+      try {
+        const mode = opts.mode ?? 'api';
+        const result =
+          mode === 'wallet' ? await payViaWallet(opts) : await payViaApi(opts);
+        setState({
+          status: 'success',
+          txHash: result.txHash,
+          receipt: result.receipt,
+        });
+        return result;
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error(String(err));
+        setState({ status: 'error', error });
+        throw error;
+      }
+    },
+    []
+  );
 
   return { pay, state };
 }

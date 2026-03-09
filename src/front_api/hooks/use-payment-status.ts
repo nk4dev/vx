@@ -17,7 +17,11 @@ export function usePaymentStatus() {
   }, []);
 
   const setSuccess = useCallback((result: PaymentResult) => {
-    setState({ status: 'success', txHash: result.txHash, receipt: result.receipt });
+    setState({
+      status: 'success',
+      txHash: result.txHash,
+      receipt: result.receipt,
+    });
   }, []);
 
   const setError = useCallback((error: Error) => {

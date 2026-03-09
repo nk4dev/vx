@@ -1,5 +1,5 @@
-import { getGasFees } from "../core/data/index";
-import { load_rpc_config } from "../core/rpc/connect";
+import { getGasFees } from '../core/data/index';
+import { load_rpc_config } from '../core/rpc/connect';
 
 function showHelp() {
   console.log(`\n⛽ VX Gas
@@ -36,7 +36,9 @@ export async function handleGasCommand(args: string[]) {
       const loaded = load_rpc_config();
       const first = Array.isArray(loaded) ? loaded[0] : loaded;
       if (!first || !first.protocol || !first.host || !first.port) {
-        throw new Error('Invalid vx.config.json: expected fields protocol, host, port');
+        throw new Error(
+          'Invalid vx.config.json: expected fields protocol, host, port'
+        );
       }
       rpcUrl = `${first.protocol}://${first.host}:${first.port}`;
     }

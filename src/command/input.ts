@@ -1,13 +1,11 @@
 // question.ts
-import { stdin as input, stdout as output } from "node:process";
-import * as readline from "node:readline";
-import { init } from "./pjmake";
+import { stdin as input, stdout as output } from 'node:process';
+import * as readline from 'node:readline';
+import { init } from './pjmake';
 
 const rl = readline.createInterface({ input, output });
 
-const questions: string[] = [
-  "project name or path:",
-];
+const questions: string[] = ['project name or path:'];
 
 const answers: string[] = [];
 
@@ -15,14 +13,14 @@ function shellInputHandler(index: number) {
   try {
     if (index >= questions.length) {
       rl.close();
-      console.log("\n project created");
+      console.log('\n project created');
       questions.forEach((q, i) => {
         console.log(`- ${q} ${answers[i]}`);
       });
       return;
     }
 
-    rl.question(questions[index] + " ", (answer) => {
+    rl.question(questions[index] + ' ', (answer) => {
       answers.push(answer);
       if (index === questions.length - 1) {
         // Last answer received; run initializer with provided project name

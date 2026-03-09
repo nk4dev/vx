@@ -9,7 +9,6 @@ export type SendPaymentOptions = {
   maxPriorityFeePerGas?: string; // gwei as string
   maxFeePerGas?: string; // gwei as string
   gasLimit?: number;
-  
 };
 
 export type SendPaymentResult = {
@@ -22,7 +21,9 @@ function gweiToWei(gwei?: string) {
   return `${gwei}000000000`;
 }
 
-export async function sendPayment(opts: SendPaymentOptions): Promise<SendPaymentResult> {
+export async function sendPayment(
+  opts: SendPaymentOptions
+): Promise<SendPaymentResult> {
   if (!opts.rpcUrl) throw new Error('rpcUrl is required');
   if (!opts.privateKey) throw new Error('privateKey is required');
   if (!opts.to) throw new Error('to (recipient) is required');
@@ -37,7 +38,8 @@ export async function sendPayment(opts: SendPaymentOptions): Promise<SendPayment
   };
 
   if (opts.gasLimit) tx.gasLimit = opts.gasLimit;
-  if (opts.maxPriorityFeePerGas) tx.maxPriorityFeePerGas = gweiToWei(opts.maxPriorityFeePerGas);
+  if (opts.maxPriorityFeePerGas)
+    tx.maxPriorityFeePerGas = gweiToWei(opts.maxPriorityFeePerGas);
   if (opts.maxFeePerGas) tx.maxFeePerGas = gweiToWei(opts.maxFeePerGas);
 
   const sent = await wallet.sendTransaction(tx as any);

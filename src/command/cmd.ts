@@ -11,7 +11,7 @@ const { setup } = require('./setup');
 import { handlePayCommand } from './pay';
 import { handleIpfsCommand } from './ipfs';
 import { handleGenerateCommand } from './generate';
-const loadversion = SDK_VERSION
+const loadversion = SDK_VERSION;
 
 export default async function VX() {
   const args = process.argv.slice(2);
@@ -99,7 +99,7 @@ export default async function VX() {
   } catch (error) {
     console.error(`Error: ${error.message}`);
     process.exit(1);
-  } 
+  }
 }
 
 function help() {
@@ -109,30 +109,49 @@ function help() {
     process.exit(0);
   }
 
-  const stage = "dev";
+  const stage = 'dev';
 
   const commandlist = [
-    { command: 'init', description: 'Initialize a new project with default settings.' },
-    { command: 'create', description: 'Create a new project with the specified name.' },
+    {
+      command: 'init',
+      description: 'Initialize a new project with default settings.',
+    },
+    {
+      command: 'create',
+      description: 'Create a new project with the specified name.',
+    },
     { command: 'serve', description: 'Start a local development server.' },
-    { command: 'setup', description: 'Project setup helpers (hardhat, react).' },
+    {
+      command: 'setup',
+      description: 'Project setup helpers (hardhat, react).',
+    },
     { command: 'rpc', description: 'Manage or query RPC endpoints.' },
     { command: 'pay', description: 'Send a payment/transaction.' },
     { command: 'gas', description: 'Estimate gas fees for transactions.' },
-    { command: 'generate', description: 'Generate templates (react, vue) and list options.' },
+    {
+      command: 'generate',
+      description: 'Generate templates (react, vue) and list options.',
+    },
     { command: 'sol', description: 'Solidity helper commands (examples).' },
     { command: 'dash', description: 'Build and serve the dashboard.' },
-    { command: 'info', description: 'Display information about the current project.' },
+    {
+      command: 'info',
+      description: 'Display information about the current project.',
+    },
     { command: 'help', description: 'Display this help message.' },
-    { command: '--version / -v', description: 'Show SDK version.' }
-  ]
+    { command: '--version / -v', description: 'Show SDK version.' },
+  ];
 
-  console.log(`\n🚀 ${NAME} SDK v${SDK_VERSION} ${stage} for VX ${API_VERSION}`);
+  console.log(
+    `\n🚀 ${NAME} SDK v${SDK_VERSION} ${stage} for VX ${API_VERSION}`
+  );
   console.log('Available commands:');
-  commandlist.forEach(cmd => {
+  commandlist.forEach((cmd) => {
     console.log(`  ${cmd.command.padEnd(10)} - ${cmd.description}`);
   });
-  console.log('\nUse "vx3 <command> --help" for more information on a specific command.\n');
+  console.log(
+    '\nUse "vx3 <command> --help" for more information on a specific command.\n'
+  );
 
   process.exit(0);
 }

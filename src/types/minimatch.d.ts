@@ -15,7 +15,11 @@ declare module 'minimatch' {
     match(target: string, partial?: boolean): boolean;
   }
 
-  export function minimatch(target: string, pattern: string, options?: IOptions): boolean;
+  export function minimatch(
+    target: string,
+    pattern: string,
+    options?: IOptions
+  ): boolean;
 }
 
 export {};
