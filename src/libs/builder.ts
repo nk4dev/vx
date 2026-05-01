@@ -1,8 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import npm_json from '../../package.json';
-
-const SDK_VERSION = npm_json.version;
 
 export function createPackageJson(projectDir: string) {
   const projectname = path.basename(projectDir);

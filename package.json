@@ -1,5 +1,5 @@
 {
-  "name": "@vx3/vx",
+  "name": "vx3",
   "version": "0.0.2",
   "description": "A CLI tool for vx3 smart contracts platform",
   "main": "dist/src/index.js",
@@ -11,7 +11,8 @@
     "packages/hardhat",
     "packages/components",
     "packages/react-template",
-    "packages/vue-template"
+    "packages/vue-template",
+    "packages/vxc"
   ],
   "license": "MIT",
   "keywords": [
@@ -67,5 +68,8 @@
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

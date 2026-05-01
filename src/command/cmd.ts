@@ -11,6 +11,7 @@ const { setup } = require('./setup');
 import { handlePayCommand } from './pay';
 import { handleIpfsCommand } from './ipfs';
 import { handleGenerateCommand } from './generate';
+import { handleCompileCommand } from './compile';
 const loadversion = SDK_VERSION;
 
 export default async function VX() {
@@ -36,6 +37,10 @@ export default async function VX() {
         }
         return;
       case 'serve':
+        console.log('replace command to "node"');
+        process.exit(1);
+        return;
+      case 'node':
         localServer();
         return;
       case 'rpc':
@@ -64,6 +69,9 @@ export default async function VX() {
         return;
       case 'generate':
         await handleGenerateCommand(args.slice(1));
+        return;
+      case 'compile':
+        await handleCompileCommand(args.slice(1));
         return;
 
       case 'sol':
@@ -133,6 +141,10 @@ function help() {
       description: 'Generate templates (react, vue) and list options.',
     },
     { command: 'sol', description: 'Solidity helper commands (examples).' },
+    {
+      command: 'compile',
+      description: 'Compile Solidity sources with the VXC custom compiler.',
+    },
     { command: 'dash', description: 'Build and serve the dashboard.' },
     {
       command: 'info',
