@@ -1,15 +1,26 @@
+'use strict';
+
 const { spawnSync } = require('child_process');
 const path = require('path');
 
+const CLI = path.resolve(__dirname, '../dist/src/cli.js');
+
 describe('vx3 CLI', () => {
-  it('should display help with --help', () => {
-    // vx3コマンドのパスを取得（必要に応じて修正）
-    const vx3Path = path.resolve(__dirname, '../path/to/vx3'); // 実際のパスに合わせて修正
+  it('runs without crashing when given help', () => {
+    const result = spawnSync(process.execPath, [CLI, 'help'], { encoding: 'utf-8' });
+    expect(result.error).toBeUndefined();
+    expect(result.stdout + result.stderr).toMatch(/vx3/i);
+  });
 
-    const result = spawnSync('node', [vx3Path, '--help'], {
-      encoding: 'utf-8',
-    });
+  it('prints usage on --version / -v', () => {
+    const result = spawnSync(process.execPath, [CLI, '--version'], { encoding: 'utf-8' });
+    expect(result.error).toBeUndefined();
+    expect(result.stdout + result.stderr).toMatch(/\d+\.\d+/);
+  });
 
-    expect(result.status).toBe(1);
+  it('prints help for unknown command', () => {
+    const result = spawnSync(process.execPath, [CLI, '__no_such_command__'], { encoding: 'utf-8' });
+    expect(result.error).toBeUndefined();
+    expect(result.stdout + result.stderr).toMatch(/Unknown command/i);
   });
 });

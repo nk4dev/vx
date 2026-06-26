@@ -150,12 +150,14 @@
 
       <div class="nav-section-title">CLI Reference</div>
       <a href="#cli-create" class="nav-link">create / init</a>
+      <a href="#cli-node" class="nav-link">node</a>
+      <a href="#cli-dash" class="nav-link">dash</a>
+      <a href="#cli-compile" class="nav-link">compile (VXC)</a>
       <a href="#cli-setup" class="nav-link">setup hardhat</a>
       <a href="#cli-rpc" class="nav-link">rpc</a>
       <a href="#cli-gas" class="nav-link">gas</a>
       <a href="#cli-pay" class="nav-link">pay</a>
       <a href="#cli-ipfs" class="nav-link">ipfs</a>
-      <a href="#cli-serve" class="nav-link">serve</a>
       <a href="#cli-info" class="nav-link">info / version</a>
 
       <div class="nav-section-title">SDK API</div>
@@ -227,6 +229,14 @@
             <div class="text-brand-accent font-semibold text-sm mb-1">📦 IPFS</div>
             <p class="text-slate-400 text-sm">Fetch IPFS content directly from the CLI</p>
           </div>
+          <div class="rounded-lg border border-emerald-700/30 bg-emerald-900/10 p-4">
+            <div class="text-emerald-400 font-semibold text-sm mb-1">🛠 VXC Compiler</div>
+            <p class="text-slate-400 text-sm">Custom Solidity compiler with own lexer, import resolver, and artifact pipeline (<code>vx3 compile</code>)</p>
+          </div>
+          <div class="rounded-lg border border-sky-700/30 bg-sky-900/10 p-4">
+            <div class="text-brand-accent font-semibold text-sm mb-1">📊 Live Dashboard</div>
+            <p class="text-slate-400 text-sm">Real-time dev dashboard with block number, gas fees, RPC status, and SSE activity log (<code>vx3 dash</code>)</p>
+          </div>
         </div>
         <div class="mt-4 flex flex-wrap gap-3 text-sm">
           <a href="https://github.com/nk4dev/vx" class="text-brand-accent hover:underline" target="_blank" rel="noopener">GitHub (vx)</a>
@@ -276,7 +286,11 @@
 vx3 setup hardhat</code></pre>
           </div>
           <div>
-            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">3.</span> Use the SDK programmatically:</p>
+            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">3.</span> Open the live dashboard:</p>
+            <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 dash --open</code></pre>
+          </div>
+          <div>
+            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">4.</span> Use the SDK programmatically:</p>
             <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import vx from '@vx3/vx';
 
 const blockNumber = await vx.getBlockNumber('https://eth.llamarpc.com');
@@ -399,10 +413,79 @@ vx3 ipfs fetch QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG
 vx3 ipfs fetch &lt;cid&gt; https://cloudflare-ipfs.com/ipfs/</code></pre>
         </div>
 
-        <div id="cli-serve" class="mb-10">
-          <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 serve</h3>
-          <p class="text-slate-300 text-sm mb-3">Start a local development server.</p>
-          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 serve</code></pre>
+        <div id="cli-node" class="mb-10">
+          <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 node</h3>
+          <p class="text-slate-300 text-sm mb-3">Start a local development HTTP server (port 3000). Provides real-time block updates via SSE.</p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 node
+vx3 node --port 3001
+vx3 node --debug    # enable /debug UI</code></pre>
+          <div class="mt-3 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">Endpoint</th><th class="text-left py-2 text-slate-400">Description</th></tr></thead>
+              <tbody class="text-slate-300 text-xs font-mono">
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">GET /api</td><td>API status</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">GET /api/block</td><td>Latest block number</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">GET /events</td><td>SSE stream (real-time block updates)</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">GET /debug</td><td>Debug UI (--debug only)</td></tr>
+                <tr><td class="py-1.5 pr-4">POST /api/pay</td><td>Send ETH transaction</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="cli-dash" class="mb-10">
+          <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 dash</h3>
+          <p class="text-slate-300 text-sm mb-3">
+            Open the real-time developer dashboard (port 4000). Shows live block number, EIP-1559 gas fees, RPC status, and an activity log via SSE.
+          </p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 dash                   # http://127.0.0.1:4000
+vx3 dash --port 5000       # custom port
+vx3 dash --host 0.0.0.0    # bind to all interfaces
+vx3 dash --open            # auto-open in browser</code></pre>
+          <div class="mt-3 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">Endpoint</th><th class="text-left py-2 pr-4 text-slate-400">Method</th><th class="text-left py-2 text-slate-400">Description</th></tr></thead>
+              <tbody class="text-slate-300 text-xs font-mono">
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">/</td><td class="pr-4">GET</td><td>Dashboard HTML</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">/api/status</td><td class="pr-4">GET</td><td>Server + RPC status JSON</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">/api/block</td><td class="pr-4">GET</td><td>Latest block number</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">/api/gas</td><td class="pr-4">GET</td><td>EIP-1559 gas fee data</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">/api/rpc</td><td class="pr-4">GET</td><td>RPC config list</td></tr>
+                <tr><td class="py-1.5 pr-4">/events</td><td class="pr-4">GET</td><td>SSE stream (block + gas, every 4s)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="cli-compile" class="mb-10">
+          <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 compile &lt;entry.sol&gt;</h3>
+          <p class="text-slate-300 text-sm mb-3">
+            Compile Solidity contracts using <strong>VXC</strong>, VX3's custom Solidity compiler with its own lexer, import resolver, and artifact pipeline.
+            Outputs <code>&lt;Contract&gt;.json</code> + <code>vxc.manifest.json</code> to <code>--out</code>.
+          </p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 compile contracts/Token.sol
+
+# With optimization and EVM version
+vx3 compile contracts/Token.sol \
+  --out build \
+  --optimize --runs 1000 \
+  --evm cancun
+
+# With remappings
+vx3 compile contracts/Token.sol \
+  --remap @openzeppelin/=node_modules/@openzeppelin/</code></pre>
+          <div class="mt-3 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">Flag</th><th class="text-left py-2 text-slate-400">Description</th></tr></thead>
+              <tbody class="text-slate-300 text-xs">
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>--out &lt;dir&gt;</code></td><td>Output directory for artifacts (default: <code>out/</code>)</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>--optimize</code></td><td>Enable Solidity optimizer</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>--runs &lt;n&gt;</code></td><td>Optimizer runs (default: 200)</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>--evm &lt;version&gt;</code></td><td>EVM version target (e.g. <code>cancun</code>, <code>paris</code>)</td></tr>
+                <tr><td class="py-1.5 pr-4"><code>--remap &lt;mapping&gt;</code></td><td>Import remapping (repeatable)</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div id="cli-info" class="mb-2">

@@ -12,11 +12,13 @@ export type Token =
 export function lex(source: string): Token[] {
   const tokens: Token[] = [];
   const stripped = stripCommentsAndStrings(source);
-  const lines = stripped.split(/\r?\n/);
+  const originalLines = source.split(/\r?\n/);
+  const strippedLines = stripped.split(/\r?\n/);
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
+  for (let i = 0; i < strippedLines.length; i++) {
+    const line = strippedLines[i].trim();
+    const origLine = (originalLines[i] ?? '').trim();
+    if (!line && !origLine) continue;
 
     const pragma = /^pragma\s+([^;]+);/.exec(line);
     if (pragma) {
@@ -24,10 +26,15 @@ export function lex(source: string): Token[] {
       continue;
     }
 
-    const imp = /^import\s+(?:[^"']*\s+from\s+)?["']([^"']+)["']\s*;/.exec(line);
-    if (imp) {
-      tokens.push({ kind: 'import', path: imp[1], line: i + 1 });
-      continue;
+    // Import paths are string literals, so run the regex on the original line.
+    // Use the stripped line as a guard: if it no longer starts with `import`,
+    // the statement was inside a comment and should be skipped.
+    if (/^import\s/.test(line)) {
+      const imp = /^import\s+(?:[^"']*\s+from\s+)?["']([^"']+)["']\s*;/.exec(origLine);
+      if (imp) {
+        tokens.push({ kind: 'import', path: imp[1], line: i + 1 });
+        continue;
+      }
     }
 
     const c = /\b(contract|library|interface)\s+([A-Za-z_]\w*)/.exec(line);

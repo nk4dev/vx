@@ -150,12 +150,14 @@
 
       <div class="nav-section-title">CLI リファレンス</div>
       <a href="#cli-create" class="nav-link">create / init</a>
+      <a href="#cli-node" class="nav-link">node</a>
+      <a href="#cli-dash" class="nav-link">dash（ダッシュボード）</a>
+      <a href="#cli-compile" class="nav-link">compile (VXC)</a>
       <a href="#cli-setup" class="nav-link">setup hardhat</a>
       <a href="#cli-rpc" class="nav-link">rpc</a>
       <a href="#cli-gas" class="nav-link">gas</a>
       <a href="#cli-pay" class="nav-link">pay</a>
       <a href="#cli-ipfs" class="nav-link">ipfs</a>
-      <a href="#cli-serve" class="nav-link">serve</a>
       <a href="#cli-info" class="nav-link">info / version</a>
 
       <div class="nav-section-title">SDK API</div>
@@ -227,6 +229,14 @@
             <div class="text-brand-accent font-semibold text-sm mb-1">📦 IPFS</div>
             <p class="text-slate-400 text-sm">CLI から直接 IPFS コンテンツを取得</p>
           </div>
+          <div class="rounded-lg border border-emerald-700/30 bg-emerald-900/10 p-4">
+            <div class="text-emerald-400 font-semibold text-sm mb-1">🛠 VXC コンパイラ</div>
+            <p class="text-slate-400 text-sm">独自レキサー・import リゾルバ・アーティファクトパイプラインを持つカスタム Solidity コンパイラ（<code>vx3 compile</code>）</p>
+          </div>
+          <div class="rounded-lg border border-sky-700/30 bg-sky-900/10 p-4">
+            <div class="text-brand-accent font-semibold text-sm mb-1">📊 ライブダッシュボード</div>
+            <p class="text-slate-400 text-sm">ブロック番号・ガス料金・RPC ステータスを SSE でリアルタイム表示（<code>vx3 dash</code>）</p>
+          </div>
         </div>
         <div class="mt-4 flex flex-wrap gap-3 text-sm">
           <a href="https://github.com/nk4dev/vx" class="text-brand-accent hover:underline" target="_blank" rel="noopener">GitHub (vx)</a>
@@ -276,7 +286,11 @@
 vx3 setup hardhat</code></pre>
           </div>
           <div>
-            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">3.</span> SDK をプログラムから使用：</p>
+            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">3.</span> ライブダッシュボードを開く：</p>
+            <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 dash --open</code></pre>
+          </div>
+          <div>
+            <p class="text-slate-300 text-sm mb-2"><span class="text-brand-purple font-semibold">4.</span> SDK をプログラムから使用：</p>
             <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-emerald-300">import vx from '@vx3/vx';
 
 const blockNumber = await vx.getBlockNumber('https://eth.llamarpc.com');
@@ -399,10 +413,80 @@ vx3 ipfs fetch QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG
 vx3 ipfs fetch &lt;cid&gt; https://cloudflare-ipfs.com/ipfs/</code></pre>
         </div>
 
-        <div id="cli-serve" class="mb-10">
-          <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 serve</h3>
-          <p class="text-slate-300 text-sm mb-3">ローカル開発サーバーを起動します。</p>
-          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 serve</code></pre>
+        <div id="cli-node" class="mb-10">
+          <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 node</h3>
+          <p class="text-slate-300 text-sm mb-3">ローカル開発 HTTP サーバーを起動します（ポート 3000）。SSE によるリアルタイムブロック更新を提供します。</p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 node
+vx3 node --port 3001
+vx3 node --debug    # /debug UI を有効化</code></pre>
+          <div class="mt-3 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">エンドポイント</th><th class="text-left py-2 text-slate-400">説明</th></tr></thead>
+              <tbody class="text-slate-300 text-xs font-mono">
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">GET /api</td><td>API ステータス</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">GET /api/block</td><td>最新ブロック番号</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">GET /events</td><td>SSE ストリーム（リアルタイムブロック更新）</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">GET /debug</td><td>デバッグ UI（--debug 時のみ）</td></tr>
+                <tr><td class="py-1.5 pr-4">POST /api/pay</td><td>ETH トランザクション送信</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="cli-dash" class="mb-10">
+          <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 dash</h3>
+          <p class="text-slate-300 text-sm mb-3">
+            リアルタイム開発ダッシュボードを起動します（ポート 4000）。ライブブロック番号・EIP-1559 ガス料金・RPC ステータス・SSE アクティビティログを表示します。
+          </p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 dash                   # http://127.0.0.1:4000
+vx3 dash --port 5000       # ポート指定
+vx3 dash --host 0.0.0.0    # 全インターフェースにバインド
+vx3 dash --open            # ブラウザを自動で開く</code></pre>
+          <div class="mt-3 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">エンドポイント</th><th class="text-left py-2 pr-4 text-slate-400">メソッド</th><th class="text-left py-2 text-slate-400">説明</th></tr></thead>
+              <tbody class="text-slate-300 text-xs font-mono">
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">/</td><td class="pr-4">GET</td><td>ダッシュボード HTML</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">/api/status</td><td class="pr-4">GET</td><td>サーバー + RPC ステータス</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">/api/block</td><td class="pr-4">GET</td><td>最新ブロック番号</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">/api/gas</td><td class="pr-4">GET</td><td>EIP-1559 ガス料金データ</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4">/api/rpc</td><td class="pr-4">GET</td><td>RPC 設定リスト</td></tr>
+                <tr><td class="py-1.5 pr-4">/events</td><td class="pr-4">GET</td><td>SSE ストリーム（ブロック + ガス、4 秒ごと）</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="cli-compile" class="mb-10">
+          <h3 class="text-lg font-semibold text-brand-accent mb-1">vx3 compile &lt;entry.sol&gt;</h3>
+          <p class="text-slate-300 text-sm mb-3">
+            <strong>VXC</strong>（VX3 独自カスタム Solidity コンパイラ）でスマートコントラクトをコンパイルします。
+            独自レキサー・import リゾルバ・アーティファクトパイプラインを持ちます。
+            <code>&lt;Contract&gt;.json</code> と <code>vxc.manifest.json</code> を <code>--out</code> に出力します。
+          </p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><code class="text-sky-300">vx3 compile contracts/Token.sol
+
+# 最適化と EVM バージョン指定
+vx3 compile contracts/Token.sol \
+  --out build \
+  --optimize --runs 1000 \
+  --evm cancun
+
+# import リマッピングを指定
+vx3 compile contracts/Token.sol \
+  --remap @openzeppelin/=node_modules/@openzeppelin/</code></pre>
+          <div class="mt-3 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead><tr class="border-b border-slate-700"><th class="text-left py-2 pr-4 text-slate-400">フラグ</th><th class="text-left py-2 text-slate-400">説明</th></tr></thead>
+              <tbody class="text-slate-300 text-xs">
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>--out &lt;dir&gt;</code></td><td>アーティファクト出力ディレクトリ（デフォルト: <code>out/</code>）</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>--optimize</code></td><td>Solidity オプティマイザを有効化</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>--runs &lt;n&gt;</code></td><td>オプティマイザ実行回数（デフォルト: 200）</td></tr>
+                <tr class="border-b border-slate-800"><td class="py-1.5 pr-4"><code>--evm &lt;version&gt;</code></td><td>EVM バージョン（例: <code>cancun</code>、<code>paris</code>）</td></tr>
+                <tr><td class="py-1.5 pr-4"><code>--remap &lt;mapping&gt;</code></td><td>import リマッピング（複数指定可）</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div id="cli-info" class="mb-2">

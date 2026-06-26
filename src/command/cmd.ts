@@ -12,6 +12,7 @@ import { handlePayCommand } from './pay';
 import { handleIpfsCommand } from './ipfs';
 import { handleGenerateCommand } from './generate';
 import { handleCompileCommand } from './compile';
+import { handleDashCommand } from './dash';
 const loadversion = SDK_VERSION;
 
 export default async function VX() {
@@ -95,9 +96,8 @@ export default async function VX() {
         console.log('Info: version', result.version);
         break;
       case 'dash':
-        console.log('🚀🚀🚀🚀\n');
-        console.log('build dashboard now. stay tuned!');
-        break;
+        handleDashCommand(args.slice(1));
+        return;
       default:
         console.error(`😑 < Unknown command: ${args[0]}`);
         help();
