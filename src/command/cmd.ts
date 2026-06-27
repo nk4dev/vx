@@ -13,6 +13,7 @@ import { handleIpfsCommand } from './ipfs';
 import { handleGenerateCommand } from './generate';
 import { handleCompileCommand } from './compile';
 import { handleDashCommand } from './dash';
+import { handleNftCommand } from './nft';
 const loadversion = SDK_VERSION;
 
 export default async function VX() {
@@ -95,6 +96,9 @@ export default async function VX() {
         const result = await data.json();
         console.log('Info: version', result.version);
         break;
+      case 'nft':
+        await handleNftCommand(args.slice(1));
+        return;
       case 'dash':
         handleDashCommand(args.slice(1));
         return;
@@ -145,6 +149,7 @@ function help() {
       command: 'compile',
       description: 'Compile Solidity sources with the VXC custom compiler.',
     },
+    { command: 'nft', description: 'NFT operations: mint tokens to a contract.' },
     { command: 'dash', description: 'Build and serve the dashboard.' },
     {
       command: 'info',

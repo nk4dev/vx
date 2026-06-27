@@ -2,6 +2,7 @@ import instance from './core/contract';
 import * as data from './core/data';
 import { getRpcUrl } from './core/contract';
 import * as payment from './payment/index';
+import * as nft from './nft/index';
 
 // owner by @nk4dev
 // this file is vx sdk entry point.
@@ -21,12 +22,17 @@ const vx = {
   getGasFees: data.getGasFees,
   // payment API
   payment,
+  // NFT API
+  nft,
+  mintNFT: nft.mintNFT,
   // legacy
   instance,
 };
 
 export default vx;
 export { payment };
+export { mintNFT } from './nft/index';
+export type { MintNFTOptions, MintNFTResult } from './types/nft';
 
 // React component, hooks & types
 export { Payment } from './front_api/payment';
