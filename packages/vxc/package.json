@@ -1,0 +1,23 @@
+{
+  "name": "@vx3/vxc",
+  "version": "0.1.0",
+  "description": "VXC — VX3's custom Solidity compiler frontend (lexer, import resolver, artifact pipeline) with a pluggable solc backend.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "vxc": "dist/cli.js"
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "keywords": ["solidity", "compiler", "solc", "vx3", "web3"],
+  "license": "MIT",
+  "dependencies": {
+    "solc": "^0.8.30"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "@types/node": "^22.16.5"
+  }
+}

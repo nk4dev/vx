@@ -2,6 +2,11 @@
   {
     "host": "localhost",
     "port": 8545,
-    "protocol": "http"
+    "protocol": "http",
+    "type": "rpc"
+  },
+  {
+    "type": "ipfs",
+    "gateway": "https://ipfs.io"
   }
 ]

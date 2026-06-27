@@ -1,220 +1,249 @@
-# VX - Web3 Development Toolkit for VX3
+# VX3 — Web3 Developer SDK
 
-Useful web3 development tools for creating projects, connecting to RPCs, checking gas, and running a local dev server.
+VX3 is a developer-first toolkit for building, testing, and shipping Web3
+applications. It bundles a CLI, a local development node, a real-time
+dashboard, project scaffolding, payment / gas / IPFS helpers, and **VXC**,
+an in-house custom Solidity compiler.
 
-> [!WARNING]
-> This project is in active development and has not yet been officially released. Use at your own risk.
+Parent repo & docs: <https://github.com/nk4dev/vx3>
+SDK docs: <https://nknighta.me/vx>
 
-- project master : https://github.com/nk4dev/vx3   
-- update here: https://nknighta.me/vx   
-- vx3: https://nknighta.me/dev/vx3   
+---
 
-this project using code generation AI tools.
-- GitHub Copilot [GPT-5, Claude sonnet 4, GPT-5 mini, grok code fast]
-- Google Gemini
-- NotebookLM
+## Highlights
 
-## Features
-- Connect to multiple chains (ethers v6)
-- Create and manage wallets
-- Local development server with simple APIs
-- Deploy/compile examples (Hardhat samples included)
+- **One CLI for the whole flow** — scaffold, compile, run a node, pay, estimate
+  gas, pin to IPFS, and open a live dashboard.
+- **VXC, a custom Solidity compiler** — own frontend (lexer, import resolver,
+  artifact pipeline) with a pluggable backend.
+  Lives at [`packages/vxc`](packages/vxc/README.md).
+- **Real-time dashboard** — `vx3 dash` opens a dark-themed dev dashboard with
+  live block number, gas fees, RPC status, and an SSE activity log.
+- **Frontend templates** — React and Vue starters, plus a Hardhat package
+  pre-wired for VX3 projects.
+- **Programmatic APIs** — every CLI command is also exposed as a TypeScript
+  function.
 
-## Requirements
-- Node.js 18+ (recommended; required for built-in `fetch` usage)
-- npm (or pnpm/yarn)
+## Install
 
-## Installation 
 ```bash
-npm i @nk4dev/vx or npm i -g @nk4dev/vx
-
-vx3 create 
-```
-For one-off usage when published: `npx vx3 <command>`
-
-## Quick start
-- Create a new project (non-interactive):
-```powershell
-vx3 create my-app
-```
-- Create a new project (interactive prompt):
-```powershell
-vx3 create
-```
-- Initialize RPC config template:
-```powershell
-vx3 rpc init
-```
-- Start local dev server (with debug view):
-```powershell
-vx3 serve --debug
-```
-- Check gas info:
-```powershell
-vx3 gas
+git clone https://github.com/nk4dev/vx
+cd vx
+npm i
+npm run build
+npm link        # exposes the `vx3` binary globally
 ```
 
-## Library usage (import)
-You can use the SDK programmatically via the default export, while CLI features remain unchanged.
+## CLI
 
-TypeScript/ESM:
-```ts
-import vx from "@nk4dev/vx";
-
-const rpc = vx.getRpcUrl(); // from vx.config.json
-const block = await vx.getBlockNumber(rpc);
-const gas = await vx.getGasFees(rpc);
+```bash
+vx3 <command> [...options]
 ```
 
-CommonJS:
-```js
-const vx = require("@nk4dev/vx").default;
-vx.getGasFees("http://127.0.0.1:8545").then(console.log);
+| Command | Description |
+| --- | --- |
+| `init` | Initialize a new project with default settings. |
+| `create [name]` | Scaffold a new project (interactive if name omitted). |
+| `node` | Start a local development node (port 3000). |
+| `dash` | **Open the real-time developer dashboard (port 4000).** |
+| `setup hardhat\|react` | Add Hardhat or a React frontend to the current project. |
+| `rpc` | Manage or query RPC endpoints from `vx.config.json`. |
+| `pay <to> <amount>` | Send a transaction. Flags: `--rpc`, `--key`. |
+| `gas` | Estimate gas fees for a transaction. |
+| `ipfs` | Pin / fetch content via IPFS. |
+| `generate` | Generate templates (react, vue, …). |
+| `compile <entry.sol>` | Compile Solidity using the VXC custom compiler. |
+| `sol hello` | Solidity helper sample. |
+| `info` | Display project / SDK info. |
+| `--version`, `-v` | Show SDK version. |
+| `help` | Show the help screen. |
+
+### Dashboard (`vx3 dash`)
+
+```bash
+vx3 dash                   # http://127.0.0.1:4000
+vx3 dash --port 5000       # custom port
+vx3 dash --host 0.0.0.0    # bind to all interfaces
+vx3 dash --open            # auto-open in browser
 ```
 
-Named exports are still available for backward compatibility:
-```ts
-import { vx as data, instance } from "@nk4dev/vx";
-await data.getBalance("http://127.0.0.1:8545", "0x...");
+Dashboard endpoints:
+
+| Endpoint | Method | Description |
+| --- | --- | --- |
+| `/` | GET | Dashboard HTML |
+| `/api/status` | GET | Server + RPC status |
+| `/api/block` | GET | Latest block number |
+| `/api/gas` | GET | EIP-1559 gas fee data |
+| `/api/rpc` | GET | RPC config list |
+| `/events` | GET | SSE stream (block + gas, every 4 s) |
+
+### Compiling contracts with VXC
+
+```bash
+vx3 compile contracts/Token.sol \
+  --out build \
+  --optimize --runs 1000 \
+  --evm cancun \
+  --remap @openzeppelin/=node_modules/@openzeppelin/
 ```
 
-## Project creation (template copy)
-`vx3 create <name>` (or `vx3 init <name>`) recursively copies the contents of `packages/template` to the `<name>` folder directly under the current directory. A `package.json` file is also generated in the destination directory.
+Artifacts (`<Contract>.json` + `vxc.manifest.json`) are written to `--out` and
+are deploy-ready. Full docs: [`packages/vxc/README.md`](packages/vxc/README.md).
 
-Template content examples:
-- `packages/template/sample.js`
-- `packages/template/sample.sol`
-- `packages/template/vmx.config.json`
-- `packages/template/contracts/Sample.sol`
+## Packages
 
-Template directory resolution searches the following candidates in order (accommodating development/distribution differences):
-1) When running `dist`: `../../packages/template`
-2) When running TS/config: `../../../packages/template`
-3) Directly under the repository: `<cwd>/packages/template`
+| Package | Path | Purpose |
+| --- | --- | --- |
+| `@vx3/vxc` | `packages/vxc` | Custom Solidity compiler (frontend + pluggable backend). |
+| `@vx3/hardhat` | `packages/hardhat` | Hardhat config preset for VX3 projects. |
+| `@vx3/template` | `packages/template` | Default project template. |
+| `@vx3/react-template` | `packages/react-template` | React starter. |
+| `@vx3/vue-template` | `packages/vue-template` | Vue starter. |
 
-If not found, it will issue a warning and create only a minimal setup (`package.json`).
-## Hardhat setup
-Scaffold Hardhat files into the current project:
+## Development
 
-```powershell
-vx3 setup hardhat
-# then install dev dependencies
+```bash
+npm run build          # compile TypeScript → dist/
+npm test               # jest test suite
+npm run lint           # eslint
+npm run format         # prettier
+
+# Build the VXC compiler package separately
+cd packages/vxc && npx tsc
 ```
 
-## RPC configuration（vx.config.json）
+## Contact
 
-`vx3 rpc init` creates an RPC configuration template. The current template is an array, and the loader uses the first object.
+[nknighta@varius.technology](mailto:nknighta@varius.technology)
 
-```json
-[
-  { "host": "localhost", "port": 8575, "protocol": "http" }
-]
+## License
+
+MIT
+
+---
+---
+
+# VX3 — Web3 開発者 SDK
+
+VX3 は Web3 アプリケーションの構築・テスト・リリースに必要な機能をまとめた
+開発者向けツールキットです。CLI、ローカル開発ノード、リアルタイムダッシュボード、
+プロジェクトスキャフォールディング、支払い / ガス / IPFS ヘルパー、
+そして独自カスタム Solidity コンパイラ **VXC** を含みます。
+
+親リポジトリ & ドキュメント: <https://github.com/nk4dev/vx3>
+SDK ドキュメント: <https://nknighta.me/vx>
+日本語ガイド（詳細）: [`docs/ja/guide.md`](docs/ja/guide.md)
+
+---
+
+## 特徴
+
+- **ワークフロー全体を 1 つの CLI で** — スキャフォールド、コンパイル、
+  ノード起動、送金、ガス推定、IPFS ピン留め、そしてライブダッシュボード。
+- **VXC カスタム Solidity コンパイラ** — 独自フロントエンド（レキサー、
+  import リゾルバ、アーティファクトパイプライン）とプラグイン可能なバックエンド。
+  [`packages/vxc`](packages/vxc/README.md) に格納。
+- **リアルタイムダッシュボード** — `vx3 dash` でダーク UI の開発ダッシュボードを起動。
+  ライブブロック番号、ガス料金、RPC ステータス、SSE アクティビティログを表示。
+- **フロントエンドテンプレート** — React・Vue スターター、VX3 プロジェクト向け
+  Hardhat パッケージを同梱。
+- **プログラマティック API** — すべての CLI コマンドは TypeScript 関数としても提供。
+
+## インストール
+
+```bash
+git clone https://github.com/nk4dev/vx
+cd vx
+npm i
+npm run build
+npm link        # `vx3` バイナリをグローバルに公開
 ```
 
-In the future, we may standardize on a single object format.
+## CLI
 
-## Debug page (Tailwind UI)
-`vx3 serve --debug` serves a TailwindCSS-powered debug dashboard at `/debug`:
-- Shows server host and the latest block number
-- Quick links: `/api`, `/api/block`
-- "Usage" section with example fetch calls
-
-### Gas Command Example Output
-```text
-Connecting to RPC: http://localhost:8545
-Gas fee data:
-  gasPrice (wei): 20000000000
-  gasPrice (gwei): 20
-  maxFeePerGas (wei): 2532616788
-  maxFeePerGas (gwei): 2.532616788
-  maxPriorityFeePerGas (wei): 1000000000
-  maxPriorityFeePerGas (gwei): 1
+```bash
+vx3 <コマンド> [...オプション]
 ```
 
+| コマンド | 説明 |
+| --- | --- |
+| `init` | デフォルト設定で新規プロジェクトを初期化。 |
+| `create [name]` | プロジェクトをスキャフォールド（名前省略時は対話モード）。 |
+| `node` | ローカル開発ノードを起動（ポート 3000）。 |
+| `dash` | **リアルタイム開発ダッシュボードを起動（ポート 4000）。** |
+| `setup hardhat\|react` | Hardhat または React フロントエンドを追加。 |
+| `rpc` | `vx.config.json` の RPC エンドポイントを管理・参照。 |
+| `pay <to> <amount>` | トランザクション送信。オプション: `--rpc`, `--key`。 |
+| `gas` | ガス料金を推定。 |
+| `ipfs` | IPFS 経由でコンテンツをピン留め / 取得。 |
+| `generate` | テンプレートを生成（react, vue など）。 |
+| `compile <entry.sol>` | VXC カスタムコンパイラで Solidity をコンパイル。 |
+| `sol hello` | Solidity ヘルパーサンプル。 |
+| `info` | プロジェクト / SDK 情報を表示。 |
+| `--version`, `-v` | SDK バージョンを表示。 |
+| `help` | ヘルプ画面を表示。 |
 
-## Libraries
-- express（debug/local server）
-- ethers.js（RPC/chain operations）
+### ダッシュボード（`vx3 dash`）
 
-## UI frameworks that will be supported in the future 
-- React
-- Vue.js
-- Svelte
-- Next.js
-
-
-## Payment module — API and CLI (Bun runtime)
-
-This repository now includes a reusable payment module that can be used both from the CLI and programmatically from your code.
-
-What was added
-- `src/payment/index.ts` — a small helper that exports `sendPayment(options)`.
-- `src/command/pay.ts` — CLI wrapper that calls `sendPayment`.
-- `src/index.ts` — the library entry now exposes the payment namespace so you can call it from code: `vx.payment.sendPayment(...)` or `import { payment } from '@nk4dev/vx'`.
-
-Programmatic usage
-
-TypeScript/ESM example:
-```ts
-import vx from '@nk4dev/vx';
-
-await vx.payment.sendPayment({
-  rpcUrl: 'http://127.0.0.1:8545',
-  privateKey: process.env.PRIVATE_KEY!,
-  to: '0xRecipientAddressHere',
-  amountEth: '0.01'
-});
+```bash
+vx3 dash                   # http://127.0.0.1:4000
+vx3 dash --port 5000       # ポート指定
+vx3 dash --host 0.0.0.0    # 全インターフェースにバインド
+vx3 dash --open            # ブラウザを自動で開く
 ```
 
-Named import:
-```ts
-import { payment } from '@nk4dev/vx';
-await payment.sendPayment({ rpcUrl, privateKey, to, amountEth: '0.01' });
+ダッシュボードのエンドポイント:
+
+| エンドポイント | メソッド | 説明 |
+| --- | --- | --- |
+| `/` | GET | ダッシュボード HTML |
+| `/api/status` | GET | サーバー + RPC ステータス |
+| `/api/block` | GET | 最新ブロック番号 |
+| `/api/gas` | GET | EIP-1559 ガス料金データ |
+| `/api/rpc` | GET | RPC 設定リスト |
+| `/events` | GET | SSE ストリーム（ブロック + ガス、4 秒ごと） |
+
+### VXC でコントラクトをコンパイル
+
+```bash
+vx3 compile contracts/Token.sol \
+  --out build \
+  --optimize --runs 1000 \
+  --evm cancun \
+  --remap @openzeppelin/=node_modules/@openzeppelin/
 ```
 
-CLI usage (recommended: use environment variable for private key):
-```powershell
-#$env:PRIVATE_KEY='0x...'
-vx3 pay 0xRecipientAddress 0.01 --rpc http://127.0.0.1:8545
+アーティファクト（`<Contract>.json` + `vxc.manifest.json`）は `--out` に出力され、
+デプロイ可能な状態で保存されます。
+詳細: [`packages/vxc/README.md`](packages/vxc/README.md)
+
+## パッケージ
+
+| パッケージ | パス | 用途 |
+| --- | --- | --- |
+| `@vx3/vxc` | `packages/vxc` | カスタム Solidity コンパイラ（フロントエンド + プラグイン可能バックエンド）。 |
+| `@vx3/hardhat` | `packages/hardhat` | VX3 プロジェクト向け Hardhat 設定プリセット。 |
+| `@vx3/template` | `packages/template` | デフォルトプロジェクトテンプレート。 |
+| `@vx3/react-template` | `packages/react-template` | React スターター。 |
+| `@vx3/vue-template` | `packages/vue-template` | Vue スターター。 |
+
+## 開発
+
+```bash
+npm run build          # TypeScript → dist/ にコンパイル
+npm test               # jest テストスイート
+npm run lint           # eslint
+npm run format         # prettier
+
+# VXC コンパイラパッケージを個別にビルド
+cd packages/vxc && npx tsc
 ```
 
-Run/Build (using Bun)
+## 連絡先
 
-I ran the project build using the Bun runtime. Recommended steps on your machine:
+[nknighta@varius.technology](mailto:nknighta@varius.technology)
 
-```powershell
-# install dependencies with Bun
-bun install
-# compile TypeScript
-bun run build
-```
+## ライセンス
 
-Observed build notes
-- I executed `bun install` and `bun run build` in this repository. TypeScript was invoked via `tsc`.
-- The build surfaced TypeScript diagnostics in the workspace while compiling. Two notable issues were observed during the run:
-  1. TypeScript could not find module declarations for `ethers` (error: "Cannot find module 'ethers' or its corresponding type declarations"). If you encounter this, run:
-     ```powershell
-     bun add ethers
-     # then
-     bun run build
-     ```
-     or install via `npm install` if you prefer.
-  2. `packages/react-template/tsconfig.json` references the `vite/client` type and a deprecated `moduleResolution` option; this may produce an informational TypeScript diagnostic. Install the Vite types or adjust the `tsconfig.json` in that package if you plan to compile the template.
-
-Security notes
-- Avoid passing secrets on the command line. Prefer environment variables (for example `PRIVATE_KEY`) or an external signer.
-- The current `sendPayment` helper expects a raw private key (hex). Consider extending the API to accept a Signer, hardware wallet integration, or a key management provider for production usage.
-
-Next steps and tests
-- Add an integration test that starts a local Hardhat node and runs an end-to-end payment using `payment.sendPayment`.
-- Consider adding typed wrappers using `ethers.parseUnits` for gas values and stronger validation.
-
-If you'd like, I can (a) run the `bun add ethers` and re-run the build here and fix remaining diagnostics, (b) add the README snippet to the docs site, or (c) scaffold an automated integration test using Hardhat.
-
-## Author
-Maintainer: [nk4dev](https://nk4dev.github.io/)
-
-# License
-MIT License © nk4dev
-
-This project is licensed under the MIT License, see the LICENSE.txt file for details
+MIT

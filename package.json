@@ -1,15 +1,20 @@
 {
-  "name": "@nk4dev/vx",
-  "version": "0.0.18",
-  "description": "A CLI tool for smart contracts",
+  "name": "vx3",
+  "version": "0.1.1",
+  "description": "A CLI tool for vx3 smart contracts platform",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
+  "author": "Nknight AMAMIYA@nk4dev <nknighta@varius.technology>",
   "files": [
     "dist",
     "packages/template",
     "packages/hardhat",
-    "packages/react-template"
+    "packages/components",
+    "packages/react-template",
+    "packages/vue-template",
+    "packages/vxc"
   ],
+  "homepage": "https://vx.nknighta.me",
   "license": "MIT",
   "keywords": [
     "web3",
@@ -29,38 +34,44 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
+    "build:vxc": "tsc -p packages/vxc/tsconfig.json",
+    "pretest": "npm run build:vxc && npm run build",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --watchAll=false",
-    "hh": "hardhat",
-    "hh:compile": "hardhat compile",
-    "hh:test": "hardhat test",
-    "hh:node": "hardhat node",
-    "hh:deploy": "hardhat run scripts/deploy.ts --network localhost"
+    "hh": "hardhat --config packages/hardhat/hardhat.config.ts",
+    "hh:compile": "hardhat --config packages/hardhat/hardhat.config.ts compile",
+    "hh:test": "hardhat --config packages/hardhat/hardhat.config.ts test",
+    "hh:node": "hardhat --config packages/hardhat/hardhat.config.ts node",
+    "hh:deploy": "hardhat --config packages/hardhat/hardhat.config.ts run packages/hardhat/scripts/deploy.ts --network localhost",
+    "docs": "npx serve docs"
   },
   "dependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@types/minimatch": "^5.1.2",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "@types/supertest": "^6.0.3",
     "ethers": "^6.15.0",
+    "globals": "^17.4.0",
     "minimatch": "^10.0.3",
     "prettier": "^3.5.3",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
     "solc": "^0.8.30"
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
-    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
-    "@types/minimatch": "^5.1.2",
-    "@types/supertest": "^6.0.3",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.8",
     "hardhat": "^2.22.0",
     "jest": "^30.0.5",
+    "react-dom": "^19.2.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

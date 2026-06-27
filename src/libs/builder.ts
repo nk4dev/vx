@@ -1,8 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import npm_json from '../../package.json';
-
-const SDK_VERSION = npm_json.version;
 
 export function createPackageJson(projectDir: string) {
   const projectname = path.basename(projectDir);
@@ -17,7 +14,6 @@ export function createPackageJson(projectDir: string) {
     "author": "Your Name",
     "license": "ISC",
     "dependencies": {
-      "@varius-dev/vx": "https://github.com/nk4dev/vx.git"
     },
     "devDependencies": {
       "typescript": "^4.0.0"

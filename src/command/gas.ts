@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import { JsonRpcProvider } from 'ethers';
+=======
+import { getGasFees } from '../core/data/index';
+import { load_rpc_config } from '../core/rpc/connect';
+>>>>>>> dev
 
 export default async function gas(args: string[] = []) {
     try {
@@ -50,4 +55,37 @@ export default async function gas(args: string[] = []) {
         console.error('Failed to fetch gas info:', error && error.message ? error.message : error);
         process.exit(1);
     }
+<<<<<<< HEAD
+=======
+
+    if (!rpcUrl) {
+      // Try loading from vx.config.json (may be array or single object)
+      const loaded = load_rpc_config();
+      const first = Array.isArray(loaded) ? loaded[0] : loaded;
+      if (!first || !first.protocol || !first.host || !first.port) {
+        throw new Error(
+          'Invalid vx.config.json: expected fields protocol, host, port'
+        );
+      }
+      rpcUrl = `${first.protocol}://${first.host}:${first.port}`;
+    }
+
+    const fees = await getGasFees(rpcUrl);
+
+    const toStr = (v?: string) => (v != null ? `${v} gwei` : 'n/a');
+
+    console.log('\n⛽ Gas fees');
+    console.log(`RPC: ${rpcUrl}`);
+    console.log(`baseFeePerGas     : ${toStr(fees.baseFeePerGasGwei)}`);
+    console.log(`maxPriorityFee    : ${toStr(fees.maxPriorityFeePerGasGwei)}`);
+    console.log(`maxFeePerGas      : ${toStr(fees.maxFeePerGasGwei)}`);
+    console.log(`gasPrice (legacy) : ${toStr(fees.gasPriceGwei)}`);
+    console.log('');
+    process.exit(0);
+  } catch (err) {
+    const msg = (err as Error)?.message ?? String(err);
+    console.error(`Failed to fetch gas fees: ${msg}`);
+    process.exit(1);
+  }
+>>>>>>> dev
 }

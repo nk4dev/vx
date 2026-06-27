@@ -1,14 +1,22 @@
+
 node_modules/
 dist/
 runtest/
+<<<<<<< HEAD
 bun.lock
 package-lock.json
+=======
+cache/
+slug/
+
+>>>>>>> dev
 yarn-error.log
 *.log
 *.bin
 *.tsbuildinfo
 
 bun.lock
+yarn.lock
 .vscode/
 
 # Test artifacts
@@ -19,8 +27,11 @@ jest-coverage/
 .env
 
 config
+<<<<<<< HEAD
 yarn.lock
 
 ## ignore IDE files
 .vscode/
 .idea/
+=======
+>>>>>>> dev
