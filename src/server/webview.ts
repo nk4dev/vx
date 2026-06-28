@@ -4,8 +4,14 @@ export default function localWebViewBuilder({
   blognum,
   host,
   port,
-  rpcList = [],
+  rpcList = [] as unknown[],
   rpcUrl = '',
+}: {
+  blognum: number;
+  host: string;
+  port: number;
+  rpcList?: unknown[];
+  rpcUrl?: string;
 }) {
   const rpc = rpcUrl || getRpcUrl();
   // Simple CSS-powered debug UI

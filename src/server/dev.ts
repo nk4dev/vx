@@ -2,10 +2,29 @@
 import { createServer } from 'http';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { ethers } from 'ethers';
 import { getBlockNumber } from '../core/data';
 import { getRpcUrl } from '../core/contract';
 import { sendPayment } from '../payment/index';
 import localWebViewBuilder from './webview';
+
+// Hardhat-compatible dev mnemonic (public, never use for real funds)
+const DEV_MNEMONIC =
+  'test test test test test test test test test test test junk';
+const DEV_ACCOUNT_COUNT = 10;
+const DEV_BALANCE_ETH = '10000.0';
+
+function generateDevAccounts(): { address: string; privateKey: string }[] {
+  const accounts: { address: string; privateKey: string }[] = [];
+  for (let i = 0; i < DEV_ACCOUNT_COUNT; i++) {
+    const wallet = ethers.HDNodeWallet.fromMnemonic(
+      ethers.Mnemonic.fromPhrase(DEV_MNEMONIC),
+      `m/44'/60'/0'/0/${i}`
+    );
+    accounts.push({ address: wallet.address, privateKey: wallet.privateKey });
+  }
+  return accounts;
+}
 
 // Helper functions to parse command-line arguments
 function getArgValue(args: string[], flag: string): string | undefined {
@@ -41,7 +60,7 @@ export default function localServer(options?: Partial<ServerOptions>) {
 
   // Extract options from command line arguments or use provided options
   const host = getArgValue(args, '--host') || options?.host || '127.0.0.1';
-  const port = getArgValue(args, '--port') || options?.port || '3000';
+  const port = getArgValue(args, '--port') || options?.port || '8545';
 
   // Parse chains if provided
   const chainsArg = getArgValue(args, '--chains');
@@ -56,18 +75,15 @@ export default function localServer(options?: Partial<ServerOptions>) {
   let rpc: string | undefined;
   try {
     rpc = getRpcUrl();
-    if (rpc) console.log(`Using RPC URL: ${rpc}`);
   } catch (e) {
-    // If vx.config.json is missing, log and continue — server endpoints that need RPC will handle errors
-    if (options?.debug)
-      console.warn(
-        'RPC config not found; some endpoints may fail until vx.config.json is created.'
-      );
+    // vx.config.json missing — endpoints that need RPC will handle the error per-request
   }
-  // Do not fetch block number once at startup; fetch on demand per request for realtime updates
-  // bn will be retrieved dynamically from the RPC when /api/block is called
-  // Ensure PORT is a valid number, default to 3000 if not
-  const portNumber = isNaN(Number(port)) ? 3000 : Number(port);
+
+  // Ensure PORT is a valid number, default to 8545 if not
+  const portNumber = isNaN(Number(port)) ? 8545 : Number(port);
+
+  // Generate dev accounts once at startup
+  const devAccounts = generateDevAccounts();
 
   // Setup SSE clients for realtime block pushes
   const sseClients: import('http').ServerResponse[] = [];
@@ -95,7 +111,7 @@ export default function localServer(options?: Partial<ServerOptions>) {
         }
       } catch (err) {
         // ignore interval errors
-        console.log('!error!' + err.message);
+        console.log('!error!' + (err as Error).message);
       }
     }, 2000);
   };
@@ -161,7 +177,7 @@ export default function localServer(options?: Partial<ServerOptions>) {
       if (debug) {
         res.writeHead(200, { 'Content-Type': 'text/html' });
         // read vx.config.json entries (if present) and pass to page
-        let rpcList = [];
+        let rpcList: unknown[] = [];
         try {
           const cfgPath = join(process.cwd(), 'vx.config.json');
           if (existsSync(cfgPath)) {
@@ -171,7 +187,7 @@ export default function localServer(options?: Partial<ServerOptions>) {
           }
         } catch (err) {
           /* ignore parsing errors */
-          console.log('!error!' + err.message);
+          console.log('!error!' + (err as Error).message);
         }
         // Serve debug page with SSE for realtime updates and chain selector
         res.end(
@@ -187,6 +203,19 @@ export default function localServer(options?: Partial<ServerOptions>) {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('Debug mode is off. No debug information available.\n');
       }
+    } else if (req.url === '/api/accounts' && req.method === 'GET') {
+      res.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      });
+      res.end(
+        JSON.stringify(
+          devAccounts.map((a) => ({
+            address: a.address,
+            balance: DEV_BALANCE_ETH,
+          }))
+        )
+      );
     } else if (req.url === '/api/pay' && req.method === 'POST') {
       // accept JSON body: { to, amountEth, rpcUrl?, key? }
       const chunks: Uint8Array[] = [];
@@ -252,18 +281,32 @@ export default function localServer(options?: Partial<ServerOptions>) {
   });
 
   server.listen(portNumber, host, () => {
+    console.log('\nvx3 node');
+    console.log('========');
+    console.log('\nAvailable Accounts');
+    console.log('==================');
+    devAccounts.forEach((a, i) => {
+      console.log(`(${i}) ${a.address} (${DEV_BALANCE_ETH} ETH)`);
+    });
+    console.log('\nPrivate Keys');
+    console.log('============');
+    devAccounts.forEach((a, i) => {
+      console.log(`(${i}) ${a.privateKey}`);
+    });
+    console.log('\nMnemonic');
+    console.log('========');
+    console.log(DEV_MNEMONIC);
+    console.log('\nListening on');
+    console.log('============');
+    console.log(`http://${host}:${portNumber}`);
+    if (rpc) console.log(`RPC: ${rpc}`);
     if (debug) {
-      console.log(`Server on http://${host}:${portNumber} with debug mode`);
-      console.log(`http://${host}:${portNumber}/debug`);
-      if (chains) {
-        console.log('Available chains:', chains);
-      }
-      console.log('Environment:', env);
-    } else if (displaylogs) {
-      console.log(`Server on http://${host}:${portNumber}`);
-    } else {
-      return;
+      console.log(`Debug: http://${host}:${portNumber}/debug`);
+      if (chains) console.log('Chains:', JSON.stringify(chains));
+      console.log('Env:', env);
     }
+    console.log('\nAccounts endpoint: GET /api/accounts');
+    console.log('WARNING: Do not use dev keys on mainnet!\n');
   });
   server.on('error', (err) => {
     console.error('Server error:', err);
