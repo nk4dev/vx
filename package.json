@@ -27,15 +27,15 @@
   },
   "scripts": {
     "build": "rimraf dist && tsc",
-    "prepare": "npm run build",
+    "prepare": "bun run build",
     "clean": "rimraf dist",
     "dev": "node dist/src/cli.js",
-    "start": "npm run build && npx vx serve --debug",
+    "start": "bun run build && bunx vx serve --debug",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "build:vxc": "tsc -p packages/vxc/tsconfig.json",
-    "pretest": "npm run build:vxc && npm run build",
+    "pretest": "bun run build:vxc && bun run build",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -44,8 +44,7 @@
     "hh:compile": "hardhat --config packages/hardhat/hardhat.config.ts compile",
     "hh:test": "hardhat --config packages/hardhat/hardhat.config.ts test",
     "hh:node": "hardhat --config packages/hardhat/hardhat.config.ts node",
-    "hh:deploy": "hardhat --config packages/hardhat/hardhat.config.ts run packages/hardhat/scripts/deploy.ts --network localhost",
-    "docs": "npx serve docs"
+    "hh:deploy": "hardhat --config packages/hardhat/hardhat.config.ts run packages/hardhat/scripts/deploy.ts --network localhost"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
