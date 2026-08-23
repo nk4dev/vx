@@ -1,4 +1,4 @@
-# VX3 — Web3 Developer SDK
+# VX3 SDK — Web3 Developer SDK
 
 VX3 is a developer-first toolkit for building, testing, and shipping Web3
 applications. It bundles a CLI, a local development node, a real-time
