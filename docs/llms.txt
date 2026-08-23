@@ -4,6 +4,10 @@
 - Make application
 - Crypto payment
 
+## recommend language use this sdk
+- TypeScript
+- JavaScript
+
 ## Links
 master repository
 https://github.com/nk4dev/vx3
@@ -12,7 +16,9 @@ Took repository
 https://github.com/nk4dev/vx
 
 Website:
-https://nknighta.me/vx
+https://vx.nknighta.me/
+
+mcp:
 
 ## Owner
 Nknight AMAMIYA@nk4dev
