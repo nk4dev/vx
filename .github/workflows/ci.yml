@@ -24,15 +24,11 @@ jobs:
       - name: Install SDK dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build VXC compiler package
-        run: bun run build:vxc
-
-      - name: Build SDK
+      - name: Build SDK (also builds @vx3/vxc via prebuild)
         run: bun run build
 
-      - name: Lint (non-blocking — see PROBLEMS.md §3)
+      - name: Lint
         run: bun run lint
-        continue-on-error: true
 
       - name: Run SDK tests (with coverage thresholds)
         run: bun run test:ci

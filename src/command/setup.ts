@@ -18,11 +18,23 @@ function copyRecursiveSync(src: string, dest: string) {
   }
 }
 
-function upsertJSON(filePath: string, updater: (obj: any) => any) {
-  let current: any = {};
+interface PackageJson {
+  name?: string;
+  private?: boolean;
+  scripts?: Record<string, string>;
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  [key: string]: unknown;
+}
+
+function upsertJSON(
+  filePath: string,
+  updater: (obj: PackageJson) => PackageJson
+) {
+  let current: PackageJson = {};
   if (fs.existsSync(filePath)) {
     try {
-      current = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      current = JSON.parse(fs.readFileSync(filePath, 'utf8')) as PackageJson;
     } catch {
       current = {};
     }

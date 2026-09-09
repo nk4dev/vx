@@ -9,6 +9,7 @@ import { getBlockNumber } from '../core/data';
 import { getRpcUrl } from '../core/contract';
 import { loadVxConfig } from '../core/config';
 import { sendPayment } from '../payment/index';
+import { SseHub, startRpcPolling } from './sse';
 import localWebViewBuilder from './webview';
 
 // Hardhat-compatible dev mnemonic (public, never use for real funds)
@@ -54,7 +55,6 @@ interface ServerOptions {
   ];
   env?: string;
   debug?: boolean;
-  displaylogs?: boolean;
   /** Suppress the startup banner (useful for tests / embedding). */
   quiet?: boolean;
 }
@@ -85,15 +85,14 @@ export default function localServer(options?: Partial<ServerOptions>) {
   // Parse other flags
   const env = getArgValue(args, '--env') || options?.env || 'development';
   const debug = hasFlag(args, '--debug') || options?.debug || false;
-  const displaylogs = hasFlag(args, '--logs') || options?.displaylogs || false;
   const quiet = options?.quiet ?? false;
 
   // Resolve RPC and block-number lazily to avoid requiring vx.config.json at import time
   let rpc: string | undefined;
   try {
     rpc = getRpcUrl();
-  } catch (e) {
-    // vx.config.json missing — endpoints that need RPC will handle the error per-request
+  } catch {
+    // vx.config.json missing — endpoints that need RPC handle it per-request
   }
 
   // Ensure PORT is a valid number, default to 8545 if not
@@ -102,35 +101,16 @@ export default function localServer(options?: Partial<ServerOptions>) {
   // Generate dev accounts once at startup
   const devAccounts = generateDevAccounts();
 
-  // Setup SSE clients for realtime block pushes
-  const sseClients: import('http').ServerResponse[] = [];
-  let lastKnownBlock: number | undefined;
-  let sseInterval: NodeJS.Timer | undefined;
-
-  const startSseLoop = (rpcUrl: string | undefined) => {
-    if (sseInterval) return; // already running
-    sseInterval = setInterval(async () => {
-      try {
-        const url = rpcUrl || getRpcUrl();
-        if (!url) return;
-        const bn = await getBlockNumber(url);
-        if (typeof bn === 'number' && bn !== lastKnownBlock) {
-          lastKnownBlock = bn;
-          const payload = JSON.stringify({ blockNumber: bn });
-          // send to all clients
-          sseClients.forEach((client) => {
-            try {
-              client.write(`event: block\ndata: ${payload}\n\n`);
-            } catch (e) {
-              /* ignore per-client errors */
-            }
-          });
-        }
-      } catch (err) {
-        // ignore interval errors
-        console.log('!error!' + (err as Error).message);
-      }
-    }, 2000);
+  // Realtime block pushes over SSE (see src/server/sse.ts).
+  const sseHub = new SseHub();
+  let stopPolling: (() => void) | undefined;
+  const resolveRpc = () => {
+    if (rpc) return rpc;
+    try {
+      return getRpcUrl();
+    } catch {
+      return undefined;
+    }
   };
 
   const server = createServer((req, res) => {
@@ -174,21 +154,10 @@ export default function localServer(options?: Partial<ServerOptions>) {
       })();
     } else if (req.url === '/events') {
       // SSE endpoint for realtime events
-      const headers = {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-        'Access-Control-Allow-Origin': '*',
-      };
-      res.writeHead(200, headers);
-      res.write('\n');
-      sseClients.push(res);
-      // start loop that polls block number and emits events
-      startSseLoop(rpc || undefined);
-      req.on('close', () => {
-        const idx = sseClients.indexOf(res);
-        if (idx >= 0) sseClients.splice(idx, 1);
-      });
+      sseHub.add(res);
+      if (!stopPolling) {
+        stopPolling = startRpcPolling(sseHub, resolveRpc, { intervalMs: 2000 });
+      }
     } else if (req.url === '/debug') {
       // Handle /debug endpoint
       if (debug) {
@@ -330,9 +299,12 @@ export default function localServer(options?: Partial<ServerOptions>) {
     console.log('WARNING: Do not use these dev keys on a public network!\n');
   });
   server.on('error', (err) => {
-    console.error('Server error:', err);
-    process.exit(1);
+    // Set the exit code rather than hard-exiting: this keeps `localServer()`
+    // safe to call from an embedding process.
+    console.error(`Server error: ${err.message}`);
+    process.exitCode = 1;
   });
+  server.on('close', () => stopPolling?.());
 
   return server;
 }

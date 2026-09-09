@@ -49,11 +49,9 @@ export interface LoadOptions {
 
 function candidatePaths(explicitPath?: string): string[] {
   if (explicitPath) return [path.resolve(explicitPath)];
-  return [
-    path.join(process.cwd(), CONFIG_FILENAME),
-    path.join(process.cwd(), 'packages', 'sdk', CONFIG_FILENAME),
-    path.join(__dirname, '..', '..', CONFIG_FILENAME),
-  ];
+  // Resolved relative to the current working directory only — predictable, and
+  // matches how every other CLI tool locates its config.
+  return [path.join(process.cwd(), CONFIG_FILENAME)];
 }
 
 /**

@@ -9,21 +9,23 @@ const config = {
   clearMocks: true,
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
 
-  // Tests exercise the compiled output (they require ../dist/src/...), so
+  // Tests exercise the compiled output (they require ../dist/...), so
   // coverage is measured against dist. Scope is the config / RPC / payment
   // core that this project's tests actually cover well; extending the gate to
   // src/command/** and src/libs/** is tracked as follow-up work.
   collectCoverageFrom: [
-    'dist/src/core/**/*.js',
-    'dist/src/payment/**/*.js',
-    '!dist/src/core/data/**',
+    'dist/core/**/*.js',
+    'dist/payment/**/*.js',
+    'dist/nft/**/*.js',
+    'dist/libs/builder.js',
+    'dist/server/sse.js',
   ],
   coverageThreshold: {
     global: {
-      statements: 60,
-      branches: 70,
-      functions: 55,
-      lines: 60,
+      statements: 68,
+      branches: 74,
+      functions: 64,
+      lines: 68,
     },
   },
 

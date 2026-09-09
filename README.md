@@ -48,8 +48,8 @@ vx3 <command> [...options]
 | `dash` | **Open the real-time developer dashboard (port 4000).** |
 | `setup hardhat\|react` | Add Hardhat or a React frontend to the current project. |
 | `rpc` | Manage or query RPC endpoints from `vx.config.json`. |
-| `pay <to> <amount>` | Send a transaction. Flags: `--rpc`, `--key`. |
-| `gas` | Estimate gas fees for a transaction. |
+| `pay <to> <amount>` | Send a transaction. Flags: `--rpc`, `--key`, `--json`. |
+| `gas` | Estimate gas fees for a transaction. Flags: `--rpc`, `--json`. |
 | `ipfs` | Pin / fetch content via IPFS. |
 | `generate` | Generate templates (react, vue, …). |
 | `compile <entry.sol>` | Compile Solidity using the VXC custom compiler. |
@@ -178,7 +178,7 @@ vx3 <コマンド> [...オプション]
 | `dash` | **リアルタイム開発ダッシュボードを起動（ポート 4000）。** |
 | `setup hardhat\|react` | Hardhat または React フロントエンドを追加。 |
 | `rpc` | `vx.config.json` の RPC エンドポイントを管理・参照。 |
-| `pay <to> <amount>` | トランザクション送信。オプション: `--rpc`, `--key`。 |
+| `pay <to> <amount>` | トランザクション送信。オプション: `--rpc`, `--key`, `--json`。 |
 | `gas` | ガス料金を推定。 |
 | `ipfs` | IPFS 経由でコンテンツをピン留め / 取得。 |
 | `generate` | テンプレートを生成（react, vue など）。 |

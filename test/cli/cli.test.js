@@ -3,7 +3,7 @@
 const { spawnSync } = require('child_process');
 const path = require('path');
 
-const CLI = path.resolve(__dirname, '../../dist/src/cli.js');
+const CLI = path.resolve(__dirname, '../../dist/cli.js');
 
 function run(...args) {
   return spawnSync(process.execPath, [CLI, ...args], { encoding: 'utf-8' });
@@ -41,5 +41,18 @@ describe('vx3 CLI (commander)', () => {
   it('per-command help still works for pass-through commands', () => {
     const r = run('compile', '--help');
     expect(r.stdout + r.stderr).toMatch(/vx3 compile/);
+  });
+
+  it('pay --json emits a JSON error instead of prose on bad input', () => {
+    const r = run('pay', '--json');
+    expect(r.status).not.toBe(0);
+    const parsed = JSON.parse(r.stdout.trim());
+    expect(parsed.error).toMatch(/Usage: vx3 pay/);
+  });
+
+  it('nft --json emits a JSON error for an unknown subcommand', () => {
+    const r = run('nft', 'bogus', '--json');
+    expect(r.status).not.toBe(0);
+    expect(JSON.parse(r.stdout.trim())).toHaveProperty('error');
   });
 });

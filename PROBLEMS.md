@@ -91,6 +91,40 @@ Existing tests: `test/core/ipfs.test.js`, `test/core/rpc.test.js`, `test/payment
 
 ## Fix status
 
+### Second pass (v0.1.1-ai, 2026-09)
+
+- **§1 design** — `vx3 node` → `vx3 api` (honest name; `node` kept as a hidden
+  alias). Library layer no longer calls `process.exit()`: `getRpcUrl()` /
+  `instance()` and the `rpc/*` helpers throw `VxConfigError`. Hand-written
+  arg-switch in `command/cmd.ts` replaced with a `commander` program (real
+  `--help` / `--version` / unknown-command handling). New `src/core/config.ts`
+  is the single `vx.config.json` loader/validator; `connect.ts`, `manager.ts`,
+  `core/ipfs.ts` and the servers delegate to it.
+- **§2 code quality** — removed all `any` from `src/**` (payment, nft, data,
+  setup, index typed properly); `getGasFees` returns a plain JSON-serializable
+  DTO (no BigInt, no `toJSON` monkeypatch); server error handlers set
+  `process.exitCode` instead of hard-exiting; `src/types/minimatch.d.ts`
+  deleted (`types: ["node"]` in both tsconfigs makes it unnecessary).
+- **§3 lint** — `bun run lint` is now **clean** (0 errors). `eslint.config.mjs`
+  ignores build output / coverage / scaffolding templates and allows `_`-prefixed
+  unused vars; `catch (e) {}` → `catch {}`; the `@vx3/vxc` `require()` fallback in
+  `compile.ts` replaced with a static import. CI runs lint as a blocking step.
+- **§4 tests** — new suites for `core/config`, `core/data` (gas DTO), `nft`,
+  `server/sse`, `server` (`/api/pay` route), `libs/builder`, and CLI `--json`.
+  123 tests. `jest.config.cjs` gates coverage (`core` + `payment` + `nft` +
+  `sse` + `builder`, ~73%/74%/64% floor).
+- **§5 packaging** — `package.json` `exports` map (`.`, `./core/config`,
+  `./dist/*`); `prebuild` builds `@vx3/vxc`; `dist/src/**` layout flattened to
+  `dist/**` (`rootDir: ./src`, `main`/`bin`/tests updated).
+- **§6 structure** — SSE + RPC-polling logic extracted to `src/server/sse.ts`
+  (`SseHub`, `startRpcPolling`), shared by `dev.ts` and `dashboard.ts`.
+- **DX** — `--json` output mode for `gas`, `pay`, `nft`.
+
+Still deferred: a leveled logger to replace the ~150 direct `console.*` calls;
+`tsup`/`unbuild` dual ESM+CJS build (the `src/index.ts` CJS-merge shim remains);
+coverage gate extension to `src/command/**` and `src/server/*.ts` HTTP handlers;
+`--json` for the remaining commands.
+
 ### Fixed
 
 - **§1 Security** — `/api/pay` no longer accepts a private key over the network (signs with `PRIVATE_KEY` env or a generated dev account only); it now rejects cross-origin requests (same-origin check on the `Origin` header) to close the CSRF/DNS-rebinding drain path. `dashboard.ts`'s `--open` handler now uses `spawn` with an argv array instead of `exec("$cmd $url")`, closing the command-injection vector. `dashview.ts`/`webview.ts` now HTML-escape `host`/`port`/`rpcUrl` before interpolating them into served HTML (new `src/libs/html.ts` helper), and JSON embedded in `<script>` blocks is now escaped against `</script>` breakout. `pjmake.ts`'s `init()` now rejects absolute paths and `..` segments in the project name. `pay`/`nft` now print a warning when `--key` is used. The orphaned `paymentdialog.tsx` (plaintext private-key field, POSTed to the server, never actually built or exported) was deleted rather than patched — `payment.ts`'s `Payment` component already covers this without the key field.

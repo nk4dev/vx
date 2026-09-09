@@ -49,15 +49,18 @@ export type {
   PaymentDialogControl,
 } from './types/payment';
 
-// CJS/ESM interop: ensure default import from CJS yields usable object with methods
-// without requiring `.default` access in Node ESM.
-// This merges named exports onto the default object and exposes them via module.exports.
-// Safe no-op in pure ESM contexts.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare const module: any | undefined;
+// CJS interop: the build targets CommonJS, so merge the named exports onto the
+// default-export object and re-expose them as module.exports. This lets both
+// `require('vx3')` and `import vx from 'vx3'` resolve to the same usable object.
+declare const module: NodeModule | undefined;
 try {
-  if (typeof module !== 'undefined' && module && module.exports) {
-    const named = { default: vx, instance, vx: data };
-    module.exports = Object.assign({}, named, vx);
+  if (typeof module !== 'undefined' && module?.exports) {
+    module.exports = Object.assign(
+      {},
+      { default: vx, instance, vx: data },
+      vx
+    );
   }
-} catch {}
+} catch {
+  /* pure ESM context — nothing to merge */
+}

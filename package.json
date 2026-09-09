@@ -2,8 +2,20 @@
   "name": "vx3",
   "version": "0.1.1",
   "description": "A CLI tool for vx3 smart contracts platform",
-  "main": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./core/config": {
+      "types": "./dist/core/config.d.ts",
+      "default": "./dist/core/config.js"
+    },
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
   "author": "Nknight AMAMIYA@nk4dev <nknighta@varius.technology>",
   "files": [
     "dist",
@@ -25,19 +37,20 @@
     "smart-contracts"
   ],
   "bin": {
-    "vx3": "dist/src/cli.js"
+    "vx3": "dist/cli.js"
   },
   "scripts": {
+    "build:vxc": "tsc -p packages/vxc/tsconfig.json",
+    "prebuild": "bun run build:vxc",
     "build": "rimraf dist && tsc",
     "prepare": "bun run build",
-    "clean": "rimraf dist",
-    "dev": "node dist/src/cli.js",
-    "start": "bun run build && node dist/src/cli.js api --debug",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix",
+    "clean": "rimraf dist packages/vxc/dist",
+    "dev": "node dist/cli.js",
+    "start": "bun run build && node dist/cli.js api --debug",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.ts\"",
-    "build:vxc": "tsc -p packages/vxc/tsconfig.json",
-    "pretest": "bun run build:vxc && bun run build",
+    "pretest": "bun run build",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

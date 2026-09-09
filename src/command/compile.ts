@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { VXCompiler } from '@vx3/vxc';
 
 interface ParsedArgs {
   entry?: string;
@@ -58,16 +59,6 @@ Options:
   if (!args.entry) {
     console.error('vx3 compile: missing entry .sol file');
     process.exit(1);
-  }
-
-  let VXCompiler: typeof import('../../packages/vxc/src/compiler').VXCompiler;
-  try {
-    // Prefer the built package; fall back to the workspace source.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    ({ VXCompiler } = require('@vx3/vxc'));
-  } catch {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    ({ VXCompiler } = require('../../packages/vxc/src/compiler'));
   }
 
   const compiler = new VXCompiler();

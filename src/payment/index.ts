@@ -1,4 +1,11 @@
-import { JsonRpcProvider, Wallet, parseEther } from 'ethers';
+import {
+  JsonRpcProvider,
+  Wallet,
+  parseEther,
+  parseUnits,
+  type TransactionReceipt,
+  type TransactionRequest,
+} from 'ethers';
 
 export type SendPaymentOptions = {
   rpcUrl: string;
@@ -13,12 +20,11 @@ export type SendPaymentOptions = {
 
 export type SendPaymentResult = {
   txHash: string;
-  receipt?: any;
+  receipt: TransactionReceipt | null;
 };
 
-function gweiToWei(gwei?: string) {
-  if (!gwei) return undefined;
-  return `${gwei}000000000`;
+function gweiToWei(gwei?: string): bigint | undefined {
+  return gwei ? parseUnits(gwei, 'gwei') : undefined;
 }
 
 export async function sendPayment(
@@ -32,7 +38,7 @@ export async function sendPayment(
   const provider = new JsonRpcProvider(opts.rpcUrl);
   const wallet = new Wallet(opts.privateKey, provider);
 
-  const tx: any = {
+  const tx: TransactionRequest = {
     to: opts.to,
     value: parseEther(opts.amountEth),
   };
@@ -42,7 +48,7 @@ export async function sendPayment(
     tx.maxPriorityFeePerGas = gweiToWei(opts.maxPriorityFeePerGas);
   if (opts.maxFeePerGas) tx.maxFeePerGas = gweiToWei(opts.maxFeePerGas);
 
-  const sent = await wallet.sendTransaction(tx as any);
+  const sent = await wallet.sendTransaction(tx);
   const receipt = await sent.wait(1);
 
   return { txHash: sent.hash, receipt };

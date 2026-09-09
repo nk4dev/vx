@@ -2,9 +2,15 @@ import { getRpcUrl } from '../core/contract';
 import { sendPayment } from '../payment/index';
 
 function parseArgs(args: string[]) {
-  const out: { to?: string; amount?: string; rpc?: string; key?: string } = {};
-  if (args.length >= 1) out.to = args[0];
-  if (args.length >= 2) out.amount = args[1];
+  const out: {
+    to?: string;
+    amount?: string;
+    rpc?: string;
+    key?: string;
+    json: boolean;
+  } = { json: args.includes('--json') };
+  if (args.length >= 1 && !args[0].startsWith('-')) out.to = args[0];
+  if (args.length >= 2 && !args[1].startsWith('-')) out.amount = args[1];
 
   for (let i = 2; i < args.length; i++) {
     const a = args[i];
@@ -20,13 +26,16 @@ function parseArgs(args: string[]) {
 }
 
 export async function handlePayCommand(argv: string[]) {
-  const { to, amount, rpc: rpcFlag, key: keyFlag } = parseArgs(argv);
+  const { to, amount, rpc: rpcFlag, key: keyFlag, json } = parseArgs(argv);
+
+  const fail = (message: string): never => {
+    if (json) console.log(JSON.stringify({ error: message }));
+    else console.error(message);
+    process.exit(1);
+  };
 
   if (!to || !amount) {
-    console.error(
-      'Usage: vx3 pay <to> <amount> [--rpc <url>] [--key <privateKey>]'
-    );
-    process.exit(1);
+    fail('Usage: vx3 pay <to> <amount> [--rpc <url>] [--key <privateKey>] [--json]');
   }
 
   let rpcUrl = rpcFlag;
@@ -34,43 +43,46 @@ export async function handlePayCommand(argv: string[]) {
     try {
       rpcUrl = getRpcUrl();
     } catch (err) {
-      console.error(
-        `${(err as Error).message} Or pass --rpc <url>.`
-      );
-      process.exit(1);
+      fail(`${(err as Error).message} Or pass --rpc <url>.`);
     }
   }
 
-  if (keyFlag) {
+  if (keyFlag && !json) {
     console.error(
       'Warning: --key exposes your private key in shell history and process listings. Prefer the PRIVATE_KEY environment variable.'
     );
   }
   const privateKey = keyFlag || process.env.PRIVATE_KEY;
   if (!privateKey) {
-    console.error(
+    fail(
       'Private key not provided. Set PRIVATE_KEY environment variable or use --key <privateKey>'
     );
-    process.exit(1);
   }
 
-  console.log(`Sending ${amount} ETH to ${to} via ${rpcUrl}`);
+  if (!json) console.log(`Sending ${amount} ETH to ${to} via ${rpcUrl}`);
 
   try {
     const res = await sendPayment({
-      rpcUrl,
-      privateKey,
-      to,
-      amountEth: amount,
+      rpcUrl: rpcUrl as string,
+      privateKey: privateKey as string,
+      to: to as string,
+      amountEth: amount as string,
     });
-    console.log('Transaction submitted. Hash:', res.txHash);
-    if (res.receipt) {
-      console.log('Transaction confirmed in block', res.receipt.blockNumber);
-      console.log(JSON.stringify(res.receipt, null, 2));
+    if (json) {
+      console.log(
+        JSON.stringify({
+          txHash: res.txHash,
+          blockNumber: res.receipt?.blockNumber ?? null,
+        })
+      );
+    } else {
+      console.log('Transaction submitted. Hash:', res.txHash);
+      if (res.receipt) {
+        console.log('Transaction confirmed in block', res.receipt.blockNumber);
+      }
     }
     process.exit(0);
   } catch (err) {
-    console.error('Payment failed:', (err as Error).message);
-    process.exit(1);
+    fail(`Payment failed: ${(err as Error).message}`);
   }
 }

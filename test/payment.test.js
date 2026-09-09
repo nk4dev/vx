@@ -20,7 +20,7 @@ jest.mock('ethers', () => {
   };
 });
 
-const { sendPayment } = require('../dist/src/payment/index');
+const { sendPayment } = require('../dist/payment/index');
 const { Wallet } = require('ethers');
 
 const VALID_OPTS = {

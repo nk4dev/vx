@@ -43,7 +43,9 @@ export class VXCompiler {
 
   private getBackend(): SolcBackend {
     if (this.backend) return this.backend;
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // solc ships no type declarations and is loaded lazily so the compiler can
+    // be constructed (and unit-tested) without it.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const solc = require('solc') as SolcBackend;
     this.backend = solc;
     return solc;

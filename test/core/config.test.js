@@ -8,7 +8,7 @@ const ORIGINAL_CWD = process.cwd();
 
 function freshModule() {
   jest.resetModules();
-  return require('../../dist/src/core/config');
+  return require('../../dist/core/config');
 }
 
 function makeTmp() {

@@ -17,7 +17,9 @@ export interface MintNFTOptions {
   maxPriorityFeePerGas?: string;
 }
 
+import type { TransactionReceipt } from 'ethers';
+
 export interface MintNFTResult {
   txHash: string;
-  receipt?: Record<string, unknown>;
+  receipt: TransactionReceipt | null;
 }

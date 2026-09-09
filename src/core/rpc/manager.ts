@@ -135,7 +135,7 @@ export function addRpcEndpoint(
     // Try to load existing configuration
     try {
       existingConfig = loadRpcConfig(filename, rpcsDir);
-    } catch (error) {
+    } catch {
       // If file doesn't exist, start with empty array
       console.log(`Creating new configuration file: ${filename}.json`);
     }

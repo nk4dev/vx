@@ -29,8 +29,6 @@ function copyRecursiveSync(src: string, dest: string) {
   }
 }
 
-const args = process.argv.slice(2);
-
 // set project name from cli tool or shell arguments
 export function init(projectName?: string) {
   try {

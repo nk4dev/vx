@@ -4,7 +4,7 @@ const http = require('http');
 
 // Mock the payment module so no real transaction is ever attempted and we can
 // inspect exactly what the /api/pay route passes to sendPayment().
-jest.mock('../../dist/src/payment/index', () => ({
+jest.mock('../../dist/payment/index', () => ({
   __esModule: true,
   default: {},
   sendPayment: jest.fn().mockResolvedValue({
@@ -13,8 +13,8 @@ jest.mock('../../dist/src/payment/index', () => ({
   }),
 }));
 
-const { sendPayment } = require('../../dist/src/payment/index');
-const localServer = require('../../dist/src/server/dev').default;
+const { sendPayment } = require('../../dist/payment/index');
+const localServer = require('../../dist/server/dev').default;
 
 const ATTACKER_KEY = '0x' + 'e'.repeat(64);
 

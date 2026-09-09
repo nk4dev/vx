@@ -8,6 +8,7 @@ Usage: vx3 gas [--rpc <url>] [--path <vx.config.json>] [--help]\n
 Options:
   --rpc <url>        Direct RPC URL (e.g., http://localhost:8545)
   -p, --path <path>  Path to vx.config.json with an RPC array/object
+  --json             Print the raw fee data as JSON
   --help             Show this help message\n
 Examples:
   vx3 gas --rpc http://localhost:8545
@@ -19,6 +20,8 @@ export async function handleGasCommand(args: string[]) {
     showHelp();
     process.exit(0);
   }
+
+  const json = args.includes('--json');
 
   try {
     // Parse flags
@@ -38,6 +41,11 @@ export async function handleGasCommand(args: string[]) {
 
     const fees = await getGasFees(rpcUrl);
 
+    if (json) {
+      console.log(JSON.stringify({ rpc: rpcUrl, ...fees }, null, 2));
+      process.exit(0);
+    }
+
     const toStr = (v?: string) => (v != null ? `${v} gwei` : 'n/a');
 
     console.log('\n⛽ Gas fees');
@@ -50,7 +58,8 @@ export async function handleGasCommand(args: string[]) {
     process.exit(0);
   } catch (err) {
     const msg = (err as Error)?.message ?? String(err);
-    console.error(`Failed to fetch gas fees: ${msg}`);
+    if (json) console.log(JSON.stringify({ error: msg }));
+    else console.error(`Failed to fetch gas fees: ${msg}`);
     process.exit(1);
   }
 }

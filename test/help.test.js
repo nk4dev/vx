@@ -3,7 +3,7 @@
 const { spawnSync } = require('child_process');
 const path = require('path');
 
-const CLI = path.resolve(__dirname, '../dist/src/cli.js');
+const CLI = path.resolve(__dirname, '../dist/cli.js');
 
 describe('vx3 CLI', () => {
   it('runs without crashing when given help', () => {

@@ -1,7 +1,8 @@
-import { createServer } from 'http';
+import { createServer, type Server } from 'http';
 import { getBlockNumber, getGasFees } from '../core/data';
 import { getRpcUrl } from '../core/contract';
 import { loadVxConfig } from '../core/config';
+import { SseHub, startRpcPolling } from './sse';
 import dashViewBuilder from './dashview';
 
 interface DashboardOptions {
@@ -9,8 +10,6 @@ interface DashboardOptions {
   port: number;
   open?: boolean;
 }
-
-type SseClient = import('http').ServerResponse;
 
 function addCors(res: import('http').ServerResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,40 +24,23 @@ function readRpcList(): Array<Record<string, unknown>> {
   }
 }
 
-export function startDashboard({ host, port, open }: DashboardOptions): void {
+export function startDashboard({
+  host,
+  port,
+  open,
+}: DashboardOptions): Server {
   let rpcUrl: string | undefined;
   try { rpcUrl = getRpcUrl(); } catch { /* no config */ }
 
-  const sseClients: SseClient[] = [];
-  let sseInterval: NodeJS.Timer | undefined;
-
-  const broadcastSse = (event: string, data: unknown) => {
-    const line = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
-    for (const client of sseClients) {
-      try { client.write(line); } catch { /* ignore closed */ }
+  const sseHub = new SseHub();
+  let stopPolling: (() => void) | undefined;
+  const resolveRpc = () => {
+    if (rpcUrl) return rpcUrl;
+    try {
+      return getRpcUrl();
+    } catch {
+      return undefined;
     }
-  };
-
-  const startSseLoop = () => {
-    if (sseInterval) return;
-    let lastBlock: number | undefined;
-    sseInterval = setInterval(async () => {
-      try {
-        const url = rpcUrl || getRpcUrl();
-        if (!url) return;
-        const [bn, gas] = await Promise.allSettled([
-          getBlockNumber(url),
-          getGasFees(url),
-        ]);
-        if (bn.status === 'fulfilled' && bn.value !== lastBlock) {
-          lastBlock = bn.value;
-          broadcastSse('block', { blockNumber: bn.value });
-        }
-        if (gas.status === 'fulfilled') {
-          broadcastSse('gas', gas.value);
-        }
-      } catch { /* ignore */ }
-    }, 4000);
   };
 
   const server = createServer(async (req, res) => {
@@ -75,19 +57,13 @@ export function startDashboard({ host, port, open }: DashboardOptions): void {
 
     // SSE
     if (url === '/events' && req.method === 'GET') {
-      res.writeHead(200, {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-        'Access-Control-Allow-Origin': '*',
-      });
-      res.write('\n');
-      sseClients.push(res);
-      startSseLoop();
-      req.on('close', () => {
-        const i = sseClients.indexOf(res);
-        if (i >= 0) sseClients.splice(i, 1);
-      });
+      sseHub.add(res);
+      if (!stopPolling) {
+        stopPolling = startRpcPolling(sseHub, resolveRpc, {
+          intervalMs: 4000,
+          gas: true,
+        });
+      }
       return;
     }
 
@@ -150,8 +126,9 @@ export function startDashboard({ host, port, open }: DashboardOptions): void {
 
   server.on('error', (err) => {
     console.error(`Dashboard error: ${err.message}`);
-    process.exit(1);
+    process.exitCode = 1;
   });
+  server.on('close', () => stopPolling?.());
 
   server.listen(port, host, () => {
     const dashUrl = `http://${host}:${port}`;
@@ -177,4 +154,6 @@ export function startDashboard({ host, port, open }: DashboardOptions): void {
         .catch(() => {});
     }
   });
+
+  return server;
 }

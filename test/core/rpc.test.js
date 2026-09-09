@@ -9,7 +9,7 @@ const {
   listRpcConfigs,
   createDefaultRpcConfig,
   addRpcEndpoint,
-} = require('../../dist/src/core/rpc/manager');
+} = require('../../dist/core/rpc/manager');
 
 function makeTmp() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'vx-rpc-'));

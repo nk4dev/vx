@@ -18,7 +18,7 @@ function writeVxConfig(dir, cfg) {
 // Re-require the module fresh so loadVxConfig() sees the current cwd.
 function freshModule() {
   jest.resetModules();
-  return require('../../dist/src/core/ipfs');
+  return require('../../dist/core/ipfs');
 }
 
 function makeFetchMock({ ok = true, contentType = 'text/plain', body = 'hello' } = {}) {
