@@ -9,14 +9,14 @@ export function createPackageJson(projectDir: string) {
     "description": "A brief description of your package",
     "main": "index.js",
     "scripts": {
-      "dev": "vx3 serve --debug"
+      "dev": "vx3 node --debug"
     },
     "author": "Your Name",
     "license": "ISC",
     "dependencies": {
     },
     "devDependencies": {
-      "typescript": "^4.0.0"
+      "typescript": "^5.8.3"
     }
 }`;
 

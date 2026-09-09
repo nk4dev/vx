@@ -231,10 +231,10 @@ function generateTemplate(
     >;
 
     nextPkg.scripts = { ...spec.scripts, ...scripts };
-    nextPkg.dependencies = { ...spec.dependencies, ...dependencies };
+    const mergedDependencies = { ...spec.dependencies, ...dependencies };
+    mergedDependencies['@vx3/vx'] = sdkDependency;
+    nextPkg.dependencies = mergedDependencies;
     nextPkg.devDependencies = { ...spec.devDependencies, ...devDependencies };
-
-    nextPkg.dependencies['@vx3/vx'] = sdkDependency;
 
     return nextPkg;
   });

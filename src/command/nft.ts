@@ -42,15 +42,21 @@ export async function handleNftCommand(argv: string[]) {
       process.exit(1);
     }
 
-    const rpcUrl =
-      parsed.rpc ?? (typeof getRpcUrl === 'function' ? getRpcUrl() : undefined);
+    let rpcUrl = parsed.rpc;
     if (!rpcUrl) {
-      console.error(
-        'RPC URL not provided and no vx.config.json found. Use --rpc <url> or create vx.config.json.'
-      );
-      process.exit(1);
+      try {
+        rpcUrl = getRpcUrl();
+      } catch (err) {
+        console.error(`${(err as Error).message} Or pass --rpc <url>.`);
+        process.exit(1);
+      }
     }
 
+    if (parsed.key) {
+      console.error(
+        'Warning: --key exposes your private key in shell history and process listings. Prefer the PRIVATE_KEY environment variable.'
+      );
+    }
     const privateKey = parsed.key ?? process.env.PRIVATE_KEY;
     if (!privateKey) {
       console.error(

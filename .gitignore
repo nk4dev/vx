@@ -10,7 +10,6 @@ yarn-error.log
 *.bin
 *.tsbuildinfo
 
-bun.lock
 yarn.lock
 .vscode/
 
@@ -20,5 +19,3 @@ coverage/
 jest-coverage/
 
 .env
-
-config

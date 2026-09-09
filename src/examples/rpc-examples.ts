@@ -65,7 +65,7 @@ export function runExamples() {
 
     console.log('\n✅ All examples completed successfully!');
   } catch (error) {
-    console.error(`❌ Example failed: ${error.message}`);
+    console.error(`❌ Example failed: ${(error as Error).message}`);
   }
 }
 

@@ -1,4 +1,13 @@
 import { getRpcUrl } from '../core/contract';
+import { escapeHtml, toSafeInlineJson } from '../libs/html';
+
+function safeRpcUrl(): string {
+  try {
+    return getRpcUrl();
+  } catch {
+    return '';
+  }
+}
 
 export default function localWebViewBuilder({
   blognum,
@@ -13,7 +22,10 @@ export default function localWebViewBuilder({
   rpcList?: unknown[];
   rpcUrl?: string;
 }) {
-  const rpc = rpcUrl || getRpcUrl();
+  const rpc = rpcUrl || safeRpcUrl();
+  const safeHost = escapeHtml(host);
+  const safePort = escapeHtml(port);
+  const safeRpc = escapeHtml(rpc);
   // Simple CSS-powered debug UI
   return `<!doctype html>
 <html lang="en">
@@ -83,8 +95,8 @@ export default function localWebViewBuilder({
                     <div class="row-between">
                         <div>
                             <h2 class="section-heading">Server</h2>
-                            <p class="muted-sm">http://${host}:${port}</p>
-                            <p class="muted-sm">Current Rpc URL: <code>${rpc}</code></p>
+                            <p class="muted-sm">http://${safeHost}:${safePort}</p>
+                            <p class="muted-sm">Current Rpc URL: <code>${safeRpc}</code></p>
                         </div>
                         <div>
                             <div id="vx-block-number" class="block-num">${blognum}</div>
@@ -116,16 +128,14 @@ export default function localWebViewBuilder({
 
                     <div id="vx-pay-card" class="hidden">
                         <h4 class="card-title">Local chain — test payment</h4>
-                        <p class="muted-xs">This will use the server's configured PRIVATE_KEY or a key pasted below. Only enabled for local RPCs.</p>
+                        <p class="muted-xs">This will sign with the server's PRIVATE_KEY env var (or the first generated dev account). Only enabled for local RPCs. Private keys are never sent over the network.</p>
                         <div class="field inline-row">
                             <button id="vx-connect-wallet" class="button button-wallet">Connect Wallet</button>
                             <span id="vx-wallet-address" class="wallet-address"></span>
                         </div>
-                        <div class="muted-xs">Or use server-private-key (env PRIVATE_KEY) for automated tests.</div>
                         <div class="stack">
                             <input id="vx-pay-to" placeholder="to address" class="input" />
                             <input id="vx-pay-amount" placeholder="amount (ETH) e.g. 0.001" class="input" />
-                            <input id="vx-pay-key" placeholder="(optional) private key (server will use env PRIVATE_KEY if empty)" class="input input-small" />
                             <label class="checkbox-label"><input id="vx-use-wallet" type="checkbox" /> <span>Send using connected wallet (MetaMask)</span></label>
                             <div class="inline-row">
                                 <button id="vx-pay-send" class="button button-send">Send test payment</button>
@@ -142,8 +152,8 @@ export default function localWebViewBuilder({
         </footer>
         <script>
             // Embedded RPC list from server
-            const VX_RPC_LIST = ${JSON.stringify(rpcList || [])};
-            const VX_DEFAULT_RPC = ${JSON.stringify(rpc || '')};
+            const VX_RPC_LIST = ${toSafeInlineJson(rpcList || [])};
+            const VX_DEFAULT_RPC = ${toSafeInlineJson(rpc || '')};
 
             function renderRpcList() {
                 const sel = document.getElementById('vx-rpc-select');
@@ -220,7 +230,6 @@ export default function localWebViewBuilder({
             async function sendTestPayment() {
                 const to = document.getElementById('vx-pay-to').value;
                 const amount = document.getElementById('vx-pay-amount').value;
-                const key = document.getElementById('vx-pay-key').value;
                 const sel = document.getElementById('vx-rpc-select');
                 const rpcUrl = sel ? sel.value : VX_DEFAULT_RPC;
                 const status = document.getElementById('vx-pay-status');
@@ -253,7 +262,7 @@ export default function localWebViewBuilder({
                     const resp = await fetch('/api/pay', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ to, amountEth: amount, key: key || undefined, rpcUrl })
+                        body: JSON.stringify({ to, amountEth: amount, rpcUrl })
                     });
                     const j = await resp.json();
                     if (!resp.ok) throw new Error(j && j.error ? j.error : 'unknown');

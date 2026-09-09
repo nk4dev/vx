@@ -1,5 +1,3 @@
-import { getRpcUrl } from '../core/contract';
-
 interface SendETHRequest {
   to: string;
   from: string;

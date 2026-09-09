@@ -1,8 +1,7 @@
 import { createServer } from 'http';
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
 import { getBlockNumber, getGasFees } from '../core/data';
 import { getRpcUrl } from '../core/contract';
+import { loadVxConfig } from '../core/config';
 import dashViewBuilder from './dashview';
 
 interface DashboardOptions {
@@ -19,15 +18,11 @@ function addCors(res: import('http').ServerResponse) {
 
 function readRpcList(): Array<Record<string, unknown>> {
   try {
-    const cfgPath = join(process.cwd(), 'vx.config.json');
-    if (existsSync(cfgPath)) {
-      const parsed = JSON.parse(readFileSync(cfgPath, 'utf8'));
-      if (Array.isArray(parsed)) return parsed;
-    }
+    return loadVxConfig({ optional: true }) as Array<Record<string, unknown>>;
   } catch {
-    // ignore
+    // malformed config — behave as if there is none
+    return [];
   }
-  return [];
 }
 
 export function startDashboard({ host, port, open }: DashboardOptions): void {
@@ -166,8 +161,20 @@ export function startDashboard({ host, port, open }: DashboardOptions): void {
     console.log(`\n  Press Ctrl+C to stop\n`);
 
     if (open) {
-      const cmd = process.platform === 'win32' ? 'start' : process.platform === 'darwin' ? 'open' : 'xdg-open';
-      import('child_process').then(({ exec }) => exec(`${cmd} ${dashUrl}`)).catch(() => {});
+      // Use spawn with an argv array (no shell) so dashUrl can never be
+      // interpreted as shell syntax, even if --host/--port were crafted.
+      import('child_process')
+        .then(({ spawn }) => {
+          const child =
+            process.platform === 'win32'
+              ? spawn('cmd', ['/c', 'start', '', dashUrl], { stdio: 'ignore', detached: true })
+              : spawn(process.platform === 'darwin' ? 'open' : 'xdg-open', [dashUrl], {
+                  stdio: 'ignore',
+                  detached: true,
+                });
+          child.unref();
+        })
+        .catch(() => {});
     }
   });
 }

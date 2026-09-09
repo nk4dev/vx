@@ -1,28 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import {
+  validateRpcConfigArray,
+  type RpcConfig,
+  type RpcConfigArray,
+} from '../config';
 
-// Type definition for RPC configuration
-export interface RpcConfig {
-  // For standard RPC endpoints (http/https/ws/wss): use host/port/protocol
-  host?: string;
-  port?: number;
-  protocol?: 'http' | 'https' | 'ws' | 'wss';
-
-  // Optional type to allow non-RPC endpoints (for example IPFS gateways)
-  type?: 'rpc' | 'ipfs';
-
-  // IPFS-specific properties (optional). Either provide `gateway` (a URL string)
-  // or an `api` object describing an IPFS API endpoint.
-  gateway?: string;
-  api?: {
-    host: string;
-    port: number;
-    protocol: 'http' | 'https';
-  };
-}
-
-// Type for multiple RPC configurations
-export type RpcConfigArray = RpcConfig[];
+// Re-exported for backward compatibility — the canonical definitions now live
+// in src/core/config.ts.
+export type { RpcConfig, RpcConfigArray };
 
 /**
  * Save RPC configuration to rpcs directory in vx.config.json format
@@ -56,7 +42,7 @@ export function saveRpcConfig(
     console.log(`RPC configuration saved to: ${filePath}`);
     console.log(`Configuration contains ${configArray.length} RPC endpoint(s)`);
   } catch (error) {
-    console.error(`Error saving RPC configuration: ${error.message}`);
+    console.error(`Error saving RPC configuration: ${(error as Error).message}`);
     throw error;
   }
 }
@@ -81,41 +67,12 @@ export function loadRpcConfig(
     const configContent = fs.readFileSync(filePath, 'utf-8');
     const parsedConfig = JSON.parse(configContent);
 
-    // Validate the configuration format
-    if (!Array.isArray(parsedConfig)) {
-      throw new Error('Configuration must be an array of RPC endpoints');
-    }
-
-    // Validate each configuration object. Support both standard RPC entries
-    // and IPFS entries which may use `type: 'ipfs'` and either `gateway` or `api`.
-    parsedConfig.forEach((config, index) => {
-      if (config.type === 'ipfs') {
-        if (!config.gateway && !config.api) {
-          throw new Error(
-            `Invalid IPFS configuration at index ${index}: expected 'gateway' (URL) or 'api' object`
-          );
-        }
-        // if api is present, ensure fields exist
-        if (config.api) {
-          if (!config.api.host || !config.api.port || !config.api.protocol) {
-            throw new Error(
-              `Invalid IPFS API configuration at index ${index}: missing api.host/api.port/api.protocol`
-            );
-          }
-        }
-      } else {
-        // default to RPC validation
-        if (!config.host || !config.port || !config.protocol) {
-          throw new Error(
-            `Invalid RPC configuration at index ${index}: missing required fields (host, port, protocol)`
-          );
-        }
-      }
-    });
+    // Shared schema validation (throws on the first problem).
+    validateRpcConfigArray(parsedConfig, filePath);
 
     return parsedConfig;
   } catch (error) {
-    console.error(`Error loading RPC configuration: ${error.message}`);
+    console.error(`Error loading RPC configuration: ${(error as Error).message}`);
     throw error;
   }
 }
@@ -136,7 +93,7 @@ export function listRpcConfigs(rpcsDir: string = 'rpcs'): string[] {
       .filter((file) => file.endsWith('.json'))
       .map((file) => path.basename(file, '.json'));
   } catch (error) {
-    console.error(`Error listing RPC configurations: ${error.message}`);
+    console.error(`Error listing RPC configurations: ${(error as Error).message}`);
     return [];
   }
 }
@@ -189,7 +146,7 @@ export function addRpcEndpoint(
     // Save the updated configuration
     saveRpcConfig(existingConfig, filename, rpcsDir);
   } catch (error) {
-    console.error(`Error adding RPC endpoint: ${error.message}`);
+    console.error(`Error adding RPC endpoint: ${(error as Error).message}`);
     throw error;
   }
 }

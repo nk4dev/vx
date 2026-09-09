@@ -51,7 +51,7 @@ export function handleRpcCommand(args: string[]): void {
         process.exit(1);
     }
   } catch (error) {
-    console.error(`RPC command error: ${error.message}`);
+    console.error(`RPC command error: ${(error as Error).message}`);
     process.exit(1);
   }
 }
@@ -68,13 +68,8 @@ function handleSaveCommand(args: string[]): void {
   const [filename, host, port, protocol] = args;
   const rpcsDir = args[4] || 'rpcs';
 
-  const config: RpcConfig = {
-    host,
-    port: parseInt(port),
-    protocol: protocol as 'http' | 'https' | 'ws' | 'wss',
-  };
-
-  if (isNaN(config.port)) {
+  const portNumber = parseInt(port);
+  if (isNaN(portNumber)) {
     console.error('Error: Port must be a valid number');
     process.exit(1);
   }
@@ -83,6 +78,12 @@ function handleSaveCommand(args: string[]): void {
     console.error('Error: Protocol must be one of: http, https, ws, wss');
     process.exit(1);
   }
+
+  const config: RpcConfig = {
+    host,
+    port: portNumber,
+    protocol: protocol as 'http' | 'https' | 'ws' | 'wss',
+  };
 
   saveRpcConfig(config, filename, rpcsDir);
 }
@@ -135,13 +136,8 @@ function handleAddCommand(args: string[]): void {
   const [filename, host, port, protocol] = args;
   const rpcsDir = args[4] || 'rpcs';
 
-  const config: RpcConfig = {
-    host,
-    port: parseInt(port),
-    protocol: protocol as 'http' | 'https' | 'ws' | 'wss',
-  };
-
-  if (isNaN(config.port)) {
+  const portNumber = parseInt(port);
+  if (isNaN(portNumber)) {
     console.error('Error: Port must be a valid number');
     process.exit(1);
   }
@@ -150,6 +146,12 @@ function handleAddCommand(args: string[]): void {
     console.error('Error: Protocol must be one of: http, https, ws, wss');
     process.exit(1);
   }
+
+  const config: RpcConfig = {
+    host,
+    port: portNumber,
+    protocol: protocol as 'http' | 'https' | 'ws' | 'wss',
+  };
 
   addRpcEndpoint(filename, config, rpcsDir);
   console.log(`Added RPC endpoint to configuration: ${filename}.json`);

@@ -21,12 +21,9 @@ export default [
     },
     rules: {},
   },
-  {
+  ...tseslint.configs.recommended.map((config) => ({
+    ...config,
     files: ["**/*.{ts,mts,cts,tsx}"],
-    languageOptions: {
-      parser: tseslint.parser,
-    },
-    rules: {},
-  },
+  })),
   prettierConfig,
 ];

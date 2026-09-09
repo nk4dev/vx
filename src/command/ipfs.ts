@@ -31,7 +31,7 @@ export async function handleIpfsCommand(args: string[]): Promise<void> {
     }
     process.exit(0);
   } catch (err) {
-    console.error(`IPFS fetch error: ${err.message}`);
+    console.error(`IPFS fetch error: ${(err as Error).message}`);
     process.exit(1);
   }
 }

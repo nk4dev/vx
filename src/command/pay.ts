@@ -29,15 +29,23 @@ export async function handlePayCommand(argv: string[]) {
     process.exit(1);
   }
 
-  const rpcUrl =
-    rpcFlag || (typeof getRpcUrl === 'function' ? getRpcUrl() : undefined);
+  let rpcUrl = rpcFlag;
   if (!rpcUrl) {
-    console.error(
-      'RPC URL not provided and no vx.config.json found. Use --rpc <url> or create vx.config.json'
-    );
-    process.exit(1);
+    try {
+      rpcUrl = getRpcUrl();
+    } catch (err) {
+      console.error(
+        `${(err as Error).message} Or pass --rpc <url>.`
+      );
+      process.exit(1);
+    }
   }
 
+  if (keyFlag) {
+    console.error(
+      'Warning: --key exposes your private key in shell history and process listings. Prefer the PRIVATE_KEY environment variable.'
+    );
+  }
   const privateKey = keyFlag || process.env.PRIVATE_KEY;
   if (!privateKey) {
     console.error(

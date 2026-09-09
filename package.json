@@ -9,13 +9,15 @@
     "dist",
     "packages/template",
     "packages/hardhat",
-    "packages/components",
     "packages/react-template",
     "packages/vue-template",
     "packages/vxc"
   ],
   "homepage": "https://vx.nknighta.me",
   "license": "MIT",
+  "workspaces": [
+    "packages/vxc"
+  ],
   "keywords": [
     "web3",
     "vx3",
@@ -30,7 +32,7 @@
     "prepare": "bun run build",
     "clean": "rimraf dist",
     "dev": "node dist/src/cli.js",
-    "start": "bun run build && bunx vx serve --debug",
+    "start": "bun run build && node dist/src/cli.js api --debug",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -47,24 +49,36 @@
     "hh:deploy": "hardhat --config packages/hardhat/hardhat.config.ts run packages/hardhat/scripts/deploy.ts --network localhost"
   },
   "dependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
-    "@types/minimatch": "^5.1.2",
-    "@types/node": "^22.16.5",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "@types/supertest": "^6.0.3",
+    "@vx3/vxc": "workspace:*",
+    "commander": "^12.1.0",
     "ethers": "^6.15.0",
-    "globals": "^17.4.0",
-    "minimatch": "^10.0.3",
-    "prettier": "^3.5.3",
     "solc": "^0.8.30"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@types/node": "^22.16.5",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.4.0",
     "hardhat": "^2.22.0",
     "jest": "^30.0.5",
+    "prettier": "^3.5.3",
+    "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",

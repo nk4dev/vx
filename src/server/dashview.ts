@@ -1,4 +1,5 @@
 import { SDK_VERSION } from '../config';
+import { escapeHtml, toSafeInlineJson } from '../libs/html';
 
 interface DashViewOptions {
   host: string;
@@ -8,9 +9,12 @@ interface DashViewOptions {
 }
 
 export default function dashViewBuilder({ host, port, rpcList, rpcUrl }: DashViewOptions): string {
-  const rpcListJson = JSON.stringify(rpcList || []);
-  const rpcUrlJson = JSON.stringify(rpcUrl || '');
-  const versionJson = JSON.stringify(SDK_VERSION);
+  const rpcListJson = toSafeInlineJson(rpcList || []);
+  const rpcUrlJson = toSafeInlineJson(rpcUrl || '');
+  const versionJson = toSafeInlineJson(SDK_VERSION);
+  const safeHost = escapeHtml(host);
+  const safePort = escapeHtml(port);
+  const safeRpcUrl = escapeHtml(rpcUrl || '—');
 
   return `<!doctype html>
 <html lang="en">
@@ -148,8 +152,8 @@ export default function dashViewBuilder({ host, port, rpcList, rpcUrl }: DashVie
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-heading">Server</div>
-      <div class="sidebar-item"><span class="ico">◎</span><span class="mono" id="sb-addr">http://${host}:${port}</span></div>
-      <div class="sidebar-item"><span class="ico">⬡</span><span id="sb-rpc" class="mono" style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="">${rpcUrl || '—'}</span></div>
+      <div class="sidebar-item"><span class="ico">◎</span><span class="mono" id="sb-addr">http://${safeHost}:${safePort}</span></div>
+      <div class="sidebar-item"><span class="ico">⬡</span><span id="sb-rpc" class="mono" style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="">${safeRpcUrl}</span></div>
     </div>
 
     <div class="sidebar-section">
@@ -245,7 +249,7 @@ export default function dashViewBuilder({ host, port, rpcList, rpcUrl }: DashVie
 <footer class="footer">
   <span>VX3 SDK v${SDK_VERSION}</span>
   <span>·</span>
-  <span>Dashboard server: <span class="mono">http://${host}:${port}</span></span>
+  <span>Dashboard server: <span class="mono">http://${safeHost}:${safePort}</span></span>
   <span>·</span>
   <a href="https://nknighta.me/vx/" target="_blank">Docs</a>
 </footer>

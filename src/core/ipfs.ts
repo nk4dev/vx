@@ -1,5 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import {
+  getIpfsEntries,
+  loadVxConfig as loadConfig,
+  type RpcConfigArray,
+} from './config';
 
 export interface IpfsApi {
   host: string;
@@ -13,26 +16,25 @@ export interface IpfsEntry {
   api?: IpfsApi;
 }
 
-export function loadVxConfig(): any[] {
-  const configPath = path.join(process.cwd(), 'vx.config.json');
-  if (!fs.existsSync(configPath)) return [];
+/**
+ * Read vx.config.json (lenient: returns `[]` when missing or malformed).
+ * @deprecated prefer `loadVxConfig()` from `core/config`.
+ */
+export function loadVxConfig(): RpcConfigArray {
   try {
-    const raw = fs.readFileSync(configPath, 'utf-8');
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [parsed];
-  } catch (err) {
-    console.error(`Error reading vx.config.json: ${err.message}`);
+    return loadConfig({ optional: true });
+  } catch {
     return [];
   }
 }
 
+/** IPFS-looking entries from vx.config.json (never throws). */
 export function findIpfsEntries(): IpfsEntry[] {
-  const cfg = loadVxConfig();
-  return cfg.filter(
-    (e: any) =>
-      e &&
-      (e.type === 'ipfs' || e.gateway || (e.api && (e.api.host || e.api.port)))
-  ) as IpfsEntry[];
+  try {
+    return getIpfsEntries() as IpfsEntry[];
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchFromGateway(
@@ -55,7 +57,7 @@ export async function fetchFromGateway(
     return buf;
   } catch (err) {
     throw new Error(
-      `Failed to fetch from gateway ${gatewayUrl}: ${err.message}`
+      `Failed to fetch from gateway ${gatewayUrl}: ${(err as Error).message}`
     );
   }
 }

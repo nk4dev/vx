@@ -1,174 +1,170 @@
+import { Command } from 'commander';
+import { SDK_VERSION, API_VERSION, NAME } from '../config';
 import shellHandler from './input';
 import localServer from '../server/dev';
 import { rpc } from '../core/rpc/command';
-import { SDK_VERSION, API_VERSION } from '../config';
 import { handleGasCommand } from './gas';
 import { init } from './pjmake';
-import { NAME } from '../config';
-// Use require to avoid TS resolution issues in some environments
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { setup } = require('./setup');
+import { setup } from './setup';
 import { handlePayCommand } from './pay';
 import { handleIpfsCommand } from './ipfs';
 import { handleGenerateCommand } from './generate';
 import { handleCompileCommand } from './compile';
 import { handleDashCommand } from './dash';
 import { handleNftCommand } from './nft';
-const loadversion = SDK_VERSION;
 
-export default async function VX() {
-  const args = process.argv.slice(2);
+type RawHandler = (args: string[]) => unknown;
 
-  if (args.length === 0) {
-    help();
-  }
-  try {
-    switch (args[0]) {
-      case 'init':
-        init();
-        break;
-      case 'help':
-        help();
-        break;
-      case 'create':
-        // If a name argument is provided, create non-interactively; otherwise prompt
-        if (args[1]) {
-          init(args[1]);
-        } else {
-          shellHandler();
-        }
-        return;
-      case 'serve':
-        console.log('replace command to "node"');
-        process.exit(1);
-        return;
-      case 'node':
-        localServer();
-        return;
-      case 'rpc':
-        rpc();
-        return;
-      case 'ipfs':
-        await handleIpfsCommand(args.slice(1));
-        return;
-      case 'setup':
-        if (args[1] === 'hardhat') {
-          await setup('hardhat');
-          return;
-        }
-        if (args[1] === 'react') {
-          await setup('react');
-          return;
-        }
+/**
+ * Register a "pass-through" subcommand: commander owns the name / description /
+ * help listing, but every token after the subcommand is forwarded verbatim to
+ * the existing handler, which does its own flag parsing.
+ */
+function passThrough(
+  program: Command,
+  name: string,
+  description: string,
+  handler: RawHandler
+): void {
+  program
+    .command(name)
+    .description(description)
+    .helpOption(false)
+    .allowUnknownOption(true)
+    .allowExcessArguments(true)
+    .argument('[args...]')
+    .action(async (args: string[] = []) => {
+      await handler(args);
+    });
+}
+
+export function buildProgram(): Command {
+  const program = new Command();
+
+  program
+    .name('vx3')
+    .description(`${NAME} SDK — Web3 developer toolkit (platform API v${API_VERSION})`)
+    .version(SDK_VERSION, '-v, --version', 'Show SDK version')
+    .enablePositionalOptions()
+    .showHelpAfterError('(run "vx3 help" for usage)')
+    .configureHelp({ sortSubcommands: false });
+
+  program
+    .command('init')
+    .description('Initialize a new project in the current directory')
+    .argument('[name]', 'project directory name')
+    .action((name?: string) => init(name));
+
+  program
+    .command('create')
+    .description('Scaffold a new project (interactive when name is omitted)')
+    .argument('[name]', 'project directory name')
+    .action((name?: string) => {
+      if (name) init(name);
+      else shellHandler();
+    });
+
+  program
+    .command('api')
+    .description('Start the local helper API server (proxies block/gas/pay to your RPC)')
+    .helpOption(false)
+    .allowUnknownOption(true)
+    .allowExcessArguments(true)
+    .action(() => {
+      localServer();
+    });
+
+  // Backwards-compatible alias for `api`.
+  program
+    .command('node', { hidden: true })
+    .helpOption(false)
+    .allowUnknownOption(true)
+    .allowExcessArguments(true)
+    .action(() => {
+      localServer();
+    });
+
+  program
+    .command('rpc')
+    .description('Manage RPC endpoints in vx.config.json (subcommands: init, list)')
+    .helpOption(false)
+    .allowUnknownOption(true)
+    .allowExcessArguments(true)
+    .argument('[args...]')
+    .action(() => rpc());
+
+  program
+    .command('setup')
+    .description('Add Hardhat or a React frontend to the current project')
+    .argument('<target>', 'hardhat | react')
+    .action(async (target: string) => {
+      if (target !== 'hardhat' && target !== 'react') {
         console.error('Unknown setup target. Available: hardhat, react');
+        process.exitCode = 1;
         return;
-      case 'pay':
-        // vx3 pay <to> <amount> [--rpc <url>] [--key <privateKey>]
-        await handlePayCommand(args.slice(1));
-        return;
-      case 'gas':
-        await handleGasCommand(args.slice(1));
-        return;
-      case 'generate':
-        await handleGenerateCommand(args.slice(1));
-        return;
-      case 'compile':
-        await handleCompileCommand(args.slice(1));
-        return;
+      }
+      await setup(target);
+    });
 
-      case 'sol':
-        if (args[1] === 'hello') {
-          console.log('hello world');
-          process.exit(0);
-        } else {
-          console.error('Unknown sol subcommand');
-          process.exit(1);
-        }
-      case '--version':
-        console.log(`${NAME} version: ${loadversion}`);
-        process.exit(0);
-      case '-v':
-        console.log(`${NAME} version: ${loadversion}`);
-        process.exit(0);
-      case 'info':
-        console.log('Checking project...');
-        const data = await fetch('https://api.varius.technology/version');
-        const result = await data.json();
-        console.log('Info: version', result.version);
-        break;
-      case 'nft':
-        await handleNftCommand(args.slice(1));
-        return;
-      case 'dash':
-        handleDashCommand(args.slice(1));
-        return;
-      default:
-        console.error(`😑 < Unknown command: ${args[0]}`);
-        help();
-    }
+  passThrough(program, 'pay', 'Send a transaction: vx3 pay <to> <amount> [--rpc <url>]', handlePayCommand);
+  passThrough(program, 'gas', 'Estimate current gas fees for the configured RPC', handleGasCommand);
+  passThrough(program, 'ipfs', 'Pin / fetch content via IPFS', handleIpfsCommand);
+  passThrough(program, 'generate', 'Generate a framework template (react, vue)', handleGenerateCommand);
+  passThrough(program, 'compile', 'Compile Solidity with the VXC custom compiler', handleCompileCommand);
+  passThrough(program, 'nft', 'NFT operations: vx3 nft mint <contract> [...]', handleNftCommand);
+  passThrough(program, 'dash', 'Open the real-time developer dashboard', handleDashCommand);
 
-    process.exit(0);
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
+  program
+    .command('sol')
+    .description('Solidity helper samples')
+    .argument('[sub]', 'e.g. "hello"')
+    .action((sub?: string) => {
+      if (sub === 'hello') {
+        console.log('hello world');
+        return;
+      }
+      console.error('Unknown sol subcommand');
+      process.exitCode = 1;
+    });
+
+  program
+    .command('info')
+    .description('Show the remote VX platform version')
+    .action(async () => {
+      console.log('Checking project...');
+      try {
+        const res = await fetch('https://api.varius.technology/version', {
+          signal: AbortSignal.timeout(5000),
+        });
+        const json = (await res.json()) as { version?: string };
+        console.log('Info: version', json.version);
+      } catch (err) {
+        console.error(
+          `Could not reach api.varius.technology: ${(err as Error).message}`
+        );
+        process.exitCode = 1;
+      }
+    });
+
+  return program;
+}
+
+export default async function main(argv?: string[]): Promise<void> {
+  const program = buildProgram();
+
+  // With no arguments, show help instead of doing nothing.
+  const effectiveArgv = argv ?? process.argv;
+  if (effectiveArgv.length <= 2) {
+    program.outputHelp();
+    return;
+  }
+
+  try {
+    await program.parseAsync(effectiveArgv);
+  } catch (err) {
+    console.error(`Error: ${(err as Error).message}`);
     process.exit(1);
   }
 }
 
-function help() {
-  const args = process.argv.slice(2);
-  if (args.includes('--version') || args.includes('-v')) {
-    console.log(`${NAME} version: ${SDK_VERSION}`);
-    process.exit(0);
-  }
-
-  const stage = 'dev';
-
-  const commandlist = [
-    {
-      command: 'init',
-      description: 'Initialize a new project with default settings.',
-    },
-    {
-      command: 'create',
-      description: 'Create a new project with the specified name.',
-    },
-    { command: 'serve', description: 'Start a local development server.' },
-    {
-      command: 'setup',
-      description: 'Project setup helpers (hardhat, react).',
-    },
-    { command: 'rpc', description: 'Manage or query RPC endpoints.' },
-    { command: 'pay', description: 'Send a payment/transaction.' },
-    { command: 'gas', description: 'Estimate gas fees for transactions.' },
-    {
-      command: 'generate',
-      description: 'Generate templates (react, vue) and list options.',
-    },
-    { command: 'sol', description: 'Solidity helper commands (examples).' },
-    {
-      command: 'compile',
-      description: 'Compile Solidity sources with the VXC custom compiler.',
-    },
-    { command: 'nft', description: 'NFT operations: mint tokens to a contract.' },
-    { command: 'dash', description: 'Build and serve the dashboard.' },
-    {
-      command: 'info',
-      description: 'Display information about the current project.',
-    },
-    { command: 'help', description: 'Display this help message.' },
-    { command: '--version / -v', description: 'Show SDK version.' },
-  ];
-
-  console.log(
-    `\n🚀 ${NAME} SDK v${SDK_VERSION} ${stage} for VX ${API_VERSION}`
-  );
-  console.log('Available commands:');
-  commandlist.forEach((cmd) => {
-    console.log(`  ${cmd.command.padEnd(10)} - ${cmd.description}`);
-  });
-  console.log(
-    '\nUse "vx3 <command> --help" for more information on a specific command.\n'
-  );
-
-  process.exit(0);
-}
+export { main };

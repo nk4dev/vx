@@ -1,44 +1,46 @@
 name: CI - SDK Tests
 
 on:
+  push:
+    branches: [main, master, dev]
+  pull_request:
   workflow_dispatch:
 
 jobs:
   test:
-    name: Test SDK (Node ${{ matrix.node-version }})
+    name: Test SDK
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    strategy:
-      matrix:
-        node-version: ['18.x']
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          bun-version: latest
 
       - name: Install SDK dependencies
-        working-directory: .
-        run: |
-          # prefer ci if a lockfile exists, fallback to install otherwise
-          npm ci --silent || npm install --silent
+        run: bun install --frozen-lockfile
+
+      - name: Build VXC compiler package
+        run: bun run build:vxc
 
       - name: Build SDK
-        working-directory: .
-        run: npm run build --silent
+        run: bun run build
 
-      - name: Run SDK tests
-        working-directory: .
-        run: npm test --silent
+      - name: Lint (non-blocking — see PROBLEMS.md §3)
+        run: bun run lint
+        continue-on-error: true
+
+      - name: Run SDK tests (with coverage thresholds)
+        run: bun run test:ci
 
       - name: Upload test results (optional)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: sdk-jest-results
-          path: sdk/test-results || sdk/jest-results || dist
+          path: coverage
+          if-no-files-found: ignore

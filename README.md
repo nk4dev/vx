@@ -1,7 +1,7 @@
 # VX3 — Web3 Developer SDK
 
 VX3 is a developer-first toolkit for building, testing, and shipping Web3
-applications. It bundles a CLI, a local development node, a real-time
+applications. It bundles a CLI, a local helper API server, a real-time
 dashboard, project scaffolding, payment / gas / IPFS helpers, and **VXC**,
 an in-house custom Solidity compiler.
 
@@ -29,9 +29,9 @@ SDK docs: <https://nknighta.me/vx>
 ```bash
 git clone https://github.com/nk4dev/vx
 cd vx
-npm i
-npm run build
-npm link        # exposes the `vx3` binary globally
+bun i
+bun run build
+bun link        # exposes the `vx3` binary globally
 ```
 
 ## CLI
@@ -44,7 +44,7 @@ vx3 <command> [...options]
 | --- | --- |
 | `init` | Initialize a new project with default settings. |
 | `create [name]` | Scaffold a new project (interactive if name omitted). |
-| `node` | Start a local development node (port 3000). |
+| `api` | Start the local helper API server on port 8545. It does **not** run an EVM — `/api/block`, `/api/gas` and `/api/pay` proxy to the RPC in `vx.config.json`. (`node` is a deprecated alias.) |
 | `dash` | **Open the real-time developer dashboard (port 4000).** |
 | `setup hardhat\|react` | Add Hardhat or a React frontend to the current project. |
 | `rpc` | Manage or query RPC endpoints from `vx.config.json`. |
@@ -66,6 +66,10 @@ vx3 dash --port 5000       # custom port
 vx3 dash --host 0.0.0.0    # bind to all interfaces
 vx3 dash --open            # auto-open in browser
 ```
+
+> **Note:** `--host 0.0.0.0` exposes the dashboard's `/api/*` endpoints to your
+> whole network. There is no authentication, so only do this on a trusted
+> network.
 
 Dashboard endpoints:
 
@@ -104,10 +108,10 @@ are deploy-ready. Full docs: [`packages/vxc/README.md`](packages/vxc/README.md).
 ## Development
 
 ```bash
-npm run build          # compile TypeScript → dist/
-npm test               # jest test suite
-npm run lint           # eslint
-npm run format         # prettier
+bun run build           # compile TypeScript → dist/
+bun test                # jest test suite
+bun run lint             # eslint
+bun run format           # prettier
 
 # Build the VXC compiler package separately
 cd packages/vxc && npx tsc
@@ -133,7 +137,7 @@ VX3 は Web3 アプリケーションの構築・テスト・リリースに必�
 
 親リポジトリ & ドキュメント: <https://github.com/nk4dev/vx3>
 SDK ドキュメント: <https://nknighta.me/vx>
-日本語ガイド（詳細）: [`docs/ja/guide.md`](docs/ja/guide.md)
+詳細な日本語ガイドはこの README の日本語セクション（下記）を参照してください。
 
 ---
 
@@ -155,9 +159,9 @@ SDK ドキュメント: <https://nknighta.me/vx>
 ```bash
 git clone https://github.com/nk4dev/vx
 cd vx
-npm i
-npm run build
-npm link        # `vx3` バイナリをグローバルに公開
+bun i
+bun run build
+bun link        # `vx3` バイナリをグローバルに公開
 ```
 
 ## CLI
@@ -170,7 +174,7 @@ vx3 <コマンド> [...オプション]
 | --- | --- |
 | `init` | デフォルト設定で新規プロジェクトを初期化。 |
 | `create [name]` | プロジェクトをスキャフォールド（名前省略時は対話モード）。 |
-| `node` | ローカル開発ノードを起動（ポート 3000）。 |
+| `api` | ローカルヘルパー API サーバーをポート 8545 で起動。EVM は動かさず、`/api/block`・`/api/gas`・`/api/pay` は `vx.config.json` の RPC にプロキシする。（`node` は非推奨エイリアス。） |
 | `dash` | **リアルタイム開発ダッシュボードを起動（ポート 4000）。** |
 | `setup hardhat\|react` | Hardhat または React フロントエンドを追加。 |
 | `rpc` | `vx.config.json` の RPC エンドポイントを管理・参照。 |
@@ -192,6 +196,10 @@ vx3 dash --port 5000       # ポート指定
 vx3 dash --host 0.0.0.0    # 全インターフェースにバインド
 vx3 dash --open            # ブラウザを自動で開く
 ```
+
+> **注意:** `--host 0.0.0.0` を指定するとダッシュボードの `/api/*`
+> エンドポイントがネットワーク全体に公開されます。認証機能はないため、
+> 信頼できるネットワークでのみ使用してください。
 
 ダッシュボードのエンドポイント:
 
@@ -231,10 +239,10 @@ vx3 compile contracts/Token.sol \
 ## 開発
 
 ```bash
-npm run build          # TypeScript → dist/ にコンパイル
-npm test               # jest テストスイート
-npm run lint           # eslint
-npm run format         # prettier
+bun run build           # TypeScript → dist/ にコンパイル
+bun test                # jest テストスイート
+bun run lint             # eslint
+bun run format           # prettier
 
 # VXC コンパイラパッケージを個別にビルド
 cd packages/vxc && npx tsc

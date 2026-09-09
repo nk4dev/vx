@@ -45,6 +45,19 @@ export function init(projectName?: string) {
     }
     if (!projectName) projectName = 'my-vx-project';
 
+    // Reject path separators / traversal segments so `vx3 create` can only ever
+    // write inside the current working directory.
+    if (
+      path.isAbsolute(projectName) ||
+      projectName.split(/[\\/]/).some((seg) => seg === '..' || seg === '.') ||
+      projectName.includes('\0')
+    ) {
+      console.error(
+        `Invalid project name: "${projectName}". It must not be an absolute path or contain "..".`
+      );
+      process.exit(1);
+    }
+
     const createName = projectName;
     const projectdir = process.cwd();
     const projectDirPath = path.join(projectdir, createName || 'my-vx-project');

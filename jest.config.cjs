@@ -9,6 +9,24 @@ const config = {
   clearMocks: true,
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
 
+  // Tests exercise the compiled output (they require ../dist/src/...), so
+  // coverage is measured against dist. Scope is the config / RPC / payment
+  // core that this project's tests actually cover well; extending the gate to
+  // src/command/** and src/libs/** is tracked as follow-up work.
+  collectCoverageFrom: [
+    'dist/src/core/**/*.js',
+    'dist/src/payment/**/*.js',
+    '!dist/src/core/data/**',
+  ],
+  coverageThreshold: {
+    global: {
+      statements: 60,
+      branches: 70,
+      functions: 55,
+      lines: 60,
+    },
+  },
+
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 

@@ -1,10 +1,13 @@
-// local development server for vx-sdk
+// vx3 api — local helper API server.
+//
+// This does NOT run an EVM. It exposes a small HTTP API (/api/block, /api/gas,
+// /api/pay, SSE /events) that proxies to the RPC configured in vx.config.json,
+// plus a set of deterministic dev accounts for convenience.
 import { createServer } from 'http';
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
 import { ethers } from 'ethers';
 import { getBlockNumber } from '../core/data';
 import { getRpcUrl } from '../core/contract';
+import { loadVxConfig } from '../core/config';
 import { sendPayment } from '../payment/index';
 import localWebViewBuilder from './webview';
 
@@ -52,24 +55,38 @@ interface ServerOptions {
   env?: string;
   debug?: boolean;
   displaylogs?: boolean;
+  /** Suppress the startup banner (useful for tests / embedding). */
+  quiet?: boolean;
 }
 
 export default function localServer(options?: Partial<ServerOptions>) {
   // Parse command line arguments
   const args = process.argv.slice(2);
 
-  // Extract options from command line arguments or use provided options
-  const host = getArgValue(args, '--host') || options?.host || '127.0.0.1';
-  const port = getArgValue(args, '--port') || options?.port || '8545';
+  // Extract options from command line arguments or use provided options.
+  // Note: `port` may legitimately be 0 (ask the OS for a free port), so fall
+  // through on undefined rather than on falsiness.
+  const argHost = getArgValue(args, '--host');
+  const argPort = getArgValue(args, '--port');
+  const host = argHost ?? options?.host ?? '127.0.0.1';
+  const port = argPort ?? options?.port ?? '8545';
 
   // Parse chains if provided
   const chainsArg = getArgValue(args, '--chains');
-  const chains = chainsArg ? JSON.parse(chainsArg) : options?.chains;
+  let chains = options?.chains;
+  if (chainsArg) {
+    try {
+      chains = JSON.parse(chainsArg);
+    } catch (e) {
+      console.error(`--chains: invalid JSON (${(e as Error).message}); ignored`);
+    }
+  }
 
   // Parse other flags
   const env = getArgValue(args, '--env') || options?.env || 'development';
   const debug = hasFlag(args, '--debug') || options?.debug || false;
   const displaylogs = hasFlag(args, '--logs') || options?.displaylogs || false;
+  const quiet = options?.quiet ?? false;
 
   // Resolve RPC and block-number lazily to avoid requiring vx.config.json at import time
   let rpc: string | undefined;
@@ -179,15 +196,10 @@ export default function localServer(options?: Partial<ServerOptions>) {
         // read vx.config.json entries (if present) and pass to page
         let rpcList: unknown[] = [];
         try {
-          const cfgPath = join(process.cwd(), 'vx.config.json');
-          if (existsSync(cfgPath)) {
-            const raw = readFileSync(cfgPath, 'utf8');
-            const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed)) rpcList = parsed;
-          }
+          rpcList = loadVxConfig({ optional: true });
         } catch (err) {
-          /* ignore parsing errors */
-          console.log('!error!' + (err as Error).message);
+          /* malformed config — serve the page without an RPC list */
+          console.error(`vx.config.json: ${(err as Error).message}`);
         }
         // Serve debug page with SSE for realtime updates and chain selector
         res.end(
@@ -217,7 +229,23 @@ export default function localServer(options?: Partial<ServerOptions>) {
         )
       );
     } else if (req.url === '/api/pay' && req.method === 'POST') {
-      // accept JSON body: { to, amountEth, rpcUrl?, key? }
+      // Reject cross-origin requests to this state-changing endpoint: a page on
+      // another origin (or a DNS-rebound attacker host) could otherwise POST
+      // here and move funds without ever needing to read the response.
+      const origin = req.headers.origin;
+      const sameOrigin =
+        !origin ||
+        origin === `http://${host}:${portNumber}` ||
+        origin === `https://${host}:${portNumber}`;
+      if (!sameOrigin) {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'cross-origin requests are not allowed' }));
+        return;
+      }
+
+      // accept JSON body: { to, amountEth, rpcUrl? }
+      // NOTE: a private key is never accepted from the request body — only the
+      // server-side PRIVATE_KEY env var or a generated dev account may sign.
       const chunks: Uint8Array[] = [];
       req.on('data', (chunk) => chunks.push(chunk));
       req.on('end', async () => {
@@ -227,7 +255,7 @@ export default function localServer(options?: Partial<ServerOptions>) {
           const to = data.to;
           const amountEth = data.amountEth || data.amount;
           const rpcUrl = data.rpcUrl || rpc;
-          const privateKey = data.key || process.env.PRIVATE_KEY;
+          const privateKey = process.env.PRIVATE_KEY || devAccounts[0].privateKey;
 
           if (!to || !amountEth) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -244,16 +272,6 @@ export default function localServer(options?: Partial<ServerOptions>) {
             );
             return;
           }
-          if (!privateKey) {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(
-              JSON.stringify({
-                error:
-                  'private key not provided. Set PRIVATE_KEY env or pass key in request body',
-              })
-            );
-            return;
-          }
 
           const result = await sendPayment({
             rpcUrl,
@@ -261,10 +279,7 @@ export default function localServer(options?: Partial<ServerOptions>) {
             to,
             amountEth: String(amountEth),
           });
-          res.writeHead(200, {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          });
+          res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(
             JSON.stringify({ txHash: result.txHash, receipt: result.receipt })
           );
@@ -281,12 +296,17 @@ export default function localServer(options?: Partial<ServerOptions>) {
   });
 
   server.listen(portNumber, host, () => {
-    console.log('\nvx3 node');
-    console.log('========');
-    console.log('\nAvailable Accounts');
-    console.log('==================');
+    if (quiet) return;
+    console.log('\nvx3 api  —  local helper API server');
+    console.log('==================================');
+    console.log('\nThis server does not run an EVM. It proxies /api/block,');
+    console.log('/api/gas and /api/pay to the RPC configured in vx.config.json.');
+    console.log('\nDeterministic dev accounts (Hardhat "test junk" mnemonic)');
+    console.log('========================================================');
+    console.log('These are only funded when your configured RPC is itself a');
+    console.log('fresh Hardhat/Anvil node — this process does not fund them.');
     devAccounts.forEach((a, i) => {
-      console.log(`(${i}) ${a.address} (${DEV_BALANCE_ETH} ETH)`);
+      console.log(`(${i}) ${a.address}`);
     });
     console.log('\nPrivate Keys');
     console.log('============');
@@ -299,21 +319,20 @@ export default function localServer(options?: Partial<ServerOptions>) {
     console.log('\nListening on');
     console.log('============');
     console.log(`http://${host}:${portNumber}`);
-    if (rpc) console.log(`RPC: ${rpc}`);
+    if (rpc) console.log(`RPC (proxy target): ${rpc}`);
+    else console.log('RPC: not configured — run "vx3 rpc init"');
     if (debug) {
       console.log(`Debug: http://${host}:${portNumber}/debug`);
       if (chains) console.log('Chains:', JSON.stringify(chains));
       console.log('Env:', env);
     }
     console.log('\nAccounts endpoint: GET /api/accounts');
-    console.log('WARNING: Do not use dev keys on mainnet!\n');
+    console.log('WARNING: Do not use these dev keys on a public network!\n');
   });
   server.on('error', (err) => {
     console.error('Server error:', err);
     process.exit(1);
   });
 
-  if (server.listening) {
-    console.log('already server is running');
-  }
+  return server;
 }
