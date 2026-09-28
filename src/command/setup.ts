@@ -77,7 +77,7 @@ async function setupHardhat() {
   } else {
     const files = [
       ['hardhat.config.ts', 'hardhat.config.ts'],
-      ['contracts', 'contracts'],
+      ['contract', 'contract'],
       ['scripts', 'scripts'],
     ];
     for (const [srcRel, destRel] of files) {

@@ -6,6 +6,8 @@ jest.mock('ethers', () => {
   const MockContract = jest.fn().mockImplementation(() => ({
     mint: mockMint,
     safeMint: mockSafeMint,
+    'mint(address,uint256)': mockMint,
+    'safeMint(address,string)': mockSafeMint,
   }));
   MockContract.__mint = mockMint;
   MockContract.__safeMint = mockSafeMint;
@@ -77,5 +79,17 @@ describe('mintNFT() — function selection', () => {
   it('returns the receipt from tx.wait()', async () => {
     const res = await mintNFT({ ...BASE, tokenId: 1n });
     expect(res.receipt).toMatchObject({ blockNumber: 5 });
+  });
+
+  it('rejects when both tokenId and tokenURI are given (no matching default overload)', async () => {
+    await expect(
+      mintNFT({ ...BASE, to: '0xTo', tokenId: 1n, tokenURI: 'ipfs://x' })
+    ).rejects.toThrow(/mint\(address,uint256,string\)/);
+  });
+
+  it('rejects when neither tokenId, tokenURI, nor functionName are given', async () => {
+    await expect(mintNFT({ ...BASE, to: '0xTo' })).rejects.toThrow(
+      /Provide --id .* or --uri/
+    );
   });
 });

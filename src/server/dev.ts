@@ -1,7 +1,7 @@
 // vx3 api — local helper API server.
 //
-// This does NOT run an EVM. It exposes a small HTTP API (/api/block, /api/gas,
-// /api/pay, SSE /events) that proxies to the RPC configured in vx.config.json,
+// This does NOT run an EVM. It exposes a small HTTP API (/api/block, /api/pay,
+// /api/accounts, SSE /events) that proxies to the RPC configured in vx.config.json,
 // plus a set of deterministic dev accounts for convenience.
 import { createServer } from 'http';
 import { ethers } from 'ethers';
@@ -268,8 +268,8 @@ export default function localServer(options?: Partial<ServerOptions>) {
     if (quiet) return;
     console.log('\nvx3 api  —  local helper API server');
     console.log('==================================');
-    console.log('\nThis server does not run an EVM. It proxies /api/block,');
-    console.log('/api/gas and /api/pay to the RPC configured in vx.config.json.');
+    console.log('\nThis server does not run an EVM. It uses the RPC configured in');
+    console.log('vx.config.json for /api/block and /api/pay (gas: see "vx3 dash").');
     console.log('\nDeterministic dev accounts (Hardhat "test junk" mnemonic)');
     console.log('========================================================');
     console.log('These are only funded when your configured RPC is itself a');

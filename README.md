@@ -13,7 +13,7 @@ SDK docs: <https://nknighta.me/vx>
 ## Highlights
 
 - **One CLI for the whole flow** — scaffold, compile, run a node, pay, estimate
-  gas, pin to IPFS, and open a live dashboard.
+  gas, fetch from IPFS, and open a live dashboard.
 - **VXC, a custom Solidity compiler** — own frontend (lexer, import resolver,
   artifact pipeline) with a pluggable backend.
   Lives at [`packages/vxc`](packages/vxc/README.md).
@@ -42,19 +42,20 @@ vx3 <command> [...options]
 
 | Command | Description |
 | --- | --- |
-| `init` | Initialize a new project with default settings. |
+| `init [name]` | Create a project directory (`name`, default `my-vx-project`) from the template. Fails if it exists. |
 | `create [name]` | Scaffold a new project (interactive if name omitted). |
-| `api` | Start the local helper API server on port 8545. It does **not** run an EVM — `/api/block`, `/api/gas` and `/api/pay` proxy to the RPC in `vx.config.json`. (`node` is a deprecated alias.) |
+| `api` | Start the local helper API server on port 8545. It does **not** run an EVM. Endpoints: `/api`, `/api/block`, `/api/accounts`, `/api/pay` (POST), `/events` (SSE), `/debug` (with `--debug`); they use the RPC in `vx.config.json`. Flags: `--host`, `--port`, `--debug`, `--env`, `--chains`. (`node` is a deprecated alias.) |
 | `dash` | **Open the real-time developer dashboard (port 4000).** |
 | `setup hardhat\|react` | Add Hardhat or a React frontend to the current project. |
-| `rpc` | Manage or query RPC endpoints from `vx.config.json`. |
-| `pay <to> <amount>` | Send a transaction. Flags: `--rpc`, `--key`, `--json`. |
-| `gas` | Estimate gas fees for a transaction. Flags: `--rpc`, `--json`. |
-| `ipfs` | Pin / fetch content via IPFS. |
-| `generate` | Generate templates (react, vue, …). |
-| `compile <entry.sol>` | Compile Solidity using the VXC custom compiler. |
+| `rpc init\|list` | Create a starter `vx.config.json` / show the configured RPC URL. |
+| `pay <to> <amount>` | Send a transaction. Flags: `-r/--rpc`, `-k/--key` (prefer the `PRIVATE_KEY` env var), `--json`. |
+| `gas` | Show current gas fees from your RPC. Flags: `--rpc`, `--json`. |
+| `ipfs fetch <cid> [gateway]` | Fetch content from IPFS by CID (gateway defaults to the one in `vx.config.json`). |
+| `nft mint <contract>` | Mint an NFT. Flags: `--to`, `--id`, `--uri`, `--fn`, `--rpc`, `--key`, `--json`. |
+| `generate template/<react\|vue> [dir]` | Generate a template (`generate list` to list; `--debug` uses the local SDK). |
+| `compile <entry.sol>` | Compile with VXC. Flags: `-o/--out` (default `artifacts/vxc`), `--optimize`, `--runs` (200), `--evm`, `--base`, `--metadata`, `--remap k=v`. |
 | `sol hello` | Solidity helper sample. |
-| `info` | Display project / SDK info. |
+| `info` | Display the remote VX platform version. |
 | `--version`, `-v` | Show SDK version. |
 | `help` | Show the help screen. |
 
@@ -144,7 +145,7 @@ SDK ドキュメント: <https://nknighta.me/vx>
 ## 特徴
 
 - **ワークフロー全体を 1 つの CLI で** — スキャフォールド、コンパイル、
-  ノード起動、送金、ガス推定、IPFS ピン留め、そしてライブダッシュボード。
+  ノード起動、送金、ガス推定、IPFS 取得、そしてライブダッシュボード。
 - **VXC カスタム Solidity コンパイラ** — 独自フロントエンド（レキサー、
   import リゾルバ、アーティファクトパイプライン）とプラグイン可能なバックエンド。
   [`packages/vxc`](packages/vxc/README.md) に格納。
@@ -172,19 +173,20 @@ vx3 <コマンド> [...オプション]
 
 | コマンド | 説明 |
 | --- | --- |
-| `init` | デフォルト設定で新規プロジェクトを初期化。 |
+| `init [name]` | テンプレートからプロジェクトディレクトリ（`name`、省略時 `my-vx-project`）を作成。既存なら失敗。 |
 | `create [name]` | プロジェクトをスキャフォールド（名前省略時は対話モード）。 |
-| `api` | ローカルヘルパー API サーバーをポート 8545 で起動。EVM は動かさず、`/api/block`・`/api/gas`・`/api/pay` は `vx.config.json` の RPC にプロキシする。（`node` は非推奨エイリアス。） |
+| `api` | ローカルヘルパー API サーバーをポート 8545 で起動。EVM は動かさない。エンドポイント: `/api`、`/api/block`、`/api/accounts`、`/api/pay`（POST）、`/events`（SSE）、`/debug`（`--debug` 時）。`vx.config.json` の RPC を使用。オプション: `--host`, `--port`, `--debug`, `--env`, `--chains`。（`node` は非推奨エイリアス。） |
 | `dash` | **リアルタイム開発ダッシュボードを起動（ポート 4000）。** |
 | `setup hardhat\|react` | Hardhat または React フロントエンドを追加。 |
-| `rpc` | `vx.config.json` の RPC エンドポイントを管理・参照。 |
-| `pay <to> <amount>` | トランザクション送信。オプション: `--rpc`, `--key`, `--json`。 |
-| `gas` | ガス料金を推定。 |
-| `ipfs` | IPFS 経由でコンテンツをピン留め / 取得。 |
-| `generate` | テンプレートを生成（react, vue など）。 |
-| `compile <entry.sol>` | VXC カスタムコンパイラで Solidity をコンパイル。 |
+| `rpc init\|list` | 初期 `vx.config.json` を作成 / 設定された RPC URL を表示。 |
+| `pay <to> <amount>` | トランザクション送信。オプション: `-r/--rpc`, `-k/--key`（`PRIVATE_KEY` 環境変数を推奨）, `--json`。 |
+| `gas` | RPC から現在のガス料金を表示。オプション: `--rpc`, `--json`。 |
+| `ipfs fetch <cid> [gateway]` | CID で IPFS からコンテンツを取得（gateway 省略時は `vx.config.json` の値）。 |
+| `nft mint <contract>` | NFT をミント。オプション: `--to`, `--id`, `--uri`, `--fn`, `--rpc`, `--key`, `--json`。 |
+| `generate template/<react\|vue> [dir]` | テンプレートを生成（`generate list` で一覧、`--debug` でローカル SDK を使用）。 |
+| `compile <entry.sol>` | VXC でコンパイル。オプション: `-o/--out`（既定 `artifacts/vxc`）, `--optimize`, `--runs`（200）, `--evm`, `--base`, `--metadata`, `--remap k=v`。 |
 | `sol hello` | Solidity ヘルパーサンプル。 |
-| `info` | プロジェクト / SDK 情報を表示。 |
+| `info` | リモートの VX プラットフォームバージョンを表示。 |
 | `--version`, `-v` | SDK バージョンを表示。 |
 | `help` | ヘルプ画面を表示。 |
 

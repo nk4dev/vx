@@ -23,17 +23,28 @@ function resolveFnAndArgs(
     return { fn: opts.functionName, args };
   }
 
+  // The default ABI declares overloaded `mint`/`safeMint` fragments so a
+  // range of common ERC-721 contracts can be auto-detected. ethers rejects a
+  // bare `contract['mint']` lookup as ambiguous whenever more than one
+  // fragment shares that name, so the fully-qualified signature (matching
+  // one of the DEFAULT_ABI entries above) must be used instead of the plain
+  // name when no custom ABI/function name was supplied.
   if (opts.tokenURI && opts.tokenId === undefined) {
-    return { fn: 'safeMint', args: [to, opts.tokenURI] };
+    return { fn: 'safeMint(address,string)', args: [to, opts.tokenURI] };
   }
   if (opts.tokenId !== undefined && !opts.tokenURI) {
-    return { fn: 'mint', args: [to, opts.tokenId] };
+    return { fn: 'mint(address,uint256)', args: [to, opts.tokenId] };
   }
   if (opts.tokenId !== undefined && opts.tokenURI) {
-    return { fn: 'mint', args: [to, opts.tokenId, opts.tokenURI] };
+    throw new Error(
+      'The default ABI has no mint(address,uint256,string) overload. ' +
+        'Pass --fn <name> together with a custom --abi, or provide only one of --id/--uri.'
+    );
   }
 
-  return { fn: 'mint', args: [to] };
+  throw new Error(
+    'Provide --id <tokenId> or --uri <tokenURI> (or --fn <name> with a custom ABI) to mint.'
+  );
 }
 
 export async function mintNFT(opts: MintNFTOptions): Promise<MintNFTResult> {

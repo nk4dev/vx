@@ -143,6 +143,13 @@ export function buildProgram(): Command {
           `Could not reach api.varius.technology: ${(err as Error).message}`
         );
         process.exitCode = 1;
+      } finally {
+        // Node's fetch (undici) can leave a keep-alive/connect handle open
+        // after an aborted or completed request, which keeps the event loop
+        // alive well past the point the command has finished its own work.
+        // This is a one-shot command, so force the process to exit rather
+        // than wait on that handle.
+        process.exit(process.exitCode ?? 0);
       }
     });
 
