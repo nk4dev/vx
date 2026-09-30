@@ -1,5 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import {
+  SDK_PACKAGE_NAME,
+  SDK_DEPENDENCY_RANGE,
+  LEGACY_SDK_PACKAGE_NAME,
+} from '../config';
 
 function ensureDir(p: string) {
   fs.mkdirSync(p, { recursive: true });
@@ -125,7 +130,9 @@ async function setupReact() {
     pkg.dependencies.react = pkg.dependencies.react || '^19.0.0';
     pkg.dependencies['react-dom'] = pkg.dependencies['react-dom'] || '^19.0.0';
     pkg.dependencies.ethers = pkg.dependencies.ethers || '^6.15.0';
-    pkg.dependencies['@vx3/vx'] = pkg.dependencies['@vx3/vx'] || '0.0.19';
+    delete pkg.dependencies[LEGACY_SDK_PACKAGE_NAME];
+    pkg.dependencies[SDK_PACKAGE_NAME] =
+      pkg.dependencies[SDK_PACKAGE_NAME] || SDK_DEPENDENCY_RANGE;
 
     pkg.devDependencies = pkg.devDependencies || {};
     pkg.devDependencies.vite = pkg.devDependencies.vite || '^6.0.0';
@@ -162,16 +169,18 @@ async function setupReact() {
       }
     }
     console.log(
-      '✔  Copied React template files (Payment component, hooks, demo app).'
+      '✔  Copied React template files (Payment / WalletConnect components, hooks, demo app).'
     );
   }
 
   console.log('\n🎉 React setup complete!\n');
   console.log('Generated files:');
   console.log('  src/components/Payment.tsx          – Payment UI component');
+  console.log('  src/components/WalletConnect.tsx    – Wallet connect sample');
   console.log('  src/components/hooks/use-payment.ts  – usePayment hook');
   console.log('  src/components/hooks/use-payment-status.ts');
   console.log('  src/components/hooks/use-payment-dialog.ts');
+  console.log('  src/components/hooks/use-wallet.ts   – useWallet hook');
   console.log('  src/App.tsx                         – Demo application');
   console.log('  vite.config.ts / tsconfig.json       – Build configuration');
   console.log('\nNext steps:');

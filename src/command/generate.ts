@@ -1,5 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import {
+  SDK_PACKAGE_NAME,
+  SDK_DEPENDENCY_RANGE,
+  LEGACY_SDK_PACKAGE_NAME,
+} from '../config';
 
 type TemplateName = 'react' | 'vue';
 
@@ -32,7 +37,6 @@ const TEMPLATE_SPECS: Record<TemplateName, TemplateSpec> = {
       react: '^19.0.0',
       'react-dom': '^19.0.0',
       ethers: '^6.15.0',
-      '@vx3/vx': '0.0.19',
     },
     devDependencies: {
       vite: '^6.0.0',
@@ -54,7 +58,6 @@ const TEMPLATE_SPECS: Record<TemplateName, TemplateSpec> = {
     dependencies: {
       vue: '^3.5.13',
       ethers: '^6.15.0',
-      '@vx3/vx': '0.0.19',
     },
     devDependencies: {
       vite: '^6.0.0',
@@ -188,13 +191,14 @@ function generateTemplate(
     );
   }
 
-  const sdkDependency = options.debugLocal
-    ? (resolveLocalSdkDependency(outputDir, cwd) ?? '0.0.19')
-    : '0.0.19';
+  const localSdkDependency = options.debugLocal
+    ? resolveLocalSdkDependency(outputDir, cwd)
+    : null;
+  const sdkDependency = localSdkDependency ?? SDK_DEPENDENCY_RANGE;
 
-  if (options.debugLocal && sdkDependency === '0.0.19') {
+  if (options.debugLocal && !localSdkDependency) {
     console.warn(
-      'Debug mode enabled, but local vx3 package was not found. Falling back to published version 0.0.19.'
+      `Debug mode enabled, but local ${SDK_PACKAGE_NAME} package was not found. Falling back to published version ${SDK_DEPENDENCY_RANGE}.`
     );
   }
 
@@ -232,7 +236,8 @@ function generateTemplate(
 
     nextPkg.scripts = { ...spec.scripts, ...scripts };
     const mergedDependencies = { ...spec.dependencies, ...dependencies };
-    mergedDependencies['@vx3/vx'] = sdkDependency;
+    delete mergedDependencies[LEGACY_SDK_PACKAGE_NAME];
+    mergedDependencies[SDK_PACKAGE_NAME] = sdkDependency;
     nextPkg.dependencies = mergedDependencies;
     nextPkg.devDependencies = { ...spec.devDependencies, ...devDependencies };
 
