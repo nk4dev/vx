@@ -9,6 +9,7 @@
     "skipLibCheck": true,
     "strict": true,
     "rootDir": "./src",
+    "declaration": true,
     "types": ["node"],
   },
   "include": ["src/**/*.ts"],

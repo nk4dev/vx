@@ -1,6 +1,6 @@
 {
   "name": "vx3",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A CLI tool for vx3 smart contracts platform",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -62,7 +62,6 @@
     "hh:deploy": "hardhat --config packages/hardhat/hardhat.config.ts run packages/hardhat/scripts/deploy.ts --network localhost"
   },
   "dependencies": {
-    "@vx3/vxc": "workspace:*",
     "commander": "^12.1.0",
     "ethers": "^6.15.0",
     "solc": "^0.8.30"

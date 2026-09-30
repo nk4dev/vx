@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { VXCompiler } from '@vx3/vxc';
+// Bundled with the SDK (packages/vxc is in "files"); @vx3/vxc is not on npm.
+import { VXCompiler } from '../../packages/vxc/dist';
 
 interface ParsedArgs {
   entry?: string;

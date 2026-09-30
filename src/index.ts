@@ -62,8 +62,11 @@ export type {
 declare const module: NodeModule | undefined;
 try {
   if (typeof module !== 'undefined' && module?.exports) {
+    // Keep the named exports above (React components/hooks such as
+    // useWallet, usePayment, Payment) — replacing module.exports drops them.
     module.exports = Object.assign(
       {},
+      module.exports,
       { default: vx, instance, vx: data },
       vx
     );
