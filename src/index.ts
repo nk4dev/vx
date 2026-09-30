@@ -39,6 +39,13 @@ export { Payment } from './front_api/payment';
 export { usePayment } from './front_api/hooks/use-payment';
 export { usePaymentStatus } from './front_api/hooks/use-payment-status';
 export { usePaymentDialog } from './front_api/hooks/use-payment-dialog';
+export { useWallet } from './front_api/hooks/use-wallet';
+export type {
+  Eip1193Provider,
+  WalletStatus,
+  WalletState,
+  UseWalletOptions,
+} from './types/wallet';
 export type {
   PaymentMode,
   PaymentStatus,

@@ -21,6 +21,7 @@ export { Payment } from './payment';
 export { usePayment } from './hooks/use-payment';
 export { usePaymentStatus } from './hooks/use-payment-status';
 export { usePaymentDialog } from './hooks/use-payment-dialog';
+export { useWallet } from './hooks/use-wallet';
 
 // Payment types
 export type {
@@ -32,3 +33,11 @@ export type {
   PaymentState,
   PaymentDialogControl,
 } from '../types/payment';
+
+// Wallet types
+export type {
+  Eip1193Provider,
+  WalletStatus,
+  WalletState,
+  UseWalletOptions,
+} from '../types/wallet';
