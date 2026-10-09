@@ -30,12 +30,14 @@ export const SDK_VERSION = readPackageVersion();
 
 /** npm package name of the SDK, as generated projects should depend on it. */
 export const SDK_PACKAGE_NAME = 'vx3';
-/** Dependency range written into generated projects' package.json. */
-export const SDK_DEPENDENCY_RANGE = `^${SDK_VERSION}`;
-/** Old, never-published package name written by earlier generators. */
-export const LEGACY_SDK_PACKAGE_NAME = '@vx3/vx';
+/**
+ * Dependency spec written into generated projects' package.json. Defaults to
+ * the latest published release — the local SDK_VERSION may not be on npm yet —
+ * unless a version is given explicitly (`--sdk-version`).
+ */
+export const SDK_DEPENDENCY_RANGE = 'latest';
 
 // The vx3 platform (contracts / hosted API) version — tracked independently
 // of the SDK package version.
-export const API_VERSION = '0.1.2';
+export const API_VERSION = '@latest';
 export const NAME = 'VX3';

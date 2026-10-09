@@ -52,7 +52,7 @@ vx3 <command> [...options]
 | `gas` | Show current gas fees from your RPC. Flags: `--rpc`, `--json`. |
 | `ipfs fetch <cid> [gateway]` | Fetch content from IPFS by CID (gateway defaults to the one in `vx.config.json`). |
 | `nft mint <contract>` | Mint an NFT. Flags: `--to`, `--id`, `--uri`, `--fn`, `--rpc`, `--key`, `--json`. |
-| `generate template/<react\|vue> [dir]` | Generate a template (`generate list` to list; `--debug` uses the local SDK). |
+| `generate template/<react\|vue> [dir]` | Generate a template (`generate list` to list; `--debug` uses the local SDK). Depends on the latest published `vx3` unless `--sdk-version <version>` is given. |
 | `compile <entry.sol>` | Compile with VXC. Flags: `-o/--out` (default `artifacts/vxc`), `--optimize`, `--runs` (200), `--evm`, `--base`, `--metadata`, `--remap k=v`. |
 | `sol hello` | Solidity helper sample. |
 | `info` | Display the remote VX platform version. |
@@ -183,7 +183,7 @@ vx3 <コマンド> [...オプション]
 | `gas` | RPC から現在のガス料金を表示。オプション: `--rpc`, `--json`。 |
 | `ipfs fetch <cid> [gateway]` | CID で IPFS からコンテンツを取得（gateway 省略時は `vx.config.json` の値）。 |
 | `nft mint <contract>` | NFT をミント。オプション: `--to`, `--id`, `--uri`, `--fn`, `--rpc`, `--key`, `--json`。 |
-| `generate template/<react\|vue> [dir]` | テンプレートを生成（`generate list` で一覧、`--debug` でローカル SDK を使用）。 |
+| `generate template/<react\|vue> [dir]` | テンプレートを生成（`generate list` で一覧、`--debug` でローカル SDK を使用）。`--sdk-version <version>` を指定しない限り、公開済みの最新 `vx3` に依存。 |
 | `compile <entry.sol>` | VXC でコンパイル。オプション: `-o/--out`（既定 `artifacts/vxc`）, `--optimize`, `--runs`（200）, `--evm`, `--base`, `--metadata`, `--remap k=v`。 |
 | `sol hello` | Solidity ヘルパーサンプル。 |
 | `info` | リモートの VX プラットフォームバージョンを表示。 |

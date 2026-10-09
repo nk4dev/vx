@@ -97,13 +97,17 @@ export function buildProgram(): Command {
     .command('setup')
     .description('Add Hardhat or a React frontend to the current project')
     .argument('<target>', 'hardhat | react')
-    .action(async (target: string) => {
+    .option(
+      '--sdk-version <version>',
+      'vx3 version for the react target (default: latest published)'
+    )
+    .action(async (target: string, opts: { sdkVersion?: string }) => {
       if (target !== 'hardhat' && target !== 'react') {
         console.error('Unknown setup target. Available: hardhat, react');
         process.exitCode = 1;
         return;
       }
-      await setup(target);
+      await setup(target, opts.sdkVersion);
     });
 
   passThrough(program, 'pay', 'Send a transaction: vx3 pay <to> <amount> [--rpc <url>]', handlePayCommand);

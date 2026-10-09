@@ -3,7 +3,6 @@ import * as path from 'path';
 import {
   SDK_PACKAGE_NAME,
   SDK_DEPENDENCY_RANGE,
-  LEGACY_SDK_PACKAGE_NAME,
 } from '../config';
 
 type TemplateName = 'react' | 'vue';
@@ -20,13 +19,14 @@ type TemplateSpec = {
 type GenerateOptions = {
   targetDirArg?: string;
   debugLocal: boolean;
+  sdkVersion?: string;
 };
 
 // generate package.json template for react and vue projects, with options to link local SDK for development
 const TEMPLATE_SPECS: Record<TemplateName, TemplateSpec> = {
   react: {
     templateDir: 'react-template',
-    description: 'Vite + React + TypeScript payment demo',
+    description: 'Vite + React + TypeScript vx3 demo',
     entries: ['index.html', 'vite.config.ts', 'tsconfig.json', 'src'],
     scripts: {
       dev: 'vite',
@@ -36,7 +36,6 @@ const TEMPLATE_SPECS: Record<TemplateName, TemplateSpec> = {
     dependencies: {
       react: '^19.0.0',
       'react-dom': '^19.0.0',
-      ethers: '^6.15.0',
     },
     devDependencies: {
       vite: '^6.0.0',
@@ -191,12 +190,14 @@ function generateTemplate(
     );
   }
 
-  const localSdkDependency = options.debugLocal
-    ? resolveLocalSdkDependency(outputDir, cwd)
-    : null;
-  const sdkDependency = localSdkDependency ?? SDK_DEPENDENCY_RANGE;
+  const localSdkDependency =
+    options.debugLocal && !options.sdkVersion
+      ? resolveLocalSdkDependency(outputDir, cwd)
+      : null;
+  const sdkDependency =
+    options.sdkVersion ?? localSdkDependency ?? SDK_DEPENDENCY_RANGE;
 
-  if (options.debugLocal && !localSdkDependency) {
+  if (options.debugLocal && !options.sdkVersion && !localSdkDependency) {
     console.warn(
       `Debug mode enabled, but local ${SDK_PACKAGE_NAME} package was not found. Falling back to published version ${SDK_DEPENDENCY_RANGE}.`
     );
@@ -236,7 +237,6 @@ function generateTemplate(
 
     nextPkg.scripts = { ...spec.scripts, ...scripts };
     const mergedDependencies = { ...spec.dependencies, ...dependencies };
-    delete mergedDependencies[LEGACY_SDK_PACKAGE_NAME];
     mergedDependencies[SDK_PACKAGE_NAME] = sdkDependency;
     nextPkg.dependencies = mergedDependencies;
     nextPkg.devDependencies = { ...spec.devDependencies, ...devDependencies };
@@ -245,9 +245,7 @@ function generateTemplate(
   });
 
   console.log(`Generated template/${templateName} in: ${outputDir}`);
-  if (options.debugLocal) {
-    console.log(`Using local SDK dependency: ${sdkDependency}`);
-  }
+  console.log(`Using ${SDK_PACKAGE_NAME} dependency: ${sdkDependency}`);
   console.log('Next steps:');
   console.log(`  1) cd ${outputDir}`);
   console.log('  2) npm install');
@@ -257,7 +255,13 @@ function generateTemplate(
 function printGenerateHelp(): void {
   console.log('Usage:');
   console.log('  vx3 generate list');
-  console.log('  vx3 generate template/<react|vue> [targetDir] [--debug]');
+  console.log(
+    '  vx3 generate template/<react|vue> [targetDir] [--debug] [--sdk-version <version>]'
+  );
+  console.log('');
+  console.log(
+    `  --sdk-version <version>  ${SDK_PACKAGE_NAME} version to depend on (default: ${SDK_DEPENDENCY_RANGE})`
+  );
   process.exit(0);
 }
 
@@ -267,10 +271,18 @@ function parseGenerateOptions(rawArgs: string[]): GenerateOptions {
     debugLocal: false,
   };
 
-  for (const arg of rawArgs) {
+  for (let i = 0; i < rawArgs.length; i++) {
+    const arg = rawArgs[i];
     // Local source code loading for library debugging
     if (arg === '--debug') {
       options.debugLocal = true;
+      continue;
+    }
+
+    if (arg === '--sdk-version' || arg.startsWith('--sdk-version=')) {
+      const value = arg.includes('=') ? arg.slice(arg.indexOf('=') + 1) : rawArgs[++i];
+      if (!value) throw new Error('--sdk-version requires a value');
+      options.sdkVersion = value;
       continue;
     }
 

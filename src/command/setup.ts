@@ -3,7 +3,6 @@ import * as path from 'path';
 import {
   SDK_PACKAGE_NAME,
   SDK_DEPENDENCY_RANGE,
-  LEGACY_SDK_PACKAGE_NAME,
 } from '../config';
 
 function ensureDir(p: string) {
@@ -101,13 +100,13 @@ async function setupHardhat() {
   );
 }
 
-export async function setup(target: string) {
+export async function setup(target: string, sdkVersion?: string) {
   switch (target) {
     case 'hardhat':
       await setupHardhat();
       break;
     case 'react':
-      await setupReact();
+      await setupReact(sdkVersion);
       break;
     default:
       throw new Error(`Unknown setup target: ${target}`);
@@ -115,7 +114,7 @@ export async function setup(target: string) {
 }
 
 // React template setup
-async function setupReact() {
+async function setupReact(sdkVersion?: string) {
   const cwd = process.cwd();
   const pkgPath = path.join(cwd, 'package.json');
 
@@ -130,9 +129,8 @@ async function setupReact() {
     pkg.dependencies.react = pkg.dependencies.react || '^19.0.0';
     pkg.dependencies['react-dom'] = pkg.dependencies['react-dom'] || '^19.0.0';
     pkg.dependencies.ethers = pkg.dependencies.ethers || '^6.15.0';
-    delete pkg.dependencies[LEGACY_SDK_PACKAGE_NAME];
     pkg.dependencies[SDK_PACKAGE_NAME] =
-      pkg.dependencies[SDK_PACKAGE_NAME] || SDK_DEPENDENCY_RANGE;
+      sdkVersion || pkg.dependencies[SDK_PACKAGE_NAME] || SDK_DEPENDENCY_RANGE;
 
     pkg.devDependencies = pkg.devDependencies || {};
     pkg.devDependencies.vite = pkg.devDependencies.vite || '^6.0.0';
