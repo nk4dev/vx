@@ -50,6 +50,19 @@ describe('vx3 CLI (commander)', () => {
     expect(parsed.error).toMatch(/Usage: vx3 pay/);
   });
 
+  it.each([
+    [['pay', '0x' + '1'.repeat(40), '0.1', '--rpc'], '--rpc'],
+    [['pay', '0x' + '1'.repeat(40), '0.1', '--rpc', '--json'], '--rpc'],
+    [['pay', '0x' + '1'.repeat(40), '0.1', '-k'], '-k'],
+    [['nft', 'mint', '0x' + '1'.repeat(40), '--id', '1', '--rpc'], '--rpc'],
+    [['nft', 'mint', '0x' + '1'.repeat(40), '--id'], '--id'],
+    [['nft', 'mint', '0x' + '1'.repeat(40), '--to', '--id', '1'], '--to'],
+  ])('refuses %j: a value flag without a value never falls back', (args, flag) => {
+    const r = run(...args);
+    expect(r.status).not.toBe(0);
+    expect(r.stdout + r.stderr).toContain(`Missing value for ${flag}`);
+  });
+
   it('nft --json emits a JSON error for an unknown subcommand', () => {
     const r = run('nft', 'bogus', '--json');
     expect(r.status).not.toBe(0);

@@ -23,6 +23,8 @@ SDK docs: <https://nknighta.me/vx>
   pre-wired for VX3 projects.
 - **Programmatic APIs** — every CLI command is also exposed as a TypeScript
   function.
+  React component / hooks are also available from `vx3/react`; `react` is an
+  optional peer dependency and is only needed when you use them.
 
 ## Install
 
@@ -44,7 +46,7 @@ vx3 <command> [...options]
 | --- | --- |
 | `init [name]` | Create a project directory (`name`, default `my-vx-project`) from the template. Fails if it exists. |
 | `create [name]` | Scaffold a new project (interactive if name omitted). |
-| `api` | Start the local helper API server on port 8545. It does **not** run an EVM. Endpoints: `/api`, `/api/block`, `/api/accounts`, `/api/pay` (POST), `/events` (SSE), `/debug` (with `--debug`); they use the RPC in `vx.config.json`. Flags: `--host`, `--port`, `--debug`, `--env`, `--chains`. (`node` is a deprecated alias.) |
+| `api` | Start the local helper API server on port 8545. It does **not** run an EVM. Endpoints: `/api`, `/api/block`, `/api/accounts`, `/api/pay` (POST), `/events` (SSE), `/debug` (with `--debug`); they use the RPC in `vx.config.json`. Flags: `--host`, `--port`, `--debug`, `--env`, `--chains`, `--allow-origin <origin>` (lets a frontend dev server call `/api/pay`). (`node` is a deprecated alias.) |
 | `dash` | **Open the real-time developer dashboard (port 4000).** |
 | `setup hardhat\|react` | Add Hardhat or a React frontend to the current project. |
 | `rpc init\|list` | Create a starter `vx.config.json` / show the configured RPC URL. |
@@ -154,6 +156,8 @@ SDK ドキュメント: <https://nknighta.me/vx>
 - **フロントエンドテンプレート** — React・Vue スターター、VX3 プロジェクト向け
   Hardhat パッケージを同梱。
 - **プログラマティック API** — すべての CLI コマンドは TypeScript 関数としても提供。
+  React コンポーネント / フックは `vx3/react` からも利用可能。`react` は任意の
+  peer dependency で、それらを使うときだけ必要。
 
 ## インストール
 
@@ -175,7 +179,7 @@ vx3 <コマンド> [...オプション]
 | --- | --- |
 | `init [name]` | テンプレートからプロジェクトディレクトリ（`name`、省略時 `my-vx-project`）を作成。既存なら失敗。 |
 | `create [name]` | プロジェクトをスキャフォールド（名前省略時は対話モード）。 |
-| `api` | ローカルヘルパー API サーバーをポート 8545 で起動。EVM は動かさない。エンドポイント: `/api`、`/api/block`、`/api/accounts`、`/api/pay`（POST）、`/events`（SSE）、`/debug`（`--debug` 時）。`vx.config.json` の RPC を使用。オプション: `--host`, `--port`, `--debug`, `--env`, `--chains`。（`node` は非推奨エイリアス。） |
+| `api` | ローカルヘルパー API サーバーをポート 8545 で起動。EVM は動かさない。エンドポイント: `/api`、`/api/block`、`/api/accounts`、`/api/pay`（POST）、`/events`（SSE）、`/debug`（`--debug` 時）。`vx.config.json` の RPC を使用。オプション: `--host`, `--port`, `--debug`, `--env`, `--chains`, `--allow-origin <origin>`（フロントエンドの開発サーバから `/api/pay` を呼べるようにする）。（`node` は非推奨エイリアス。） |
 | `dash` | **リアルタイム開発ダッシュボードを起動（ポート 4000）。** |
 | `setup hardhat\|react` | Hardhat または React フロントエンドを追加。 |
 | `rpc init\|list` | 初期 `vx.config.json` を作成 / 設定された RPC URL を表示。 |

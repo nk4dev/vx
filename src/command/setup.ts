@@ -47,6 +47,18 @@ function upsertJSON(
   fs.writeFileSync(filePath, JSON.stringify(next, null, 2));
 }
 
+const HARDHAT_TSCONFIG = {
+  compilerOptions: {
+    target: 'es2020',
+    module: 'commonjs',
+    esModuleInterop: true,
+    forceConsistentCasingInFileNames: true,
+    strict: true,
+    skipLibCheck: true,
+    resolveJsonModule: true,
+  },
+};
+
 async function setupHardhat() {
   const cwd = process.cwd();
   const pkgPath = path.join(cwd, 'package.json');
@@ -66,8 +78,26 @@ async function setupHardhat() {
     pkg.devDependencies.hardhat = pkg.devDependencies.hardhat || '^2.22.0';
     pkg.devDependencies['@nomicfoundation/hardhat-toolbox'] =
       pkg.devDependencies['@nomicfoundation/hardhat-toolbox'] || '^3.0.0';
+    // hardhat.config.ts / scripts are TypeScript and run through ts-node.
+    // Pin TypeScript 5: left unpinned, npm resolves the toolbox's peer range
+    // to a newer major that ts-node cannot load.
+    pkg.devDependencies.typescript =
+      pkg.devDependencies.typescript || '^5.8.3';
+    pkg.devDependencies['ts-node'] =
+      pkg.devDependencies['ts-node'] || '^10.9.2';
+    pkg.devDependencies['@types/node'] =
+      pkg.devDependencies['@types/node'] || '^22.16.5';
     return pkg;
   });
+
+  // Hardhat's ts-node needs a CommonJS tsconfig; never overwrite an existing one.
+  const tsconfigPath = path.join(cwd, 'tsconfig.json');
+  if (!fs.existsSync(tsconfigPath)) {
+    fs.writeFileSync(
+      tsconfigPath,
+      `${JSON.stringify(HARDHAT_TSCONFIG, null, 2)}\n`
+    );
+  }
 
   // 2) copy template files
   const candidates = [
@@ -92,9 +122,7 @@ async function setupHardhat() {
   }
 
   console.log('Hardhat setup complete. Next steps:');
-  console.log(
-    '  1) Install dev deps: npm install -D hardhat @nomicfoundation/hardhat-toolbox'
-  );
+  console.log('  1) Install dev deps: npm install');
   console.log(
     '  2) Try: npm run hh:node | npm run hh:compile | npm run hh:deploy'
   );

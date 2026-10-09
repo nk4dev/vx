@@ -8,25 +8,39 @@ function parseArgs(args: string[]) {
     rpc?: string;
     key?: string;
     json: boolean;
+    error?: string;
   } = { json: args.includes('--json') };
   if (args.length >= 1 && !args[0].startsWith('-')) out.to = args[0];
   if (args.length >= 2 && !args[1].startsWith('-')) out.amount = args[1];
 
   for (let i = 2; i < args.length; i++) {
     const a = args[i];
-    if ((a === '--rpc' || a === '-r') && args[i + 1]) {
-      out.rpc = args[i + 1];
-      i++;
-    } else if ((a === '--key' || a === '-k') && args[i + 1]) {
-      out.key = args[i + 1];
-      i++;
+    const isRpc = a === '--rpc' || a === '-r';
+    const isKey = a === '--key' || a === '-k';
+    if (!isRpc && !isKey) continue;
+    // Never fall back silently: a forgotten value must not send the payment
+    // through whatever RPC / key happens to be configured.
+    const value = args[i + 1];
+    if (!value || value.startsWith('-')) {
+      out.error = `Missing value for ${a}`;
+      break;
     }
+    if (isRpc) out.rpc = value;
+    else out.key = value;
+    i++;
   }
   return out;
 }
 
 export async function handlePayCommand(argv: string[]) {
-  const { to, amount, rpc: rpcFlag, key: keyFlag, json } = parseArgs(argv);
+  const {
+    to,
+    amount,
+    rpc: rpcFlag,
+    key: keyFlag,
+    json,
+    error: argError,
+  } = parseArgs(argv);
 
   const fail = (message: string): never => {
     if (json) console.log(JSON.stringify({ error: message }));
@@ -34,6 +48,7 @@ export async function handlePayCommand(argv: string[]) {
     process.exit(1);
   };
 
+  if (argError) fail(argError);
   if (!to || !amount) {
     fail('Usage: vx3 pay <to> <amount> [--rpc <url>] [--key <privateKey>] [--json]');
   }

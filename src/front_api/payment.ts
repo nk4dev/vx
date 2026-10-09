@@ -4,6 +4,7 @@ import type {
   PaymentResult,
   PaymentMode,
 } from '../types/payment';
+import { ethToWeiHex } from './amount';
 
 /* ------------------------------------------------------------------ */
 /*  Internal styles (inline CSS objects — no external CSS dependency)  */
@@ -63,6 +64,20 @@ const styles: Record<string, React.CSSProperties> = {
 /*  Payment helpers (same logic as use-payment hook)                   */
 /* ------------------------------------------------------------------ */
 
+/** Parse an API response body, tolerating empty / non-JSON bodies. */
+async function readJson(resp: Response): Promise<{
+  error?: string;
+  txHash?: string;
+  receipt?: Record<string, unknown>;
+}> {
+  const text = await resp.text();
+  try {
+    return text ? JSON.parse(text) : {};
+  } catch {
+    return {};
+  }
+}
+
 async function payViaApi(
   to: string,
   amount: string,
@@ -75,9 +90,13 @@ async function payViaApi(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ to, amountEth: amount, rpcUrl, currency }),
   });
-  const data = await resp.json();
-  if (!resp.ok)
-    throw new Error(data?.error ?? `Payment failed (${resp.status})`);
+  const data = await readJson(resp);
+  if (!resp.ok) {
+    throw new Error(
+      data.error ?? `Payment API request failed (${resp.status})`
+    );
+  }
+  if (!data.txHash) throw new Error('Payment API returned no txHash');
   return { txHash: data.txHash, receipt: data.receipt };
 }
 
@@ -105,8 +124,7 @@ async function payViaWallet(
   })) as string[];
   if (!accounts?.length) throw new Error('No accounts available.');
 
-  const valueHex =
-    '0x' + BigInt(Math.floor(parseFloat(amount) * 1e18)).toString(16);
+  const valueHex = ethToWeiHex(amount);
 
   const txHash = (await ethereum.request({
     method: 'eth_sendTransaction',

@@ -4,6 +4,21 @@ import type {
   PaymentResult,
   PaymentState,
 } from '../../types/payment';
+import { ethToWeiHex } from '../amount';
+
+/** Parse an API response body, tolerating empty / non-JSON bodies. */
+async function readJson(resp: Response): Promise<{
+  error?: string;
+  txHash?: string;
+  receipt?: Record<string, unknown>;
+}> {
+  const text = await resp.text();
+  try {
+    return text ? JSON.parse(text) : {};
+  } catch {
+    return {};
+  }
+}
 
 /**
  * Send a payment via the backend API (`/api/pay` by default).
@@ -20,10 +35,13 @@ async function payViaApi(opts: PaymentOptions): Promise<PaymentResult> {
       currency: opts.currency ?? 'ETH',
     }),
   });
-  const data = await resp.json();
+  const data = await readJson(resp);
   if (!resp.ok) {
-    throw new Error(data?.error ?? `Payment failed (${resp.status})`);
+    throw new Error(
+      data.error ?? `Payment API request failed (${resp.status})`
+    );
   }
+  if (!data.txHash) throw new Error('Payment API returned no txHash');
   return { txHash: data.txHash, receipt: data.receipt };
 }
 
@@ -57,9 +75,7 @@ async function payViaWallet(opts: PaymentOptions): Promise<PaymentResult> {
 
   const from = accounts[0];
 
-  // Convert ETH amount to Wei hex string
-  const amountWei = BigInt(Math.floor(parseFloat(opts.amount) * 1e18));
-  const valueHex = '0x' + amountWei.toString(16);
+  const valueHex = ethToWeiHex(opts.amount);
 
   const txHash = (await ethereum.request({
     method: 'eth_sendTransaction',

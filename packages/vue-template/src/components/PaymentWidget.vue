@@ -21,6 +21,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { ethToWeiHex } from './amount';
 
 type EthereumProvider = {
   request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
@@ -54,7 +55,7 @@ async function payViaWallet(): Promise<void> {
       throw new Error('No wallet account is available.');
     }
 
-    const valueHex = '0x' + BigInt(Math.floor(parseFloat(amount.value) * 1e18)).toString(16);
+    const valueHex = ethToWeiHex(amount.value);
 
     const hash = (await provider.request({
       method: 'eth_sendTransaction',

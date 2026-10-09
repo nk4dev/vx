@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { ethToWeiHex } from '../amount';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -30,6 +31,18 @@ type PaymentState =
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
+/** Parse an API response body, tolerating empty / non-JSON bodies. */
+async function readJson(
+  resp: Response,
+): Promise<{ error?: string; txHash?: string; receipt?: Record<string, unknown> }> {
+  const text = await resp.text();
+  try {
+    return text ? JSON.parse(text) : {};
+  } catch {
+    return {};
+  }
+}
+
 async function payViaApi(opts: PaymentOptions): Promise<PaymentResult> {
   const endpoint = opts.apiEndpoint ?? '/api/pay';
   const resp = await fetch(endpoint, {
@@ -42,8 +55,9 @@ async function payViaApi(opts: PaymentOptions): Promise<PaymentResult> {
       currency: opts.currency ?? 'ETH',
     }),
   });
-  const data = await resp.json();
-  if (!resp.ok) throw new Error(data?.error ?? `Payment failed (${resp.status})`);
+  const data = await readJson(resp);
+  if (!resp.ok) throw new Error(data.error ?? `Payment API request failed (${resp.status})`);
+  if (!data.txHash) throw new Error('Payment API returned no txHash');
   return { txHash: data.txHash, receipt: data.receipt };
 }
 
@@ -59,7 +73,7 @@ async function payViaWallet(opts: PaymentOptions): Promise<PaymentResult> {
   const accounts = (await ethereum.request({ method: 'eth_requestAccounts' })) as string[];
   if (!accounts?.length) throw new Error('No accounts available.');
 
-  const valueHex = '0x' + BigInt(Math.floor(parseFloat(opts.amount) * 1e18)).toString(16);
+  const valueHex = ethToWeiHex(opts.amount);
 
   const txHash = (await ethereum.request({
     method: 'eth_sendTransaction',

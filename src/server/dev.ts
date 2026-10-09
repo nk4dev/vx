@@ -4,6 +4,7 @@
 // /api/accounts, SSE /events) that proxies to the RPC configured in vx.config.json,
 // plus a set of deterministic dev accounts for convenience.
 import { createServer } from 'http';
+import type { AddressInfo } from 'net';
 import { ethers } from 'ethers';
 import { getBlockNumber } from '../core/data';
 import { getRpcUrl } from '../core/contract';
@@ -43,6 +44,42 @@ function hasFlag(args: string[], flag: string): boolean {
   return args.includes(flag);
 }
 
+/** Every value given for a repeatable flag (comma-separated values allowed). */
+function getArgValues(args: string[], flag: string): string[] {
+  const values: string[] = [];
+  args.forEach((arg, i) => {
+    if (arg === flag && args[i + 1]) values.push(...args[i + 1].split(','));
+  });
+  return values.map((v) => v.trim()).filter(Boolean);
+}
+
+const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
+
+/**
+ * Whether a request `Origin` may call state-changing endpoints: no Origin
+ * (non-browser client), this server itself (any loopback alias when bound to
+ * loopback), or an origin explicitly allowed with `--allow-origin`.
+ */
+export function isAllowedOrigin(
+  origin: string | undefined,
+  host: string,
+  port: number,
+  allowOrigins: string[] = []
+): boolean {
+  if (!origin) return true;
+  if (allowOrigins.includes(origin)) return true;
+  let url: URL;
+  try {
+    url = new URL(origin);
+  } catch {
+    return false;
+  }
+  const originPort = Number(url.port || (url.protocol === 'https:' ? 443 : 80));
+  if (originPort !== port) return false;
+  if (url.hostname === host) return true;
+  return LOOPBACK_HOSTS.has(url.hostname) && LOOPBACK_HOSTS.has(host);
+}
+
 interface ServerOptions {
   host: string;
   port: number | string;
@@ -55,6 +92,8 @@ interface ServerOptions {
   ];
   env?: string;
   debug?: boolean;
+  /** Extra origins allowed to POST /api/pay (e.g. a frontend dev server). */
+  allowOrigins?: string[];
   /** Suppress the startup banner (useful for tests / embedding). */
   quiet?: boolean;
 }
@@ -86,6 +125,10 @@ export default function localServer(options?: Partial<ServerOptions>) {
   const env = getArgValue(args, '--env') || options?.env || 'development';
   const debug = hasFlag(args, '--debug') || options?.debug || false;
   const quiet = options?.quiet ?? false;
+  const allowOrigins = [
+    ...(options?.allowOrigins ?? []),
+    ...getArgValues(args, '--allow-origin'),
+  ];
 
   // Resolve RPC and block-number lazily to avoid requiring vx.config.json at import time
   let rpc: string | undefined;
@@ -202,13 +245,15 @@ export default function localServer(options?: Partial<ServerOptions>) {
       // another origin (or a DNS-rebound attacker host) could otherwise POST
       // here and move funds without ever needing to read the response.
       const origin = req.headers.origin;
-      const sameOrigin =
-        !origin ||
-        origin === `http://${host}:${portNumber}` ||
-        origin === `https://${host}:${portNumber}`;
-      if (!sameOrigin) {
+      const listenPort =
+        (server.address() as AddressInfo | null)?.port ?? portNumber;
+      if (!isAllowedOrigin(origin, host, listenPort, allowOrigins)) {
         res.writeHead(403, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'cross-origin requests are not allowed' }));
+        res.end(
+          JSON.stringify({
+            error: `cross-origin requests are not allowed (origin ${origin}). Start "vx3 api" with --allow-origin ${origin} to permit it.`,
+          })
+        );
         return;
       }
 
@@ -290,6 +335,9 @@ export default function localServer(options?: Partial<ServerOptions>) {
     console.log(`http://${host}:${portNumber}`);
     if (rpc) console.log(`RPC (proxy target): ${rpc}`);
     else console.log('RPC: not configured — run "vx3 rpc init"');
+    if (allowOrigins.length) {
+      console.log(`Allowed origins for /api/pay: ${allowOrigins.join(', ')}`);
+    }
     if (debug) {
       console.log(`Debug: http://${host}:${portNumber}/debug`);
       if (chains) console.log('Chains:', JSON.stringify(chains));

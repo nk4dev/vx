@@ -11,6 +11,7 @@ function parseArgs(args: string[]) {
     rpc?: string;
     key?: string;
     json: boolean;
+    error?: string;
   } = { json: args.includes('--json') };
 
   if (args.length >= 1 && !args[0].startsWith('-')) {
@@ -20,12 +21,21 @@ function parseArgs(args: string[]) {
   for (let i = 1; i < args.length; i++) {
     const a = args[i];
     const next = args[i + 1];
-    if (a === '--to' && next) { out.to = next; i++; }
-    else if (a === '--id' && next) { out.tokenId = next; i++; }
-    else if (a === '--uri' && next) { out.tokenURI = next; i++; }
-    else if (a === '--fn' && next) { out.functionName = next; i++; }
-    else if ((a === '--rpc' || a === '-r') && next) { out.rpc = next; i++; }
-    else if ((a === '--key' || a === '-k') && next) { out.key = next; i++; }
+    const valueFlags = ['--to', '--id', '--uri', '--fn', '--rpc', '-r', '--key', '-k'];
+    if (!valueFlags.includes(a)) continue;
+    // Never fall back silently: a forgotten value must not mint through
+    // whatever RPC / key / recipient happens to be the default.
+    if (!next || next.startsWith('-')) {
+      out.error = `Missing value for ${a}`;
+      break;
+    }
+    if (a === '--to') out.to = next;
+    else if (a === '--id') out.tokenId = next;
+    else if (a === '--uri') out.tokenURI = next;
+    else if (a === '--fn') out.functionName = next;
+    else if (a === '--rpc' || a === '-r') out.rpc = next;
+    else out.key = next;
+    i++;
   }
   return out;
 }
@@ -41,6 +51,7 @@ export async function handleNftCommand(argv: string[]) {
     process.exit(1);
   };
 
+  if (parsed.error) fail(parsed.error);
   if (sub !== 'mint') {
     fail('Usage: vx3 nft mint <contractAddress> [options]');
   }

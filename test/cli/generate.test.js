@@ -163,6 +163,51 @@ describe('vx3 generate', () => {
   });
 });
 
+describe('vx3 setup hardhat', () => {
+  it('pins a ts-node compatible TypeScript and writes a CommonJS tsconfig', () => {
+    const r = run(tmp, 'setup', 'hardhat');
+    expect(r.status).toBe(0);
+
+    const pkg = readPkg(tmp);
+    expect(pkg.devDependencies.hardhat).toBeDefined();
+    expect(pkg.devDependencies.typescript).toMatch(/^\^5\./);
+    expect(pkg.devDependencies['ts-node']).toBeDefined();
+    expect(pkg.scripts['hh:compile']).toBe('hardhat compile');
+
+    const tsconfig = JSON.parse(fs.readFileSync(path.join(tmp, 'tsconfig.json'), 'utf8'));
+    expect(tsconfig.compilerOptions.module).toBe('commonjs');
+    expect(fs.existsSync(path.join(tmp, 'hardhat.config.ts'))).toBe(true);
+  });
+
+  it('keeps an existing tsconfig.json and TypeScript version', () => {
+    fs.writeFileSync(path.join(tmp, 'tsconfig.json'), '{"keep":true}');
+    fs.writeFileSync(
+      path.join(tmp, 'package.json'),
+      JSON.stringify({ name: 'x', devDependencies: { typescript: '~5.4.0' } })
+    );
+    const r = run(tmp, 'setup', 'hardhat');
+    expect(r.status).toBe(0);
+    expect(fs.readFileSync(path.join(tmp, 'tsconfig.json'), 'utf8')).toBe('{"keep":true}');
+    expect(readPkg(tmp).devDependencies.typescript).toBe('~5.4.0');
+  });
+});
+
+describe('generated templates', () => {
+  it.each(['react', 'vue'])('%s ships the exact wei conversion, not float math', (name) => {
+    const out = path.join(tmp, name);
+    expect(run(tmp, 'generate', `template/${name}`, out).status).toBe(0);
+    const read = (rel) => fs.readFileSync(path.join(out, rel), 'utf8');
+    expect(read('src/components/amount.ts')).toMatch(/export function ethToWeiHex/);
+    const sources = fs
+      .readdirSync(path.join(out, 'src/components'), { recursive: true })
+      .filter((f) => /\.(tsx?|vue)$/.test(f) && !f.endsWith('amount.ts'))
+      .map((f) => read(path.join('src/components', f)))
+      .join('\n');
+    expect(sources).not.toMatch(/parseFloat\([^)]*\)\s*\*\s*1e18/);
+    expect(read('vite.config.ts')).not.toMatch(/localhost:3000/);
+  });
+});
+
 describe('vx3 setup react', () => {
   it('adds vx3@latest when the project has no SDK dependency', () => {
     const r = run(tmp, 'setup', 'react');

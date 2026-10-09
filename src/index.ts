@@ -34,12 +34,24 @@ export { payment };
 export { mintNFT } from './nft/index';
 export type { MintNFTOptions, MintNFTResult } from './types/nft';
 
-// React component, hooks & types
-export { Payment } from './front_api/payment';
-export { usePayment } from './front_api/hooks/use-payment';
-export { usePaymentStatus } from './front_api/hooks/use-payment-status';
-export { usePaymentDialog } from './front_api/hooks/use-payment-dialog';
-export { useWallet } from './front_api/hooks/use-wallet';
+// React component & hooks. `react` is an optional peer dependency, so these
+// are declared here for typing only and attached to module.exports as lazy
+// getters below — `require('vx3')` must work without React installed.
+// `vx3/react` exposes the same API eagerly.
+type ReactApi = typeof import('./front_api/react');
+export declare const Payment: ReactApi['Payment'];
+export declare const usePayment: ReactApi['usePayment'];
+export declare const usePaymentStatus: ReactApi['usePaymentStatus'];
+export declare const usePaymentDialog: ReactApi['usePaymentDialog'];
+export declare const useWallet: ReactApi['useWallet'];
+const REACT_EXPORTS = [
+  'Payment',
+  'usePayment',
+  'usePaymentStatus',
+  'usePaymentDialog',
+  'useWallet',
+] as const;
+export type { GasFees } from './core/data';
 export type {
   Eip1193Provider,
   WalletStatus,
@@ -62,14 +74,21 @@ export type {
 declare const module: NodeModule | undefined;
 try {
   if (typeof module !== 'undefined' && module?.exports) {
-    // Keep the named exports above (React components/hooks such as
-    // useWallet, usePayment, Payment) — replacing module.exports drops them.
-    module.exports = Object.assign(
+    const merged = Object.assign(
       {},
       module.exports,
       { default: vx, instance, vx: data },
       vx
     );
+    for (const name of REACT_EXPORTS) {
+      Object.defineProperty(merged, name, {
+        enumerable: true,
+        configurable: true,
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        get: () => (require('./front_api/react') as ReactApi)[name],
+      });
+    }
+    module.exports = merged;
   }
 } catch {
   /* pure ESM context — nothing to merge */

@@ -53,6 +53,14 @@ export async function mintNFT(opts: MintNFTOptions): Promise<MintNFTResult> {
   if (!opts.contractAddress) throw new Error('contractAddress is required');
 
   const provider = new JsonRpcProvider(opts.rpcUrl);
+  // A transaction to an address without code succeeds and mints nothing, so
+  // refuse up front instead of reporting a mint that never happened.
+  const code = await provider.getCode(opts.contractAddress);
+  if (!code || code === '0x') {
+    throw new Error(
+      `No contract found at ${opts.contractAddress} on ${opts.rpcUrl}. Check the address and the network.`
+    );
+  }
   const wallet = new Wallet(opts.privateKey, provider);
   const to = opts.to ?? wallet.address;
 

@@ -3,6 +3,7 @@
 jest.mock('ethers', () => {
   const mockMint = jest.fn();
   const mockSafeMint = jest.fn();
+  const mockGetCode = jest.fn();
   const MockContract = jest.fn().mockImplementation(() => ({
     mint: mockMint,
     safeMint: mockSafeMint,
@@ -11,8 +12,11 @@ jest.mock('ethers', () => {
   }));
   MockContract.__mint = mockMint;
   MockContract.__safeMint = mockSafeMint;
+  MockContract.__getCode = mockGetCode;
   return {
-    JsonRpcProvider: jest.fn().mockImplementation(() => ({})),
+    JsonRpcProvider: jest.fn().mockImplementation(() => ({
+      getCode: mockGetCode,
+    })),
     Wallet: jest
       .fn()
       .mockImplementation(() => ({ address: '0xSignerAddress' })),
@@ -25,6 +29,7 @@ const { mintNFT } = require('../dist/nft/index');
 const { Contract } = require('ethers');
 const mint = Contract.__mint;
 const safeMint = Contract.__safeMint;
+const getCode = Contract.__getCode;
 
 const BASE = {
   rpcUrl: 'http://localhost:8545',
@@ -33,6 +38,7 @@ const BASE = {
 };
 
 beforeEach(() => {
+  getCode.mockReset().mockResolvedValue('0x6080');
   mint.mockClear().mockResolvedValue({
     hash: '0xminthash',
     wait: jest.fn().mockResolvedValue({ blockNumber: 5 }),
@@ -52,6 +58,21 @@ describe('mintNFT() — validation', () => {
       await expect(mintNFT(opts)).rejects.toThrow(new RegExp(key));
     }
   );
+});
+
+describe('mintNFT() — contract existence', () => {
+  it('refuses to mint when the address has no contract code', async () => {
+    getCode.mockResolvedValue('0x');
+    await expect(mintNFT({ ...BASE, tokenId: 1n })).rejects.toThrow(
+      /No contract found at 0xc+/
+    );
+    expect(mint).not.toHaveBeenCalled();
+  });
+
+  it('checks the code at the given contract address', async () => {
+    await mintNFT({ ...BASE, tokenId: 1n });
+    expect(getCode).toHaveBeenCalledWith(BASE.contractAddress);
+  });
 });
 
 describe('mintNFT() — function selection', () => {

@@ -88,6 +88,37 @@ describe('vx3 api — POST /api/pay', () => {
     expect(sendPayment).not.toHaveBeenCalled();
   });
 
+  it('tells the caller how to allow a rejected origin', async () => {
+    const res = await request(server, {
+      method: 'POST',
+      path: '/api/pay',
+      headers: { 'Content-Type': 'application/json', Origin: 'http://localhost:5173' },
+      body: { to: '0x' + '1'.repeat(40), amountEth: '0.01', rpcUrl: 'http://127.0.0.1:8545' },
+    });
+
+    expect(res.status).toBe(403);
+    expect(res.body.error).toMatch(/--allow-origin http:\/\/localhost:5173/);
+    expect(sendPayment).not.toHaveBeenCalled();
+  });
+
+  it.each(['127.0.0.1', 'localhost'])(
+    'accepts its own origin via the %s loopback alias',
+    async (alias) => {
+      const res = await request(server, {
+        method: 'POST',
+        path: '/api/pay',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: `http://${alias}:${server.address().port}`,
+        },
+        body: { to: '0x' + '1'.repeat(40), amountEth: '0.01', rpcUrl: 'http://127.0.0.1:8545' },
+      });
+
+      expect(res.status).toBe(200);
+      expect(sendPayment).toHaveBeenCalledTimes(1);
+    }
+  );
+
   it('returns 400 when "to" / "amountEth" are missing', async () => {
     const res = await request(server, {
       method: 'POST',
@@ -115,6 +146,65 @@ describe('vx3 api — POST /api/pay', () => {
       amountEth: '0.5',
       rpcUrl: 'http://127.0.0.1:8545',
     });
+  });
+});
+
+describe('vx3 api — allowOrigins', () => {
+  let server;
+  beforeEach((done) => {
+    sendPayment.mockClear();
+    server = localServer({
+      host: '127.0.0.1',
+      port: 0,
+      quiet: true,
+      allowOrigins: ['http://localhost:5173'],
+    });
+    server.on('listening', done);
+  });
+  afterEach((done) => {
+    server.close(done);
+  });
+
+  const pay = (origin) =>
+    request(server, {
+      method: 'POST',
+      path: '/api/pay',
+      headers: { 'Content-Type': 'application/json', Origin: origin },
+      body: { to: '0x' + '1'.repeat(40), amountEth: '0.01', rpcUrl: 'http://127.0.0.1:8545' },
+    });
+
+  it('accepts an explicitly allowed origin', async () => {
+    expect((await pay('http://localhost:5173')).status).toBe(200);
+    expect(sendPayment).toHaveBeenCalledTimes(1);
+  });
+
+  it('still rejects every other origin', async () => {
+    expect((await pay('http://localhost:5174')).status).toBe(403);
+    expect((await pay('http://evil.example')).status).toBe(403);
+    expect(sendPayment).not.toHaveBeenCalled();
+  });
+});
+
+describe('isAllowedOrigin()', () => {
+  const { isAllowedOrigin } = require('../../dist/server/dev');
+
+  it.each([
+    [undefined, true],
+    ['http://127.0.0.1:8600', true],
+    ['http://localhost:8600', true],
+    ['http://[::1]:8600', true],
+    ['http://localhost:5173', false],
+    ['http://evil.example:8600', false],
+    ['http://evil.example', false],
+    ['not a url', false],
+    ['null', false],
+  ])('origin %p on 127.0.0.1:8600 → %p', (origin, expected) => {
+    expect(isAllowedOrigin(origin, '127.0.0.1', 8600)).toBe(expected);
+  });
+
+  it('does not treat loopback origins as local when bound to another host', () => {
+    expect(isAllowedOrigin('http://localhost:8600', '192.168.1.10', 8600)).toBe(false);
+    expect(isAllowedOrigin('http://192.168.1.10:8600', '192.168.1.10', 8600)).toBe(true);
   });
 });
 
