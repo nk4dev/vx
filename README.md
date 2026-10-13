@@ -53,13 +53,50 @@ vx3 <command> [...options]
 | `pay <to> <amount>` | Send a transaction. Flags: `-r/--rpc`, `-k/--key` (prefer the `PRIVATE_KEY` env var), `--json`. |
 | `gas` | Show current gas fees from your RPC. Flags: `--rpc`, `--json`. |
 | `ipfs fetch <cid> [gateway]` | Fetch content from IPFS by CID (gateway defaults to the one in `vx.config.json`). |
-| `nft mint <contract>` | Mint an NFT. Flags: `--to`, `--id`, `--uri`, `--fn`, `--rpc`, `--key`, `--json`. |
+| `mint nft [contract]` | Mint an NFT in one step (`nft mint` is the same command). With no arguments it mints the next token of the project's collection to your own address; the collection is deployed on first use and remembered in `vx.nft.json`. Flags: `--to`, `--uri`, `--name`/`--description`/`--image` (inlined as a `data:` URI), `--id`, `--fn`, `--deploy`, `--collection-name`, `--collection-symbol`, `-r/--rpc`, `-k/--key`, `--json`. See [Minting NFTs](#minting-nfts). |
 | `generate template/<react\|vue> [dir]` | Generate a template (`generate list` to list; `--debug` uses the local SDK). Depends on the latest published `vx3` unless `--sdk-version <version>` is given. |
 | `compile <entry.sol>` | Compile with VXC. Flags: `-o/--out` (default `artifacts/vxc`), `--optimize`, `--runs` (200), `--evm`, `--base`, `--metadata`, `--remap k=v`. |
 | `sol hello` | Solidity helper sample. |
 | `info` | Display the remote VX platform version. |
 | `--version`, `-v` | Show SDK version. |
 | `help` | Show the help screen. |
+
+### Minting NFTs
+
+```bash
+npx hardhat node                 # any local dev chain (chain ID 31337 / 1337)
+
+vx3 mint nft                     # deploys a collection on first use, mints #1 to you
+vx3 mint nft --name "My NFT" --image https://example.com/a.png
+vx3 mint nft --to 0xRecipient --uri ipfs://<cid>
+vx3 mint nft 0xExistingContract --uri ipfs://<cid>   # your own ERC-721
+```
+
+Everything has a default:
+
+| Needed | Resolved from |
+| --- | --- |
+| RPC | `--rpc`, then `vx.config.json`, then `http://localhost:8545` |
+| Signer | `--key`, then `PRIVATE_KEY` (environment, then `./.env`), then — on a local dev chain only — the node's first account |
+| Contract | the address argument, then `vx.nft.json` (per chain ID), then a newly deployed collection |
+
+Outside a local dev chain nothing is deployed and no node account is used
+implicitly: pass `--deploy` (costs gas) and a key. The bundled collection
+(`contracts/VXCollection.sol`) is a plain ERC-721 whose deployer is the only
+minter; token IDs start at 1.
+
+The same thing from code:
+
+```ts
+import { quickMint } from 'vx3';
+
+const { tokenId, contractAddress } = await quickMint({
+  metadata: { name: 'My NFT', image: 'https://example.com/a.png' },
+});
+```
+
+`mintNFT()` / `deployNFT()` remain available when you want to pass the RPC URL,
+key and contract yourself.
 
 ### Dashboard (`vx3 dash`)
 
@@ -186,7 +223,7 @@ vx3 <コマンド> [...オプション]
 | `pay <to> <amount>` | トランザクション送信。オプション: `-r/--rpc`, `-k/--key`（`PRIVATE_KEY` 環境変数を推奨）, `--json`。 |
 | `gas` | RPC から現在のガス料金を表示。オプション: `--rpc`, `--json`。 |
 | `ipfs fetch <cid> [gateway]` | CID で IPFS からコンテンツを取得（gateway 省略時は `vx.config.json` の値）。 |
-| `nft mint <contract>` | NFT をミント。オプション: `--to`, `--id`, `--uri`, `--fn`, `--rpc`, `--key`, `--json`。 |
+| `mint nft [contract]` | NFT を 1 コマンドでミント(`nft mint` も同じ)。引数なしならプロジェクトのコレクションの次のトークンを自分宛てにミント。コレクションは初回に自動デプロイされ `vx.nft.json` に記録されます。オプション: `--to`, `--uri`, `--name`/`--description`/`--image`(`data:` URI として埋め込み), `--id`, `--fn`, `--deploy`, `--collection-name`, `--collection-symbol`, `-r/--rpc`, `-k/--key`, `--json`。詳細は [Minting NFTs](#minting-nfts)。 |
 | `generate template/<react\|vue> [dir]` | テンプレートを生成（`generate list` で一覧、`--debug` でローカル SDK を使用）。`--sdk-version <version>` を指定しない限り、公開済みの最新 `vx3` に依存。 |
 | `compile <entry.sol>` | VXC でコンパイル。オプション: `-o/--out`（既定 `artifacts/vxc`）, `--optimize`, `--runs`（200）, `--evm`, `--base`, `--metadata`, `--remap k=v`。 |
 | `sol hello` | Solidity ヘルパーサンプル。 |

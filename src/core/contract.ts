@@ -1,4 +1,5 @@
 import {
+  getFirstRpcUrl,
   getRpcEndpoints,
   loadVxConfig,
   toRpcUrl,
@@ -14,13 +15,7 @@ import {
  * calling process.exit(), so it is safe to import and call from an application.
  */
 export function getRpcUrl(): string {
-  const endpoints = getRpcEndpoints(loadVxConfig());
-  if (endpoints.length === 0) {
-    throw new VxConfigError(
-      'No RPC endpoint configured in vx.config.json. Run "vx3 rpc init".'
-    );
-  }
-  return toRpcUrl(endpoints[0]);
+  return getFirstRpcUrl();
 }
 
 export interface Instance {

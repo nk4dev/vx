@@ -25,14 +25,24 @@ const vx = {
   // NFT API
   nft,
   mintNFT: nft.mintNFT,
+  quickMint: nft.quickMint,
+  deployNFT: nft.deployNFT,
   // legacy
   instance,
 };
 
 export default vx;
 export { payment };
-export { mintNFT } from './nft/index';
-export type { MintNFTOptions, MintNFTResult } from './types/nft';
+export { mintNFT, quickMint, deployNFT, buildTokenURI } from './nft/index';
+export type {
+  MintNFTOptions,
+  MintNFTResult,
+  DeployNFTOptions,
+  DeployNFTResult,
+  NFTMetadata,
+  QuickMintOptions,
+  QuickMintResult,
+} from './types/nft';
 
 // React component & hooks. `react` is an optional peer dependency, so these
 // are declared here for typing only and attached to module.exports as lazy

@@ -45,6 +45,7 @@
   },
   "scripts": {
     "build:vxc": "tsc -p packages/vxc/tsconfig.json",
+    "build:nft-artifact": "node scripts/build-nft-artifact.cjs",
     "prebuild": "bun run build:vxc",
     "build": "rimraf dist && tsc",
     "prepare": "bun run build",

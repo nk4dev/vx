@@ -19,7 +19,10 @@ jest.mock('ethers', () => {
     })),
     Wallet: jest
       .fn()
-      .mockImplementation(() => ({ address: '0xSignerAddress' })),
+      .mockImplementation(() => ({
+        address: '0xSignerAddress',
+        getAddress: async () => '0xSignerAddress',
+      })),
     Contract: MockContract,
     parseUnits: jest.fn((v) => BigInt(v) * 1000000000n),
   };

@@ -2,10 +2,10 @@ import {
   JsonRpcProvider,
   Wallet,
   parseEther,
-  parseUnits,
   type TransactionReceipt,
   type TransactionRequest,
 } from 'ethers';
+import { gweiToWei } from '../libs/units';
 
 export type SendPaymentOptions = {
   rpcUrl: string;
@@ -22,10 +22,6 @@ export type SendPaymentResult = {
   txHash: string;
   receipt: TransactionReceipt | null;
 };
-
-function gweiToWei(gwei?: string): bigint | undefined {
-  return gwei ? parseUnits(gwei, 'gwei') : undefined;
-}
 
 export async function sendPayment(
   opts: SendPaymentOptions

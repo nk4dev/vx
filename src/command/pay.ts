@@ -1,5 +1,6 @@
 import { getRpcUrl } from '../core/contract';
 import { sendPayment } from '../payment/index';
+import { KEY_FLAG_WARNING } from '../libs/env';
 
 function parseArgs(args: string[]) {
   const out: {
@@ -63,9 +64,7 @@ export async function handlePayCommand(argv: string[]) {
   }
 
   if (keyFlag && !json) {
-    console.error(
-      'Warning: --key exposes your private key in shell history and process listings. Prefer the PRIVATE_KEY environment variable.'
-    );
+    console.error(KEY_FLAG_WARNING);
   }
   const privateKey = keyFlag || process.env.PRIVATE_KEY;
   if (!privateKey) {

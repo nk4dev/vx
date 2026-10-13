@@ -11,7 +11,7 @@ import { handleIpfsCommand } from './ipfs';
 import { handleGenerateCommand } from './generate';
 import { handleCompileCommand } from './compile';
 import { handleDashCommand } from './dash';
-import { handleNftCommand } from './nft';
+import { handleMintCommand, handleNftCommand } from './nft';
 
 type RawHandler = (args: string[]) => unknown;
 
@@ -115,7 +115,8 @@ export function buildProgram(): Command {
   passThrough(program, 'ipfs', 'Pin / fetch content via IPFS', handleIpfsCommand);
   passThrough(program, 'generate', 'Generate a framework template (react, vue)', handleGenerateCommand);
   passThrough(program, 'compile', 'Compile Solidity with the VXC custom compiler', handleCompileCommand);
-  passThrough(program, 'nft', 'NFT operations: vx3 nft mint <contract> [...]', handleNftCommand);
+  passThrough(program, 'mint', 'Mint an NFT in one step: vx3 mint nft [contract] [...]', handleMintCommand);
+  passThrough(program, 'nft', 'NFT operations: vx3 nft mint [contract] [...]', handleNftCommand);
   passThrough(program, 'dash', 'Open the real-time developer dashboard', handleDashCommand);
 
   program

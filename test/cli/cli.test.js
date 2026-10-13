@@ -63,6 +63,32 @@ describe('vx3 CLI (commander)', () => {
     expect(r.stdout + r.stderr).toContain(`Missing value for ${flag}`);
   });
 
+  it('lists "mint" in help and documents "mint nft"', () => {
+    expect(run('help').stdout).toMatch(/\bmint\b.*vx3 mint nft/);
+    const r = run('mint', 'nft', '--help');
+    expect(r.status).toBe(0);
+    expect(r.stdout).toMatch(/Usage:\s+vx3 mint nft \[contractAddress\]/);
+  });
+
+  it('"mint" without a kind points at "mint nft"', () => {
+    const r = run('mint', 'token', '--json');
+    expect(r.status).not.toBe(0);
+    expect(JSON.parse(r.stdout.trim()).error).toMatch(/vx3 mint nft/);
+  });
+
+  it.each([
+    [['mint', 'nft', '--bogus'], 'Unknown option --bogus'],
+    [['mint', 'nft', '0x' + '1'.repeat(40), 'extra'], 'Unexpected argument extra'],
+    [['mint', 'nft', '--uri'], 'Missing value for --uri'],
+    [['mint', 'nft', '--id', 'abc'], 'Invalid --id abc'],
+    [['mint', 'nft', '--uri', 'x', '--name', 'y'], 'either --uri or --name'],
+    [['mint', 'nft', '0x' + '1'.repeat(40), '--deploy'], 'either a contract address or --deploy'],
+  ])('refuses %j before touching the network', (args, message) => {
+    const r = run(...args);
+    expect(r.status).not.toBe(0);
+    expect(r.stdout + r.stderr).toContain(message);
+  });
+
   it('nft --json emits a JSON error for an unknown subcommand', () => {
     const r = run('nft', 'bogus', '--json');
     expect(r.status).not.toBe(0);
