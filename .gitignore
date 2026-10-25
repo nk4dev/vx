@@ -19,3 +19,6 @@ coverage/
 jest-coverage/
 
 .env
+
+CLAUDE.md
+AGENT.md
