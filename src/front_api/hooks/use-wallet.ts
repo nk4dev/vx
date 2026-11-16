@@ -1,181 +1,126 @@
 import { useState, useEffect, useCallback } from 'react';
-import type {
-  Eip1193Provider,
-  UseWalletOptions,
-  WalletState,
-  WalletStatus,
-} from '../../types/wallet';
+import type { WalletState } from '../../types/front_components';
 
-function getInjectedProvider(): Eip1193Provider | undefined {
-  return (globalThis as Record<string, unknown>).ethereum as
-    Eip1193Provider | undefined;
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
 }
 
-function toError(err: unknown): Error {
-  return err instanceof Error ? err : new Error(String(err));
-}
+export function useWallet() {
+  const [state, setState] = useState<WalletState>({
+    address: null,
+    chainId: null,
+    isConnecting: false,
+    copied: false,
+    error: null,
+  });
 
-/**
- * React hook that connects to a browser wallet via the EIP-1193 provider
- * (`window.ethereum`) and keeps account / chain / balance in sync.
- *
- * @example
- * ```tsx
- * const wallet = useWallet();
- * if (wallet.status === 'connected') return <p>{wallet.address}</p>;
- * return <button onClick={wallet.connect}>Connect</button>;
- * ```
- */
-export function useWallet(options: UseWalletOptions = {}): WalletState {
-  const { autoConnect = true } = options;
-  const provider = options.provider ?? getInjectedProvider();
-
-  const [status, setStatus] = useState<WalletStatus>(
-    provider ? 'disconnected' : 'unavailable'
-  );
-  const [address, setAddress] = useState<string | null>(null);
-  const [chainId, setChainId] = useState<number | null>(null);
-  const [balanceWei, setBalanceWei] = useState<bigint | null>(null);
-  const [error, setError] = useState<Error | null>(null);
-
-  const applyAccounts = useCallback((accounts: string[]) => {
-    const next = accounts[0]?.toLowerCase() ?? null;
-    setAddress(next);
-    setStatus(next ? 'connected' : 'disconnected');
-    if (!next) setBalanceWei(null);
+  const getEthereum = useCallback(() => {
+    return typeof window !== 'undefined' ? window.ethereum : null;
   }, []);
 
-  const loadChainId = useCallback(async () => {
-    if (!provider) return;
-    const hex = (await provider.request({ method: 'eth_chainId' })) as string;
-    setChainId(parseInt(hex, 16));
-  }, [provider]);
-
-  const refreshBalance = useCallback(async () => {
-    if (!provider || !address) return;
+  const checkConnection = useCallback(async () => {
+    const eth = getEthereum();
+    if (!eth) return;
     try {
-      const hex = (await provider.request({
-        method: 'eth_getBalance',
-        params: [address, 'latest'],
-      })) as string;
-      setBalanceWei(BigInt(hex));
-    } catch (err) {
-      setError(toError(err));
-    }
-  }, [provider, address]);
-
-  const connect = useCallback(async (): Promise<string | null> => {
-    if (!provider) {
-      const err = new Error(
-        'No wallet provider found. Please install MetaMask or a compatible wallet.'
-      );
-      setError(err);
-      return null;
-    }
-    setError(null);
-    setStatus('connecting');
-    try {
-      const accounts = (await provider.request({
-        method: 'eth_requestAccounts',
-      })) as string[];
-      applyAccounts(accounts);
-      await loadChainId();
-      return accounts[0]?.toLowerCase() ?? null;
-    } catch (err) {
-      // 4001 = user rejected the request
-      setError(toError(err));
-      setStatus('disconnected');
-      return null;
-    }
-  }, [provider, applyAccounts, loadChainId]);
-
-  const disconnect = useCallback(async () => {
-    // Dapps cannot force-disconnect an injected wallet; revoke if supported.
-    try {
-      await provider?.request({
-        method: 'wallet_revokePermissions',
-        params: [{ eth_accounts: {} }],
-      });
-    } catch {
-      /* not supported by this wallet — local reset only */
-    }
-    applyAccounts([]);
-    setChainId(null);
-    setError(null);
-  }, [provider, applyAccounts]);
-
-  const switchChain = useCallback(
-    async (target: number) => {
-      if (!provider) return;
-      setError(null);
-      try {
-        await provider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x' + target.toString(16) }],
-        });
-      } catch (err) {
-        // 4902 = chain not added to the wallet; caller should wallet_addEthereumChain
-        setError(toError(err));
-        throw err;
+      const accounts: string[] = await eth.request({ method: 'eth_accounts' });
+      const chainId: string = await eth.request({ method: 'eth_chainId' });
+      if (accounts.length > 0) {
+        setState((prev) => ({
+          ...prev,
+          address: accounts[0],
+          chainId,
+          error: null,
+        }));
       }
-    },
-    [provider]
-  );
+    } catch (err: any) {
+      setState((prev) => ({ ...prev, error: err?.message || 'Failed to check wallet' }));
+    }
+  }, [getEthereum]);
 
-  // Restore an existing authorization without prompting the user.
   useEffect(() => {
-    if (!provider || !autoConnect) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const accounts = (await provider.request({
-          method: 'eth_accounts',
-        })) as string[];
-        if (cancelled) return;
-        applyAccounts(accounts);
-        if (accounts.length) await loadChainId();
-      } catch (err) {
-        if (!cancelled) setError(toError(err));
-      }
-    })();
-    return () => {
-      cancelled = true;
+    checkConnection();
+    const eth = getEthereum();
+    if (!eth?.on) return;
+
+    const handleAccounts = (accounts: string[]) => {
+      setState((prev) => ({
+        ...prev,
+        address: accounts[0] || null,
+        error: null,
+      }));
     };
-  }, [provider, autoConnect, applyAccounts, loadChainId]);
 
-  // Follow account / chain changes made inside the wallet.
-  useEffect(() => {
-    if (!provider?.on) return;
-    const onAccounts = (...args: unknown[]) =>
-      applyAccounts((args[0] as string[]) ?? []);
-    const onChain = (...args: unknown[]) =>
-      setChainId(parseInt(String(args[0]), 16));
-    const onDisconnect = () => applyAccounts([]);
-
-    provider.on('accountsChanged', onAccounts);
-    provider.on('chainChanged', onChain);
-    provider.on('disconnect', onDisconnect);
-    return () => {
-      provider.removeListener?.('accountsChanged', onAccounts);
-      provider.removeListener?.('chainChanged', onChain);
-      provider.removeListener?.('disconnect', onDisconnect);
+    const handleChain = (chainId: string) => {
+      setState((prev) => ({ ...prev, chainId, error: null }));
     };
-  }, [provider, applyAccounts]);
 
-  // Re-fetch balance whenever the account or chain changes.
-  useEffect(() => {
-    void refreshBalance();
-  }, [refreshBalance, chainId]);
+    eth.on('accountsChanged', handleAccounts);
+    eth.on('chainChanged', handleChain);
+
+    return () => {
+      eth.removeListener?.('accountsChanged', handleAccounts);
+      eth.removeListener?.('chainChanged', handleChain);
+    };
+  }, [getEthereum, checkConnection]);
+
+  const connect = useCallback(async () => {
+    const eth = getEthereum();
+    if (!eth) {
+      const err = 'No Ethereum wallet found. Please install MetaMask or another Web3 extension.';
+      setState((prev) => ({ ...prev, error: err }));
+      throw new Error(err);
+    }
+
+    setState((prev) => ({ ...prev, isConnecting: true, error: null }));
+    try {
+      const accounts: string[] = await eth.request({ method: 'eth_requestAccounts' });
+      const chainId: string = await eth.request({ method: 'eth_chainId' });
+      const address = accounts[0] || null;
+      setState((prev) => ({
+        ...prev,
+        address,
+        chainId,
+        isConnecting: false,
+        error: null,
+      }));
+      return { address, chainId };
+    } catch (err: any) {
+      setState((prev) => ({
+        ...prev,
+        isConnecting: false,
+        error: err?.message || 'Connection rejected',
+      }));
+      throw err;
+    }
+  }, [getEthereum]);
+
+  const disconnect = useCallback(() => {
+    setState({
+      address: null,
+      chainId: null,
+      isConnecting: false,
+      copied: false,
+      error: null,
+    });
+  }, []);
+
+  const copyAddress = useCallback(() => {
+    if (!state.address) return;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(state.address);
+      setState((prev) => ({ ...prev, copied: true }));
+      setTimeout(() => {
+        setState((prev) => ({ ...prev, copied: false }));
+      }, 2000);
+    }
+  }, [state.address]);
 
   return {
-    status,
-    address,
-    chainId,
-    balanceWei,
-    error,
+    ...state,
     connect,
     disconnect,
-    switchChain,
-    refreshBalance,
+    copyAddress,
   };
 }

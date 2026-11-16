@@ -1,3 +1,5 @@
+import { getRpcUrl } from '../core/contract';
+
 interface SendETHRequest {
   to: string;
   from: string;
@@ -16,14 +18,21 @@ export function sendETHRequestQuery({
   return { to, from, amountEth, rpcUrl, privateKey };
 }
 
-// React component & hooks
+// React UI Components
 export { Payment } from './payment';
+export { SendPayment } from './components/SendPayment';
+export { ConnectWallet } from './components/ConnectWallet';
+export { GasTracker } from './components/GasTracker';
+export { NFTMinter } from './components/NFTMinter';
+
+// React Hooks
 export { usePayment } from './hooks/use-payment';
 export { usePaymentStatus } from './hooks/use-payment-status';
 export { usePaymentDialog } from './hooks/use-payment-dialog';
 export { useWallet } from './hooks/use-wallet';
+export { useGasTracker } from './hooks/use-gas-tracker';
 
-// Payment types
+// Types
 export type {
   PaymentMode,
   PaymentStatus,
@@ -34,10 +43,10 @@ export type {
   PaymentDialogControl,
 } from '../types/payment';
 
-// Wallet types
 export type {
-  Eip1193Provider,
-  WalletStatus,
   WalletState,
-  UseWalletOptions,
-} from '../types/wallet';
+  ConnectWalletProps,
+  GasFeeData,
+  GasTrackerProps,
+  NFTMinterProps,
+} from '../types/front_components';

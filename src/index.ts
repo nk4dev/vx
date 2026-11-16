@@ -40,22 +40,33 @@ export type { MintNFTOptions, MintNFTResult } from './types/nft';
 // `vx3/react` exposes the same API eagerly.
 type ReactApi = typeof import('./front_api/react');
 export declare const Payment: ReactApi['Payment'];
+export declare const SendPayment: ReactApi['SendPayment'];
+export declare const ConnectWallet: ReactApi['ConnectWallet'];
+export declare const GasTracker: ReactApi['GasTracker'];
+export declare const NFTMinter: ReactApi['NFTMinter'];
 export declare const usePayment: ReactApi['usePayment'];
 export declare const usePaymentStatus: ReactApi['usePaymentStatus'];
 export declare const usePaymentDialog: ReactApi['usePaymentDialog'];
 export declare const useWallet: ReactApi['useWallet'];
+export declare const useGasTracker: ReactApi['useGasTracker'];
+
 const REACT_EXPORTS = [
   'Payment',
+  'SendPayment',
+  'ConnectWallet',
+  'GasTracker',
+  'NFTMinter',
   'usePayment',
   'usePaymentStatus',
   'usePaymentDialog',
   'useWallet',
+  'useGasTracker',
 ] as const;
+
 export type { GasFees } from './core/data';
 export type {
   Eip1193Provider,
   WalletStatus,
-  WalletState,
   UseWalletOptions,
 } from './types/wallet';
 export type {
@@ -67,6 +78,13 @@ export type {
   PaymentState,
   PaymentDialogControl,
 } from './types/payment';
+export type {
+  WalletState,
+  ConnectWalletProps,
+  GasFeeData,
+  GasTrackerProps,
+  NFTMinterProps,
+} from './types/front_components';
 
 // CJS interop: the build targets CommonJS, so merge the named exports onto the
 // default-export object and re-expose them as module.exports. This lets both
