@@ -7,7 +7,7 @@
 const config = {
   testEnvironment: 'node',
   clearMocks: true,
-  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/packages/hardhat/'],
 
   // Tests exercise the compiled output (they require ../dist/...), so
   // coverage is measured against dist. Scope is the config / RPC / payment

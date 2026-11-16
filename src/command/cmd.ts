@@ -12,6 +12,7 @@ import { handleGenerateCommand } from './generate';
 import { handleCompileCommand } from './compile';
 import { handleDashCommand } from './dash';
 import { handleMintCommand, handleNftCommand } from './nft';
+import { handleLoginCommand, handleLogoutCommand, handleSyncCommand } from './cloud';
 
 type RawHandler = (args: string[]) => unknown;
 
@@ -91,7 +92,7 @@ export function buildProgram(): Command {
     .allowUnknownOption(true)
     .allowExcessArguments(true)
     .argument('[args...]')
-    .action(() => rpc());
+    .action((args: string[] = []) => rpc(args));
 
   program
     .command('setup')
@@ -111,13 +112,16 @@ export function buildProgram(): Command {
     });
 
   passThrough(program, 'pay', 'Send a transaction: vx3 pay <to> <amount> [--rpc <url>]', handlePayCommand);
-  passThrough(program, 'gas', 'Estimate current gas fees for the configured RPC', handleGasCommand);
-  passThrough(program, 'ipfs', 'Pin / fetch content via IPFS', handleIpfsCommand);
+  passThrough(program, 'gas', 'Estimate current gas fees [--rpc <url>] [-p <config>] [--json]', handleGasCommand);
+  passThrough(program, 'ipfs', 'Fetch content via IPFS: vx3 ipfs fetch <cid> [gateway]', handleIpfsCommand);
   passThrough(program, 'generate', 'Generate a framework template (react, vue)', handleGenerateCommand);
   passThrough(program, 'compile', 'Compile Solidity with the VXC custom compiler', handleCompileCommand);
   passThrough(program, 'mint', 'Mint an NFT in one step: vx3 mint nft [contract] [...]', handleMintCommand);
   passThrough(program, 'nft', 'NFT operations: vx3 nft mint [contract] [...]', handleNftCommand);
   passThrough(program, 'dash', 'Open the real-time developer dashboard', handleDashCommand);
+  passThrough(program, 'login', 'Authenticate with a vx3 cloud server', handleLoginCommand);
+  passThrough(program, 'logout', 'Clear saved vx3 cloud credentials', handleLogoutCommand);
+  passThrough(program, 'sync', 'Sync the current project to vx3 cloud', handleSyncCommand);
 
   program
     .command('sol')

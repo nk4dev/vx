@@ -3,9 +3,7 @@ import * as path from 'path';
 import { ImportResolver, ResolvedSource } from './resolver';
 import { extractPragmaVersion } from './lexer';
 
-// Backend is loaded lazily so consumers without solc installed can still
-// import the frontend (lexer/resolver) for tooling.
-type SolcBackend = {
+export type SolcBackend = {
   compile(input: string): string;
   version?(): string;
 };
@@ -32,10 +30,26 @@ export interface ContractArtifact {
   metadata?: string;
 }
 
+export interface CompileError {
+  severity: string;
+  message: string;
+  formattedMessage?: string;
+  sourceLocation?: unknown;
+}
+
 export interface CompileResult {
   artifacts: ContractArtifact[];
-  errors: Array<{ severity: string; message: string; sourceLocation?: unknown }>;
+  errors: CompileError[];
   sources: string[];
+}
+
+interface SolcContractOutput {
+  abi?: unknown[];
+  evm?: {
+    bytecode?: { object?: string };
+    deployedBytecode?: { object?: string };
+  };
+  metadata?: string;
 }
 
 export class VXCompiler {
@@ -43,12 +57,15 @@ export class VXCompiler {
 
   private getBackend(): SolcBackend {
     if (this.backend) return this.backend;
-    // solc ships no type declarations and is loaded lazily so the compiler can
-    // be constructed (and unit-tested) without it.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const solc = require('solc') as SolcBackend;
-    this.backend = solc;
-    return solc;
+    try {
+      // Lazy load standard solc package
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const solc = require('solc') as SolcBackend;
+      this.backend = solc;
+      return solc;
+    } catch (err) {
+      throw new Error(`VXC: solc backend is not available. Please install solc. (${err})`);
+    }
   }
 
   compile(opts: CompileOptions): CompileResult {
@@ -60,13 +77,16 @@ export class VXCompiler {
     });
 
     const graph = resolver.resolveGraph(opts.entry);
+    const entryResolved = path.resolve(basePath, opts.entry);
     const entrySrc = [...graph.values()].find(
-      (s) => path.resolve(s.absolutePath) === path.resolve(basePath, opts.entry)
-    )!;
-    const pragma = extractPragmaVersion(entrySrc.tokens);
+      (s) => path.resolve(s.absolutePath) === entryResolved
+    );
+    const pragma = entrySrc ? extractPragmaVersion(entrySrc.tokens) : null;
 
     const sources: Record<string, { content: string }> = {};
-    for (const [vp, src] of graph) sources[vp] = { content: src.content };
+    for (const [vp, src] of graph) {
+      sources[vp] = { content: src.content };
+    }
 
     const standardJson = {
       language: 'Solidity',
@@ -94,40 +114,52 @@ export class VXCompiler {
     const raw = backend.compile(JSON.stringify(standardJson));
     const out = JSON.parse(raw);
 
-    const errors = (out.errors ?? []).map((e: { severity: string; formattedMessage?: string; message: string; sourceLocation?: unknown }) => ({
-      severity: e.severity,
-      message: e.formattedMessage ?? e.message,
-      sourceLocation: e.sourceLocation,
-    }));
+    const errors: CompileError[] = (out.errors ?? []).map(
+      (e: { severity: string; formattedMessage?: string; message: string; sourceLocation?: unknown }) => ({
+        severity: e.severity,
+        message: e.formattedMessage ?? e.message,
+        formattedMessage: e.formattedMessage,
+        sourceLocation: e.sourceLocation,
+      })
+    );
+
+    const hasError = errors.some((e) => e.severity === 'error');
 
     const artifacts: ContractArtifact[] = [];
     const contracts = out.contracts ?? {};
-    for (const [sourcePath, perSource] of Object.entries<Record<string, { abi: unknown[]; evm: { bytecode: { object: string }; deployedBytecode: { object: string } }; metadata?: string }>>(contracts)) {
+
+    for (const [sourcePath, perSource] of Object.entries<Record<string, SolcContractOutput>>(contracts)) {
       for (const [name, c] of Object.entries(perSource)) {
+        const rawBytecode = c?.evm?.bytecode?.object ?? '';
+        const rawDeployed = c?.evm?.deployedBytecode?.object ?? '';
+        const bytecode = rawBytecode ? (rawBytecode.startsWith('0x') ? rawBytecode : '0x' + rawBytecode) : '0x';
+        const deployedBytecode = rawDeployed ? (rawDeployed.startsWith('0x') ? rawDeployed : '0x' + rawDeployed) : '0x';
+
         artifacts.push({
           contractName: name,
           sourcePath,
-          abi: c.abi,
-          bytecode: '0x' + c.evm.bytecode.object,
-          deployedBytecode: '0x' + c.evm.deployedBytecode.object,
+          abi: c?.abi ?? [],
+          bytecode,
+          deployedBytecode,
           compiler: {
             name: 'vxc',
             backend: backend.version ? backend.version() : 'solc',
             pragma,
           },
-          metadata: c.metadata,
+          ...(opts.metadata && c?.metadata ? { metadata: c.metadata } : {}),
         });
       }
     }
 
-    if (opts.emitArtifacts !== false && opts.outDir) {
+    // Only write artifacts if there are no compilation errors
+    if (!hasError && opts.emitArtifacts !== false && opts.outDir) {
       this.writeArtifacts(opts.outDir, artifacts, [...graph.values()]);
     }
 
     return { artifacts, errors, sources: [...graph.keys()] };
   }
 
-  private writeArtifacts(outDir: string, artifacts: ContractArtifact[], srcs: ResolvedSource[]) {
+  private writeArtifacts(outDir: string, artifacts: ContractArtifact[], srcs: ResolvedSource[]): void {
     fs.mkdirSync(outDir, { recursive: true });
     for (const a of artifacts) {
       const file = path.join(outDir, `${a.contractName}.json`);

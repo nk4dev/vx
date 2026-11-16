@@ -33,6 +33,7 @@ const vx = {
 
 export default vx;
 export { payment };
+export * as cloud from './core/cloud';
 export { mintNFT, quickMint, deployNFT, buildTokenURI } from './nft/index';
 export type {
   MintNFTOptions,

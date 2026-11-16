@@ -26,17 +26,21 @@ export async function handleGasCommand(args: string[]) {
   try {
     // Parse flags
     let rpcUrl: string | undefined;
+    let configPath: string | undefined;
     for (let i = 0; i < args.length; i++) {
       const a = args[i];
       if (a === '--rpc') {
         rpcUrl = args[i + 1];
         i++;
+      } else if (a === '--path' || a === '-p') {
+        configPath = args[i + 1];
+        i++;
       }
     }
 
     if (!rpcUrl) {
-      // Fall back to the RPC configured in vx.config.json.
-      rpcUrl = getFirstRpcUrl();
+      // Fall back to the RPC configured in vx.config.json (or --path).
+      rpcUrl = getFirstRpcUrl({ path: configPath });
     }
 
     const fees = await getGasFees(rpcUrl);

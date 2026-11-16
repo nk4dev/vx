@@ -26,6 +26,17 @@ describe('lex()', () => {
     expect(tokens).toContainEqual(expect.objectContaining({ kind: 'import', path: './Lib.sol' }));
   });
 
+  it('extracts import with alias (import "path" as Alias)', () => {
+    const tokens = lex('import "./Lib.sol" as Lib;');
+    expect(tokens).toContainEqual(expect.objectContaining({ kind: 'import', path: './Lib.sol' }));
+  });
+
+  it('extracts multiline import statements', () => {
+    const src = 'import {\n  IERC20,\n  IERC20Metadata\n} from "./interfaces/IERC20.sol";';
+    const tokens = lex(src);
+    expect(tokens).toContainEqual(expect.objectContaining({ kind: 'import', path: './interfaces/IERC20.sol' }));
+  });
+
   it('extracts contract name', () => {
     const tokens = lex('contract Token is ERC20 {');
     expect(tokens).toContainEqual(expect.objectContaining({ kind: 'contract', name: 'Token' }));

@@ -2,8 +2,8 @@ import { exit } from 'node:process';
 import { rpc_create_config } from './config';
 import { view_rpc_config } from './connect';
 
-export function rpc() {
-  const subcommand = process.argv[3];
+export function rpc(args: string[] = []) {
+  const subcommand = args[0];
   switch (subcommand) {
     case 'init':
       try {

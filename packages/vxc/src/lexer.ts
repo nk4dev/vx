@@ -1,8 +1,7 @@
-// Minimal Solidity frontend lexer used by VXC for import/pragma discovery.
-// This is intentionally lightweight: full Solidity parsing is delegated to
-// the configured backend (solc). The lexer's job is dependency graph
-// construction and pragma extraction so VXC can resolve sources before
-// invoking the backend.
+// Minimal Solidity frontend lexer used by VXC for import/pragma/contract discovery.
+// Full Solidity parsing and AST generation is delegated to the configured solc backend.
+// The lexer's job is dependency graph construction and pragma extraction so VXC
+// can resolve sources before invoking the backend.
 
 export type Token =
   | { kind: 'pragma'; value: string; line: number }
@@ -11,71 +10,294 @@ export type Token =
 
 export function lex(source: string): Token[] {
   const tokens: Token[] = [];
-  const stripped = stripCommentsAndStrings(source);
-  const originalLines = source.split(/\r?\n/);
-  const strippedLines = stripped.split(/\r?\n/);
+  const len = source.length;
+  let i = 0;
+  let line = 1;
 
-  for (let i = 0; i < strippedLines.length; i++) {
-    const line = strippedLines[i].trim();
-    const origLine = (originalLines[i] ?? '').trim();
-    if (!line && !origLine) continue;
+  while (i < len) {
+    const c = source[i];
+    const next = i + 1 < len ? source[i + 1] : '';
 
-    const pragma = /^pragma\s+([^;]+);/.exec(line);
-    if (pragma) {
-      tokens.push({ kind: 'pragma', value: pragma[1].trim(), line: i + 1 });
+    // Handle newlines
+    if (c === '\n') {
+      line++;
+      i++;
+      continue;
+    }
+    if (c === '\r') {
+      if (next === '\n') {
+        i++;
+      }
+      line++;
+      i++;
       continue;
     }
 
-    // Import paths are string literals, so run the regex on the original line.
-    // Use the stripped line as a guard: if it no longer starts with `import`,
-    // the statement was inside a comment and should be skipped.
-    if (/^import\s/.test(line)) {
-      const imp = /^import\s+(?:[^"']*\s+from\s+)?["']([^"']+)["']\s*;/.exec(origLine);
-      if (imp) {
-        tokens.push({ kind: 'import', path: imp[1], line: i + 1 });
-        continue;
-      }
+    // Skip whitespace
+    if (c === ' ' || c === '\t' || c === '\v' || c === '\f') {
+      i++;
+      continue;
     }
 
-    const c = /\b(contract|library|interface)\s+([A-Za-z_]\w*)/.exec(line);
-    if (c) {
-      tokens.push({ kind: 'contract', name: c[2], line: i + 1 });
+    // Line comment: // ...
+    if (c === '/' && next === '/') {
+      i += 2;
+      while (i < len && source[i] !== '\n' && source[i] !== '\r') {
+        i++;
+      }
+      continue;
     }
+
+    // Block comment: /* ... */
+    if (c === '/' && next === '*') {
+      i += 2;
+      while (i < len) {
+        if (source[i] === '\n') {
+          line++;
+          i++;
+        } else if (source[i] === '\r') {
+          if (i + 1 < len && source[i + 1] === '\n') {
+            i++;
+          }
+          line++;
+          i++;
+        } else if (source[i] === '*' && i + 1 < len && source[i + 1] === '/') {
+          i += 2;
+          break;
+        } else {
+          i++;
+        }
+      }
+      continue;
+    }
+
+    // String literals outside of import (e.g. variable assignments)
+    if (c === '"' || c === "'") {
+      const quote = c;
+      i++;
+      while (i < len) {
+        if (source[i] === '\\') {
+          i += 2; // skip escaped character
+          continue;
+        }
+        if (source[i] === quote) {
+          i++;
+          break;
+        }
+        if (source[i] === '\n') {
+          line++;
+        } else if (source[i] === '\r') {
+          if (i + 1 < len && source[i + 1] === '\n') {
+            i++;
+          }
+          line++;
+        }
+        i++;
+      }
+      continue;
+    }
+
+    // Identifier or keyword candidate
+    if (isIdentStart(c)) {
+      const startLine = line;
+      let ident = '';
+      while (i < len && isIdentPart(source[i])) {
+        ident += source[i];
+        i++;
+      }
+
+      if (ident === 'pragma') {
+        // Collect up to semicolon
+        let pragmaContent = '';
+        while (i < len && source[i] !== ';') {
+          if (source[i] === '\n') {
+            line++;
+          } else if (source[i] === '\r') {
+            if (i + 1 < len && source[i + 1] === '\n') {
+              i++;
+            }
+            line++;
+          }
+          pragmaContent += source[i];
+          i++;
+        }
+        if (i < len && source[i] === ';') {
+          i++; // consume ';'
+        }
+        tokens.push({
+          kind: 'pragma',
+          value: pragmaContent.trim(),
+          line: startLine,
+        });
+        continue;
+      }
+
+      if (ident === 'import') {
+        // Collect statement up to semicolon
+        let foundPath: string | null = null;
+        while (i < len && source[i] !== ';') {
+          const ch = source[i];
+          const nxt = i + 1 < len ? source[i + 1] : '';
+
+          // Track newlines
+          if (ch === '\n') {
+            line++;
+            i++;
+            continue;
+          }
+          if (ch === '\r') {
+            if (nxt === '\n') i++;
+            line++;
+            i++;
+            continue;
+          }
+
+          // Skip line comments inside import statement
+          if (ch === '/' && nxt === '/') {
+            i += 2;
+            while (i < len && source[i] !== '\n' && source[i] !== '\r') i++;
+            continue;
+          }
+
+          // Skip block comments inside import statement
+          if (ch === '/' && nxt === '*') {
+            i += 2;
+            while (i < len) {
+              if (source[i] === '\n') {
+                line++;
+                i++;
+              } else if (source[i] === '\r') {
+                if (i + 1 < len && source[i + 1] === '\n') i++;
+                line++;
+                i++;
+              } else if (source[i] === '*' && i + 1 < len && source[i + 1] === '/') {
+                i += 2;
+                break;
+              } else {
+                i++;
+              }
+            }
+            continue;
+          }
+
+          // String literal inside import statement (the import path!)
+          if (ch === '"' || ch === "'") {
+            const quote = ch;
+            i++;
+            let importPath = '';
+            while (i < len) {
+              if (source[i] === '\\') {
+                importPath += source[i + 1] ?? '';
+                i += 2;
+                continue;
+              }
+              if (source[i] === quote) {
+                i++;
+                break;
+              }
+              importPath += source[i];
+              i++;
+            }
+            foundPath = importPath;
+            continue;
+          }
+
+          i++;
+        }
+
+        if (i < len && source[i] === ';') {
+          i++; // consume ';'
+        }
+
+        if (foundPath !== null) {
+          tokens.push({
+            kind: 'import',
+            path: foundPath,
+            line: startLine,
+          });
+        }
+        continue;
+      }
+
+      if (ident === 'contract' || ident === 'interface' || ident === 'library') {
+        // Skip whitespace and comments to find the contract/interface/library name
+        while (i < len) {
+          const ch = source[i];
+          const nxt = i + 1 < len ? source[i + 1] : '';
+          if (ch === ' ' || ch === '\t' || ch === '\v' || ch === '\f') {
+            i++;
+            continue;
+          }
+          if (ch === '\n') {
+            line++;
+            i++;
+            continue;
+          }
+          if (ch === '\r') {
+            if (nxt === '\n') i++;
+            line++;
+            i++;
+            continue;
+          }
+          if (ch === '/' && nxt === '/') {
+            i += 2;
+            while (i < len && source[i] !== '\n' && source[i] !== '\r') i++;
+            continue;
+          }
+          if (ch === '/' && nxt === '*') {
+            i += 2;
+            while (i < len) {
+              if (source[i] === '\n') {
+                line++;
+                i++;
+              } else if (source[i] === '\r') {
+                if (i + 1 < len && source[i + 1] === '\n') i++;
+                line++;
+                i++;
+              } else if (source[i] === '*' && i + 1 < len && source[i + 1] === '/') {
+                i += 2;
+                break;
+              } else {
+                i++;
+              }
+            }
+            continue;
+          }
+          break;
+        }
+
+        if (i < len && isIdentStart(source[i])) {
+          let name = '';
+          while (i < len && isIdentPart(source[i])) {
+            name += source[i];
+            i++;
+          }
+          tokens.push({
+            kind: 'contract',
+            name,
+            line: startLine,
+          });
+        }
+        continue;
+      }
+
+      // Any other identifier (e.g. 'abstract', 'function', etc.)
+      continue;
+    }
+
+    // Any other character
+    i++;
   }
+
   return tokens;
 }
 
-function stripCommentsAndStrings(src: string): string {
-  let out = '';
-  let i = 0;
-  while (i < src.length) {
-    const c = src[i];
-    const n = src[i + 1];
-    if (c === '/' && n === '/') {
-      while (i < src.length && src[i] !== '\n') i++;
-      continue;
-    }
-    if (c === '/' && n === '*') {
-      i += 2;
-      while (i < src.length && !(src[i] === '*' && src[i + 1] === '/')) i++;
-      i += 2;
-      continue;
-    }
-    if (c === '"' || c === "'") {
-      const q = c;
-      out += ' ';
-      i++;
-      while (i < src.length && src[i] !== q) {
-        if (src[i] === '\\') i++;
-        i++;
-      }
-      i++;
-      continue;
-    }
-    out += c;
-    i++;
-  }
-  return out;
+function isIdentStart(c: string): boolean {
+  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '_' || c === '$';
+}
+
+function isIdentPart(c: string): boolean {
+  return isIdentStart(c) || (c >= '0' && c <= '9');
 }
 
 export function extractPragmaVersion(tokens: Token[]): string | null {

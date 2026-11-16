@@ -22,7 +22,7 @@ export class ImportResolver {
 
   resolveEntry(entry: string): ResolvedSource {
     const abs = path.resolve(this.opts.basePath, entry);
-    return this.load(abs, path.relative(this.opts.basePath, abs).replace(/\\/g, '/'));
+    return this.load(abs, this.virtual(abs));
   }
 
   resolveGraph(entry: string): Map<string, ResolvedSource> {
@@ -50,13 +50,25 @@ export class ImportResolver {
       return this.load(abs, this.virtual(abs));
     }
 
-    for (const inc of [path.dirname(fromFile), ...(this.opts.includePaths ?? []), this.opts.basePath]) {
-      const candidate = path.resolve(inc, remapped);
-      if (fs.existsSync(candidate)) return this.load(candidate, this.virtual(candidate));
+    // Try candidates: relative to fromFile, in includePaths, or relative to basePath
+    const searchDirs = [
+      path.dirname(fromFile),
+      ...(this.opts.includePaths ?? []),
+      this.opts.basePath,
+    ];
+
+    for (const dir of searchDirs) {
+      const candidate = path.resolve(dir, remapped);
+      if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
+        return this.load(candidate, this.virtual(candidate));
+      }
     }
 
+    // Try looking up node_modules
     const nm = this.tryNodeModules(remapped);
-    if (nm) return this.load(nm, remapped);
+    if (nm) {
+      return this.load(nm, remapped);
+    }
 
     throw new Error(`VXC: cannot resolve import "${spec}" from ${fromFile}`);
   }
@@ -65,7 +77,9 @@ export class ImportResolver {
     let dir = this.opts.basePath;
     while (true) {
       const candidate = path.join(dir, 'node_modules', spec);
-      if (fs.existsSync(candidate)) return candidate;
+      if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
+        return candidate;
+      }
       const parent = path.dirname(dir);
       if (parent === dir) return null;
       dir = parent;
@@ -75,7 +89,9 @@ export class ImportResolver {
   private applyRemappings(spec: string): string {
     const m = this.opts.remappings ?? {};
     for (const [k, v] of Object.entries(m)) {
-      if (spec.startsWith(k)) return v + spec.slice(k.length);
+      if (spec.startsWith(k)) {
+        return v + spec.slice(k.length);
+      }
     }
     return spec;
   }
@@ -88,7 +104,9 @@ export class ImportResolver {
   private load(abs: string, virtualPath: string): ResolvedSource {
     const cached = this.cache.get(abs);
     if (cached) return cached;
-    if (!fs.existsSync(abs)) throw new Error(`VXC: source not found: ${abs}`);
+    if (!fs.existsSync(abs)) {
+      throw new Error(`VXC: source not found: ${abs}`);
+    }
     const content = fs.readFileSync(abs, 'utf8');
     const src: ResolvedSource = {
       absolutePath: abs,

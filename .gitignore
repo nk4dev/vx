@@ -22,3 +22,8 @@ jest-coverage/
 
 CLAUDE.md
 AGENT.md
+
+# Hardhat build & cache artifacts
+packages/hardhat/.hh-cache/
+packages/hardhat/artifacts/
+packages/hardhat/typechain-types/

@@ -23,16 +23,34 @@ function parseArgs(argv: string[]): ParsedArgs {
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--out' || a === '-o') args.out = argv[++i];
-    else if (a === '--optimize') args.optimize = true;
-    else if (a === '--runs') args.runs = Number(argv[++i]);
-    else if (a === '--evm') args.evm = argv[++i];
-    else if (a === '--base') args.base = argv[++i];
-    else if (a === '--metadata') args.metadata = true;
-    else if (a === '--remap') {
-      const [k, v] = argv[++i].split('=');
-      args.remappings[k] = v;
-    } else if (!args.entry) args.entry = a;
+    if (a === '--out' || a === '-o') {
+      args.out = argv[++i];
+    } else if (a === '--optimize') {
+      args.optimize = true;
+    } else if (a === '--runs') {
+      const val = Number(argv[++i]);
+      if (!isNaN(val) && val >= 0) args.runs = val;
+    } else if (a === '--evm') {
+      args.evm = argv[++i];
+    } else if (a === '--base') {
+      args.base = argv[++i];
+    } else if (a === '--metadata') {
+      args.metadata = true;
+    } else if (a === '--remap') {
+      const raw = argv[++i] ?? '';
+      const eqIdx = raw.indexOf('=');
+      if (eqIdx !== -1) {
+        args.remappings[raw.slice(0, eqIdx)] = raw.slice(eqIdx + 1);
+      }
+    } else if (a.startsWith('--remap=')) {
+      const raw = a.slice('--remap='.length);
+      const eqIdx = raw.indexOf('=');
+      if (eqIdx !== -1) {
+        args.remappings[raw.slice(0, eqIdx)] = raw.slice(eqIdx + 1);
+      }
+    } else if (!a.startsWith('-') && !args.entry) {
+      args.entry = a;
+    }
   }
   return args;
 }
