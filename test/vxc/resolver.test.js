@@ -3,7 +3,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { ImportResolver } = require('../../packages/vxc/dist/resolver');
+const { ImportResolver } = require('@vx3/solc-compiler');
 
 function makeTmp() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'vxc-resolver-'));

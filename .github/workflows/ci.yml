@@ -24,7 +24,7 @@ jobs:
       - name: Install SDK dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build SDK (also builds @vx3/vxc via prebuild)
+      - name: Build SDK
         run: bun run build
 
       - name: Lint

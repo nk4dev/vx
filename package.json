@@ -43,14 +43,10 @@
     "packages/template",
     "packages/hardhat",
     "packages/react-template",
-    "packages/vue-template",
-    "packages/vxc"
+    "packages/vue-template"
   ],
   "homepage": "https://vx.nknighta.me",
   "license": "MIT",
-  "workspaces": [
-    "packages/vxc"
-  ],
   "keywords": [
     "web3",
     "vx3",
@@ -61,12 +57,10 @@
     "vx3": "dist/cli.js"
   },
   "scripts": {
-    "build:vxc": "tsc -p packages/vxc/tsconfig.json",
     "build:esm": "bun scripts/build-esm.mjs",
-    "prebuild": "bun run build:vxc",
     "build": "rimraf dist && tsc && bun run build:esm",
     "prepare": "bun run build",
-    "clean": "rimraf dist packages/vxc/dist",
+    "clean": "rimraf dist",
     "dev": "node dist/cli.js",
     "start": "bun run build && node dist/cli.js api --debug",
     "lint": "eslint .",
@@ -84,9 +78,9 @@
     "hh:deploy": "hardhat --config packages/hardhat/hardhat.config.ts run packages/hardhat/scripts/deploy.ts --network localhost"
   },
   "dependencies": {
+    "@vx3/solc-compiler": "github:nk4dev/vx-solc",
     "commander": "^12.1.0",
-    "ethers": "^6.15.0",
-    "solc": "^0.8.30"
+    "ethers": "^6.15.0"
   },
   "peerDependencies": {
     "react": ">=18",

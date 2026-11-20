@@ -3,13 +3,11 @@ import { stdin as input, stdout as output } from 'node:process';
 import * as readline from 'node:readline';
 import { init } from './pjmake';
 
-const rl = readline.createInterface({ input, output });
-
 const questions: string[] = ['project name or path:'];
 
 const answers: string[] = [];
 
-function shellInputHandler(index: number) {
+function shellInputHandler(rl: readline.Interface, index: number) {
   try {
     if (index >= questions.length) {
       rl.close();
@@ -27,7 +25,7 @@ function shellInputHandler(index: number) {
         init(answers[0]);
         rl.close();
       } else {
-        shellInputHandler(index + 1);
+        shellInputHandler(rl, index + 1);
       }
     });
   } catch (error) {
@@ -37,5 +35,8 @@ function shellInputHandler(index: number) {
 }
 
 export default function shellHandler() {
-  shellInputHandler(0);
+  // Created lazily: opening stdin at import time would hold the event loop
+  // open (and swallow input) for every other vx3 command.
+  const rl = readline.createInterface({ input, output });
+  shellInputHandler(rl, 0);
 }

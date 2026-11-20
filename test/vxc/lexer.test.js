@@ -1,6 +1,6 @@
 'use strict';
 
-const { lex, extractPragmaVersion } = require('../../packages/vxc/dist/lexer');
+const { lex, extractPragmaVersion } = require('@vx3/solc-compiler');
 
 describe('lex()', () => {
   it('extracts pragma solidity', () => {
