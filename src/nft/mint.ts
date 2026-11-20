@@ -93,10 +93,22 @@ function mintedTokenId(
   return undefined;
 }
 
+function toBase64Utf8(input: string): string {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(input, 'utf-8').toString('base64');
+  }
+  const bytes = new TextEncoder().encode(input);
+  let binary = '';
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+}
+
 /** Inline ERC-721 metadata as a `data:application/json;base64,...` token URI. */
 export function buildTokenURI(metadata: NFTMetadata): string {
   const json = JSON.stringify(metadata);
-  return `data:application/json;base64,${Buffer.from(json).toString('base64')}`;
+  return `data:application/json;base64,${toBase64Utf8(json)}`;
 }
 
 /** Deploy the bundled ERC-721 collection (contracts/VXCollection.sol). */

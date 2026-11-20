@@ -3,18 +3,29 @@
   "version": "0.1.3",
   "description": "A CLI tool for vx3 smart contracts platform",
   "main": "dist/index.js",
+  "module": "dist/esm/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "browser": {
+        "import": "./dist/esm/index.browser.mjs",
+        "default": "./dist/esm/index.browser.mjs"
+      },
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./react": {
       "types": "./dist/front_api/react.d.ts",
+      "import": "./dist/esm/front_api/react.mjs",
+      "require": "./dist/front_api/react.js",
       "default": "./dist/front_api/react.js"
     },
     "./core/config": {
       "types": "./dist/core/config.d.ts",
+      "import": "./dist/esm/core/config.mjs",
+      "require": "./dist/core/config.js",
       "default": "./dist/core/config.js"
     },
     "./dist/*": "./dist/*",
@@ -45,9 +56,10 @@
   },
   "scripts": {
     "build:vxc": "tsc -p packages/vxc/tsconfig.json",
+    "build:esm": "bun scripts/build-esm.mjs",
     "build:nft-artifact": "node scripts/build-nft-artifact.cjs",
     "prebuild": "bun run build:vxc",
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && tsc && bun run build:esm",
     "prepare": "bun run build",
     "clean": "rimraf dist packages/vxc/dist",
     "dev": "node dist/cli.js",
