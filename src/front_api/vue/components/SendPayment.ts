@@ -1,5 +1,5 @@
 import { defineComponent, h, ref, type CSSProperties, type PropType } from 'vue';
-import { getRpcUrl } from '../../../core/contract';
+import { ethToWeiHex } from '../../amount';
 import type { PaymentMode, PaymentResult } from '../../../types/payment';
 import type { Eip1193Provider } from '../../../types/wallet';
 
@@ -83,12 +83,13 @@ export const SendPayment = defineComponent({
           if (!eth) throw new Error('No Ethereum wallet found');
 
           const accounts = (await eth.request({ method: 'eth_requestAccounts' })) as string[];
+          if (!accounts?.length) throw new Error('No accounts available.');
           const from = accounts[0];
-          const weiValue = BigInt(Math.floor(parseFloat(amountVal.value) * 1e18)).toString(16);
+          const valueHex = ethToWeiHex(amountVal.value);
 
           const txHash = (await eth.request({
             method: 'eth_sendTransaction',
-            params: [{ from, to: toAddress.value, value: `0x${weiValue}` }],
+            params: [{ from, to: toAddress.value, value: valueHex }],
           })) as string;
 
           const res: PaymentResult = { txHash };
@@ -96,7 +97,6 @@ export const SendPayment = defineComponent({
           emit('success', res);
         } else {
           const endpoint = props.apiEndpoint;
-          const rpc = props.rpcUrl || getRpcUrl();
           const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -104,13 +104,32 @@ export const SendPayment = defineComponent({
               to: toAddress.value,
               amountEth: amountVal.value,
               currency: props.currency,
-              rpcUrl: rpc,
+              rpcUrl: props.rpcUrl || undefined,
             }),
           });
 
-          if (!response.ok) throw new Error(`API error: ${response.status}`);
-          const data = await response.json();
-          const res: PaymentResult = { txHash: data.txHash || data.receipt?.transactionHash, receipt: data.receipt };
+          const text = await response.text();
+          let data: {
+            error?: string;
+            txHash?: string;
+            receipt?: PaymentResult['receipt'];
+          } = {};
+          try {
+            data = text ? JSON.parse(text) : {};
+          } catch {
+            data = {};
+          }
+
+          if (!response.ok) {
+            throw new Error(data.error ?? `API error: ${response.status}`);
+          }
+          const rawReceiptHash =
+            data.receipt && typeof data.receipt.transactionHash === 'string'
+              ? data.receipt.transactionHash
+              : undefined;
+          const txHash = data.txHash || rawReceiptHash;
+          if (!txHash) throw new Error('Payment API returned no txHash');
+          const res: PaymentResult = { txHash, receipt: data.receipt };
           result.value = res;
           emit('success', res);
         }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useWallet } from '../hooks/use-wallet';
+import { ethToWeiHex } from '../amount';
 import type { NFTMinterProps } from '../../types/front_components';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -90,14 +91,14 @@ export function NFTMinter(props: NFTMinterProps): React.ReactElement {
 
       // ERC721 safeMint(address) selector: 0xa0712d68 (mint(uint256)) or 0x40c10f19 (mint(address,uint256)) or 0x1249c58b (mint())
       // Standard simple mint transaction with value
-      const totalWei = BigInt(Math.floor(parseFloat(totalEth) * 1e18)).toString(16);
+      const valueHex = ethToWeiHex(totalEth);
       const mintedTx = (await eth.request({
         method: 'eth_sendTransaction',
         params: [
           {
             from: targetAddress,
             to: contractAddress,
-            value: `0x${totalWei}`,
+            value: valueHex,
             data: '0x1249c58b', // mint() default selector
           },
         ],

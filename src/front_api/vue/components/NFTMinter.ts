@@ -1,5 +1,6 @@
 import { defineComponent, h, ref, computed, type CSSProperties, type PropType } from 'vue';
 import { useWallet } from '../composables/use-wallet';
+import { ethToWeiHex } from '../../amount';
 import type { Eip1193Provider } from '../../../types/wallet';
 
 const styles = {
@@ -102,14 +103,14 @@ export const NFTMinter = defineComponent({
             : null;
         if (!eth) throw new Error('No Ethereum wallet found');
 
-        const totalWei = BigInt(Math.floor(parseFloat(totalEth.value) * 1e18)).toString(16);
+        const valueHex = ethToWeiHex(totalEth.value);
         const mintedTx = (await eth.request({
           method: 'eth_sendTransaction',
           params: [
             {
               from: targetAddress,
               to: props.contractAddress,
-              value: `0x${totalWei}`,
+              value: valueHex,
               data: '0x1249c58b', // mint() default selector
             },
           ],

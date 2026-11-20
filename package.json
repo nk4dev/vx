@@ -3,26 +3,39 @@
   "version": "0.1.3",
   "description": "A CLI tool for vx3 smart contracts platform",
   "main": "dist/index.js",
+  "module": "dist/esm/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "browser": {
+        "import": "./dist/esm/index.browser.mjs",
+        "default": "./dist/esm/index.browser.mjs"
+      },
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./react": {
       "types": "./dist/front_api/react.d.ts",
+      "import": "./dist/esm/front_api/react.mjs",
+      "require": "./dist/front_api/react.js",
       "default": "./dist/front_api/react.js"
+    },
+    "./vue": {
+      "types": "./dist/front_api/vue.d.ts",
+      "import": "./dist/esm/front_api/vue.mjs",
+      "require": "./dist/front_api/vue.js",
+      "default": "./dist/front_api/vue.js"
     },
     "./core/config": {
       "types": "./dist/core/config.d.ts",
+      "import": "./dist/esm/core/config.mjs",
+      "require": "./dist/core/config.js",
       "default": "./dist/core/config.js"
     },
     "./dist/*": "./dist/*",
-    "./package.json": "./package.json",
-    "./vue": {
-      "types": "./dist/front_api/vue.d.ts",
-      "default": "./dist/front_api/vue.js"
-    }
+    "./package.json": "./package.json"
   },
   "author": "Nknight AMAMIYA@nk4dev <nknighta@varius.technology>",
   "files": [
@@ -49,8 +62,9 @@
   },
   "scripts": {
     "build:vxc": "tsc -p packages/vxc/tsconfig.json",
+    "build:esm": "bun scripts/build-esm.mjs",
     "prebuild": "bun run build:vxc",
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && tsc && bun run build:esm",
     "prepare": "bun run build",
     "clean": "rimraf dist packages/vxc/dist",
     "dev": "node dist/cli.js",
