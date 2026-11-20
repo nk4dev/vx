@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 export interface WalletState {
   address: string | null;
   chainId: string | null;
@@ -8,7 +10,7 @@ export interface WalletState {
 
 export interface ConnectWalletProps {
   className?: string;
-  style?: Record<string, any>;
+  style?: CSSProperties;
   onConnect?: (address: string, chainId: string | null) => void;
   onDisconnect?: () => void;
 }
@@ -25,7 +27,7 @@ export interface GasTrackerProps {
   rpcUrl?: string;
   pollIntervalMs?: number;
   className?: string;
-  style?: Record<string, any>;
+  style?: CSSProperties;
   onUpdate?: (data: GasFeeData) => void;
 }
 
@@ -35,7 +37,7 @@ export interface NFTMinterProps {
   rpcUrl?: string;
   maxPerWallet?: number;
   className?: string;
-  style?: Record<string, any>;
+  style?: CSSProperties;
   onMintSuccess?: (result: { txHash: string; quantity: number }) => void;
   onMintError?: (error: Error) => void;
 }

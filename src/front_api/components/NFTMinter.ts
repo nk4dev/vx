@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useWallet } from '../hooks/use-wallet';
 import type { NFTMinterProps } from '../../types/front_components';
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   card: {
     padding: '1.5rem',
     borderRadius: '0.5rem',
@@ -56,7 +56,7 @@ const styles = {
   error: { marginTop: '1rem', fontSize: '0.875rem', color: '#dc2626' },
 };
 
-export function NFTMinter(props: NFTMinterProps) {
+export function NFTMinter(props: NFTMinterProps): React.ReactElement {
   const { contractAddress, priceEth, maxPerWallet = 5, className, style, onMintSuccess, onMintError } = props;
   const { address, connect } = useWallet();
   const [quantity, setQuantity] = useState(1);
@@ -91,7 +91,7 @@ export function NFTMinter(props: NFTMinterProps) {
       // ERC721 safeMint(address) selector: 0xa0712d68 (mint(uint256)) or 0x40c10f19 (mint(address,uint256)) or 0x1249c58b (mint())
       // Standard simple mint transaction with value
       const totalWei = BigInt(Math.floor(parseFloat(totalEth) * 1e18)).toString(16);
-      const mintedTx = await eth.request({
+      const mintedTx = (await eth.request({
         method: 'eth_sendTransaction',
         params: [
           {
@@ -101,14 +101,17 @@ export function NFTMinter(props: NFTMinterProps) {
             data: '0x1249c58b', // mint() default selector
           },
         ],
-      });
+      })) as string;
 
       setTxHash(mintedTx);
       onMintSuccess?.({ txHash: mintedTx, quantity });
-    } catch (err: any) {
-      const msg = err?.message || 'Failed to mint NFT';
-      setError(msg);
-      onMintError?.(err);
+    } catch (err: unknown) {
+      const errorObj =
+        err instanceof Error
+          ? err
+          : new Error(typeof err === 'string' && err ? err : 'Failed to mint NFT');
+      setError(errorObj.message);
+      onMintError?.(errorObj);
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,4 @@
-import { defineComponent, h, type PropType } from 'vue';
+import { defineComponent, h, type CSSProperties, type PropType } from 'vue';
 import { useWallet } from '../composables/use-wallet';
 
 const styles = {
@@ -58,7 +58,7 @@ export const ConnectWallet = defineComponent({
   name: 'ConnectWallet',
   props: {
     customClass: { type: String, default: '' },
-    customStyle: { type: Object as PropType<Record<string, any>>, default: () => ({}) },
+    customStyle: { type: Object as PropType<CSSProperties>, default: () => ({}) },
   },
   emits: ['connect', 'disconnect'],
   setup(props, { emit }) {
@@ -70,7 +70,9 @@ export const ConnectWallet = defineComponent({
         if (res?.address) {
           emit('connect', res.address, res.chainId);
         }
-      } catch {}
+      } catch {
+        return;
+      }
     };
 
     const handleDisconnect = () => {

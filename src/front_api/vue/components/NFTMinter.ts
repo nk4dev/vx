@@ -1,5 +1,6 @@
-import { defineComponent, h, ref, computed, type PropType } from 'vue';
+import { defineComponent, h, ref, computed, type CSSProperties, type PropType } from 'vue';
 import { useWallet } from '../composables/use-wallet';
+import type { Eip1193Provider } from '../../../types/wallet';
 
 const styles = {
   card: {
@@ -62,7 +63,7 @@ export const NFTMinter = defineComponent({
     priceEth: { type: String, required: true },
     maxPerWallet: { type: Number, default: 5 },
     customClass: { type: String, default: '' },
-    customStyle: { type: Object as PropType<Record<string, any>>, default: () => ({}) },
+    customStyle: { type: Object as PropType<CSSProperties>, default: () => ({}) },
   },
   emits: ['mintSuccess', 'mintError'],
   setup(props, { emit }) {
@@ -95,11 +96,14 @@ export const NFTMinter = defineComponent({
 
       loading.value = true;
       try {
-        const eth = typeof window !== 'undefined' ? (window as any).ethereum : null;
+        const eth =
+          typeof window !== 'undefined'
+            ? ((window as { ethereum?: Eip1193Provider }).ethereum ?? null)
+            : null;
         if (!eth) throw new Error('No Ethereum wallet found');
 
         const totalWei = BigInt(Math.floor(parseFloat(totalEth.value) * 1e18)).toString(16);
-        const mintedTx = await eth.request({
+        const mintedTx = (await eth.request({
           method: 'eth_sendTransaction',
           params: [
             {
@@ -109,14 +113,17 @@ export const NFTMinter = defineComponent({
               data: '0x1249c58b', // mint() default selector
             },
           ],
-        });
+        })) as string;
 
         txHash.value = mintedTx;
         emit('mintSuccess', { txHash: mintedTx, quantity: quantity.value });
-      } catch (err: any) {
-        const msg = err?.message || 'Failed to mint NFT';
-        error.value = msg;
-        emit('mintError', err);
+      } catch (err: unknown) {
+        const errorObj =
+          err instanceof Error
+            ? err
+            : new Error(typeof err === 'string' && err ? err : 'Failed to mint NFT');
+        error.value = errorObj.message;
+        emit('mintError', errorObj);
       } finally {
         loading.value = false;
       }

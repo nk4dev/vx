@@ -7,7 +7,7 @@ export function useGasTracker(options: { rpcUrl?: string; pollIntervalMs?: numbe
   const [data, setData] = useState<GasFeeData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const timerRef = useRef<any>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchGas = useCallback(async () => {
     try {
@@ -49,8 +49,8 @@ export function useGasTracker(options: { rpcUrl?: string; pollIntervalMs?: numbe
 
       setData(feeData);
       setError(null);
-    } catch (err: any) {
-      setError(err?.message || 'Failed to fetch gas fee');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch gas fee');
     } finally {
       setLoading(false);
     }

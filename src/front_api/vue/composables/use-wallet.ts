@@ -1,5 +1,5 @@
 import { ref, onMounted, onUnmounted } from 'vue';
-import type { WalletState } from '../../../types/front_components';
+import type { Eip1193Provider } from '../../../types/wallet';
 
 export function useWallet() {
   const address = ref<string | null>(null);
@@ -8,32 +8,36 @@ export function useWallet() {
   const copied = ref<boolean>(false);
   const error = ref<string | null>(null);
 
-  const getEthereum = () => {
-    return typeof window !== 'undefined' ? (window as any).ethereum : null;
+  const getEthereum = (): Eip1193Provider | null => {
+    return typeof window !== 'undefined'
+      ? ((window as { ethereum?: Eip1193Provider }).ethereum ?? null)
+      : null;
   };
 
   const checkConnection = async () => {
     const eth = getEthereum();
     if (!eth) return;
     try {
-      const accounts: string[] = await eth.request({ method: 'eth_accounts' });
-      const currentChainId: string = await eth.request({ method: 'eth_chainId' });
+      const accounts = (await eth.request({ method: 'eth_accounts' })) as string[];
+      const currentChainId = (await eth.request({ method: 'eth_chainId' })) as string;
       if (accounts.length > 0) {
         address.value = accounts[0];
         chainId.value = currentChainId;
         error.value = null;
       }
-    } catch (err: any) {
-      error.value = err?.message || 'Failed to check wallet';
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Failed to check wallet';
     }
   };
 
-  const handleAccounts = (accounts: string[]) => {
+  const handleAccounts = (...args: unknown[]) => {
+    const accounts = Array.isArray(args[0]) ? (args[0] as string[]) : [];
     address.value = accounts[0] || null;
     error.value = null;
   };
 
-  const handleChain = (newChainId: string) => {
+  const handleChain = (...args: unknown[]) => {
+    const newChainId = typeof args[0] === 'string' ? args[0] : null;
     chainId.value = newChainId;
     error.value = null;
   };
@@ -66,13 +70,13 @@ export function useWallet() {
     isConnecting.value = true;
     error.value = null;
     try {
-      const accounts: string[] = await eth.request({ method: 'eth_requestAccounts' });
-      const currentChainId: string = await eth.request({ method: 'eth_chainId' });
+      const accounts = (await eth.request({ method: 'eth_requestAccounts' })) as string[];
+      const currentChainId = (await eth.request({ method: 'eth_chainId' })) as string;
       address.value = accounts[0] || null;
       chainId.value = currentChainId;
       return { address: address.value, chainId: currentChainId };
-    } catch (err: any) {
-      error.value = err?.message || 'Connection rejected';
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Connection rejected';
       throw err;
     } finally {
       isConnecting.value = false;

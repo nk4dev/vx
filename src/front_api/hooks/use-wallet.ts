@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { WalletState } from '../../types/front_components';
+import type { Eip1193Provider } from '../../types/wallet';
 
 declare global {
   interface Window {
-    ethereum?: any;
+    ethereum?: Eip1193Provider;
   }
 }
 
@@ -24,8 +25,8 @@ export function useWallet() {
     const eth = getEthereum();
     if (!eth) return;
     try {
-      const accounts: string[] = await eth.request({ method: 'eth_accounts' });
-      const chainId: string = await eth.request({ method: 'eth_chainId' });
+      const accounts = (await eth.request({ method: 'eth_accounts' })) as string[];
+      const chainId = (await eth.request({ method: 'eth_chainId' })) as string;
       if (accounts.length > 0) {
         setState((prev) => ({
           ...prev,
@@ -34,8 +35,11 @@ export function useWallet() {
           error: null,
         }));
       }
-    } catch (err: any) {
-      setState((prev) => ({ ...prev, error: err?.message || 'Failed to check wallet' }));
+    } catch (err: unknown) {
+      setState((prev) => ({
+        ...prev,
+        error: err instanceof Error ? err.message : 'Failed to check wallet',
+      }));
     }
   }, [getEthereum]);
 
@@ -44,7 +48,8 @@ export function useWallet() {
     const eth = getEthereum();
     if (!eth?.on) return;
 
-    const handleAccounts = (accounts: string[]) => {
+    const handleAccounts = (...args: unknown[]) => {
+      const accounts = Array.isArray(args[0]) ? (args[0] as string[]) : [];
       setState((prev) => ({
         ...prev,
         address: accounts[0] || null,
@@ -52,7 +57,8 @@ export function useWallet() {
       }));
     };
 
-    const handleChain = (chainId: string) => {
+    const handleChain = (...args: unknown[]) => {
+      const chainId = typeof args[0] === 'string' ? args[0] : null;
       setState((prev) => ({ ...prev, chainId, error: null }));
     };
 
@@ -75,8 +81,8 @@ export function useWallet() {
 
     setState((prev) => ({ ...prev, isConnecting: true, error: null }));
     try {
-      const accounts: string[] = await eth.request({ method: 'eth_requestAccounts' });
-      const chainId: string = await eth.request({ method: 'eth_chainId' });
+      const accounts = (await eth.request({ method: 'eth_requestAccounts' })) as string[];
+      const chainId = (await eth.request({ method: 'eth_chainId' })) as string;
       const address = accounts[0] || null;
       setState((prev) => ({
         ...prev,
@@ -86,11 +92,11 @@ export function useWallet() {
         error: null,
       }));
       return { address, chainId };
-    } catch (err: any) {
+    } catch (err: unknown) {
       setState((prev) => ({
         ...prev,
         isConnecting: false,
-        error: err?.message || 'Connection rejected',
+        error: err instanceof Error ? err.message : 'Connection rejected',
       }));
       throw err;
     }

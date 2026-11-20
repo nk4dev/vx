@@ -2,7 +2,17 @@ import React from 'react';
 import { useGasTracker } from '../hooks/use-gas-tracker';
 import type { GasTrackerProps } from '../../types/front_components';
 
-const styles = {
+const badgeStyle = (congestion: string): React.CSSProperties => ({
+  padding: '0.125rem 0.5rem',
+  fontSize: '0.75rem',
+  fontWeight: 600,
+  borderRadius: '9999px',
+  backgroundColor: congestion === 'high' ? '#fee2e2' : congestion === 'medium' ? '#fef3c7' : '#dcfce7',
+  color: congestion === 'high' ? '#b91c1c' : congestion === 'medium' ? '#b45309' : '#15803d',
+  textTransform: 'uppercase',
+});
+
+const styles: Record<string, React.CSSProperties> = {
   card: {
     padding: '1rem',
     borderRadius: '0.5rem',
@@ -24,15 +34,6 @@ const styles = {
     color: '#0f172a',
     margin: 0,
   },
-  badge: (congestion: string) => ({
-    padding: '0.125rem 0.5rem',
-    fontSize: '0.75rem',
-    fontWeight: 600,
-    borderRadius: '9999px',
-    backgroundColor: congestion === 'high' ? '#fee2e2' : congestion === 'medium' ? '#fef3c7' : '#dcfce7',
-    color: congestion === 'high' ? '#b91c1c' : congestion === 'medium' ? '#b45309' : '#15803d',
-    textTransform: 'uppercase' as const,
-  }),
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
@@ -76,7 +77,7 @@ const styles = {
   },
 };
 
-export function GasTracker(props: GasTrackerProps) {
+export function GasTracker(props: GasTrackerProps): React.ReactElement {
   const { rpcUrl, pollIntervalMs, className, style, onUpdate } = props;
   const { data, loading, error, refresh } = useGasTracker({ rpcUrl, pollIntervalMs });
 
@@ -95,7 +96,7 @@ export function GasTracker(props: GasTrackerProps) {
       'div',
       { style: styles.header },
       h('h3', { style: styles.title }, '⚡ Gas Fee Monitor'),
-      data && h('span', { style: styles.badge(data.congestion) }, data.congestion)
+      data && h('span', { style: badgeStyle(data.congestion) }, data.congestion)
     ),
     h(
       'div',

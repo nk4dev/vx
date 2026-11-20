@@ -7,7 +7,7 @@ export function useGasTracker(options: { rpcUrl?: string; pollIntervalMs?: numbe
   const data = ref<GasFeeData | null>(null);
   const loading = ref<boolean>(true);
   const error = ref<string | null>(null);
-  let timer: any = null;
+  let timer: ReturnType<typeof setInterval> | null = null;
 
   const fetchGas = async () => {
     try {
@@ -47,8 +47,8 @@ export function useGasTracker(options: { rpcUrl?: string; pollIntervalMs?: numbe
         blockNumber: block?.number ? parseInt(block.number, 16) : 0,
       };
       error.value = null;
-    } catch (err: any) {
-      error.value = err?.message || 'Failed to fetch gas fee';
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Failed to fetch gas fee';
     } finally {
       loading.value = false;
     }

@@ -1,4 +1,4 @@
-import { defineComponent, h, watch, type PropType } from 'vue';
+import { defineComponent, h, watch, type CSSProperties, type PropType } from 'vue';
 import { useGasTracker } from '../composables/use-gas-tracker';
 
 const styles = {
@@ -81,7 +81,7 @@ export const GasTracker = defineComponent({
     rpcUrl: { type: String, default: '' },
     pollIntervalMs: { type: Number, default: 8000 },
     customClass: { type: String, default: '' },
-    customStyle: { type: Object as PropType<Record<string, any>>, default: () => ({}) },
+    customStyle: { type: Object as PropType<CSSProperties>, default: () => ({}) },
   },
   emits: ['update'],
   setup(props, { emit }) {

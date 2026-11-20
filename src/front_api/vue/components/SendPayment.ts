@@ -1,6 +1,7 @@
-import { defineComponent, h, ref, type PropType } from 'vue';
+import { defineComponent, h, ref, type CSSProperties, type PropType } from 'vue';
 import { getRpcUrl } from '../../../core/contract';
 import type { PaymentMode, PaymentResult } from '../../../types/payment';
+import type { Eip1193Provider } from '../../../types/wallet';
 
 const styles = {
   root: {
@@ -56,7 +57,7 @@ export const SendPayment = defineComponent({
     apiEndpoint: { type: String, default: '/api/pay' },
     rpcUrl: { type: String, default: '' },
     customClass: { type: String, default: '' },
-    customStyle: { type: Object as PropType<Record<string, any>>, default: () => ({}) },
+    customStyle: { type: Object as PropType<CSSProperties>, default: () => ({}) },
   },
   emits: ['success', 'error'],
   setup(props, { emit }) {
@@ -75,17 +76,20 @@ export const SendPayment = defineComponent({
 
       try {
         if (currentMode.value === 'wallet') {
-          const eth = typeof window !== 'undefined' ? (window as any).ethereum : null;
+          const eth =
+            typeof window !== 'undefined'
+              ? ((window as { ethereum?: Eip1193Provider }).ethereum ?? null)
+              : null;
           if (!eth) throw new Error('No Ethereum wallet found');
 
-          const accounts = await eth.request({ method: 'eth_requestAccounts' });
+          const accounts = (await eth.request({ method: 'eth_requestAccounts' })) as string[];
           const from = accounts[0];
           const weiValue = BigInt(Math.floor(parseFloat(amountVal.value) * 1e18)).toString(16);
 
-          const txHash = await eth.request({
+          const txHash = (await eth.request({
             method: 'eth_sendTransaction',
             params: [{ from, to: toAddress.value, value: `0x${weiValue}` }],
-          });
+          })) as string;
 
           const res: PaymentResult = { txHash };
           result.value = res;
@@ -110,8 +114,8 @@ export const SendPayment = defineComponent({
           result.value = res;
           emit('success', res);
         }
-      } catch (err: any) {
-        errorMsg.value = err?.message || 'Payment failed';
+      } catch (err: unknown) {
+        errorMsg.value = err instanceof Error ? err.message : 'Payment failed';
         emit('error', err);
       } finally {
         loading.value = false;
@@ -131,7 +135,9 @@ export const SendPayment = defineComponent({
                 style: styles.input,
                 type: 'text',
                 value: toAddress.value,
-                onInput: (ev: any) => { toAddress.value = ev.target.value; },
+                onInput: (ev: Event) => {
+                  toAddress.value = (ev.target as HTMLInputElement).value;
+                },
                 required: true,
               }),
             ]),
@@ -141,7 +147,9 @@ export const SendPayment = defineComponent({
                 style: styles.input,
                 type: 'text',
                 value: amountVal.value,
-                onInput: (ev: any) => { amountVal.value = ev.target.value; },
+                onInput: (ev: Event) => {
+                  amountVal.value = (ev.target as HTMLInputElement).value;
+                },
                 required: true,
               }),
             ]),
@@ -150,7 +158,9 @@ export const SendPayment = defineComponent({
               h('select', {
                 style: styles.input,
                 value: currentMode.value,
-                onChange: (ev: any) => { currentMode.value = ev.target.value; },
+                onChange: (ev: Event) => {
+                  currentMode.value = (ev.target as HTMLSelectElement).value as PaymentMode;
+                },
               }, [
                 h('option', { value: 'wallet' }, 'Browser Wallet (MetaMask)'),
                 h('option', { value: 'api' }, 'Backend API'),

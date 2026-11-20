@@ -2,7 +2,7 @@ import React from 'react';
 import { useWallet } from '../hooks/use-wallet';
 import type { ConnectWalletProps } from '../../types/front_components';
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   container: {
     display: 'inline-flex',
     alignItems: 'center',
@@ -55,7 +55,7 @@ const styles = {
   },
 };
 
-export function ConnectWallet(props: ConnectWalletProps) {
+export function ConnectWallet(props: ConnectWalletProps): React.ReactElement {
   const { className, style, onConnect, onDisconnect } = props;
   const { address, isConnecting, copied, connect, disconnect, copyAddress } = useWallet();
 
@@ -65,7 +65,9 @@ export function ConnectWallet(props: ConnectWalletProps) {
       if (res?.address) {
         onConnect?.(res.address, res.chainId);
       }
-    } catch {}
+    } catch {
+      /* error state is already stored in useWallet */
+    }
   };
 
   const handleDisconnect = () => {
