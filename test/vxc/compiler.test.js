@@ -3,7 +3,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { VXCompiler } = require('../../packages/vxc/dist/compiler');
+const { VXCompiler } = require('@vx3/solc-compiler');
 
 // Minimal mock that mirrors the solc Standard JSON API.
 function makeBackend(overrides = {}) {

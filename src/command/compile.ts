@@ -1,59 +1,5 @@
 import * as path from 'path';
-// Bundled with the SDK (packages/vxc is in "files"); @vx3/vxc is not on npm.
-import { VXCompiler } from '../../packages/vxc/dist';
-
-interface ParsedArgs {
-  entry?: string;
-  out: string;
-  optimize: boolean;
-  runs: number;
-  evm?: string;
-  base?: string;
-  metadata: boolean;
-  remappings: Record<string, string>;
-}
-
-function parseArgs(argv: string[]): ParsedArgs {
-  const args: ParsedArgs = {
-    out: 'artifacts/vxc',
-    optimize: false,
-    runs: 200,
-    metadata: false,
-    remappings: {},
-  };
-  for (let i = 0; i < argv.length; i++) {
-    const a = argv[i];
-    if (a === '--out' || a === '-o') {
-      args.out = argv[++i];
-    } else if (a === '--optimize') {
-      args.optimize = true;
-    } else if (a === '--runs') {
-      const val = Number(argv[++i]);
-      if (!isNaN(val) && val >= 0) args.runs = val;
-    } else if (a === '--evm') {
-      args.evm = argv[++i];
-    } else if (a === '--base') {
-      args.base = argv[++i];
-    } else if (a === '--metadata') {
-      args.metadata = true;
-    } else if (a === '--remap') {
-      const raw = argv[++i] ?? '';
-      const eqIdx = raw.indexOf('=');
-      if (eqIdx !== -1) {
-        args.remappings[raw.slice(0, eqIdx)] = raw.slice(eqIdx + 1);
-      }
-    } else if (a.startsWith('--remap=')) {
-      const raw = a.slice('--remap='.length);
-      const eqIdx = raw.indexOf('=');
-      if (eqIdx !== -1) {
-        args.remappings[raw.slice(0, eqIdx)] = raw.slice(eqIdx + 1);
-      }
-    } else if (!a.startsWith('-') && !args.entry) {
-      args.entry = a;
-    }
-  }
-  return args;
-}
+import { VXCompiler, parseArgs, type CliArgs } from '@vx3/solc-compiler';
 
 export async function handleCompileCommand(argv: string[]): Promise<void> {
   if (argv.length === 0 || argv.includes('--help') || argv.includes('-h')) {
@@ -68,13 +14,23 @@ Options:
       --runs <n>       Optimizer runs (default: 200)
       --evm <version>  Target EVM version
       --base <dir>     Base path for import resolution
+      --via-ir         Compile via Yul IR pipeline
       --metadata       Emit Solidity metadata
+  -I, --include <dir>  Add an import search path (repeatable)
       --remap k=v      Add an import remapping (repeatable)
 `);
     return;
   }
 
-  const args = parseArgs(argv);
+  let args: CliArgs;
+  try {
+    args = parseArgs(argv);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`vx3 compile: ${msg}`);
+    process.exit(1);
+  }
+
   if (!args.entry) {
     console.error('vx3 compile: missing entry .sol file');
     process.exit(1);
@@ -87,7 +43,9 @@ Options:
     outDir: args.out,
     optimizer: { enabled: args.optimize, runs: args.runs },
     evmVersion: args.evm,
+    viaIR: args.viaIR,
     remappings: args.remappings,
+    includePaths: args.includePaths,
     metadata: args.metadata,
   });
 

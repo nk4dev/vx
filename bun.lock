@@ -5,9 +5,9 @@
     "": {
       "name": "vx3",
       "dependencies": {
+        "@vx3/solc-compiler": "github:nk4dev/vx-solc",
         "commander": "^12.1.0",
         "ethers": "^6.15.0",
-        "solc": "^0.8.30",
       },
       "devDependencies": {
         "@eslint/js": "^9.28.0",
@@ -24,6 +24,7 @@
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "rimraf": "^6.0.1",
+        "solc": "^0.8.30",
         "typescript": "^5.8.3",
         "typescript-eslint": "^8.33.1",
       },
@@ -35,20 +36,6 @@
         "react",
         "react-dom",
       ],
-    },
-    "packages/vxc": {
-      "name": "@vx3/vxc",
-      "version": "0.1.0",
-      "bin": {
-        "vxc": "dist/cli.js",
-      },
-      "dependencies": {
-        "solc": "^0.8.30",
-      },
-      "devDependencies": {
-        "@types/node": "^22.16.5",
-        "typescript": "^5.8.3",
-      },
     },
   },
   "packages": {
@@ -502,7 +489,7 @@
 
     "@unrs/resolver-binding-win32-x64-msvc": ["@unrs/resolver-binding-win32-x64-msvc@1.12.2", "", { "os": "win32", "cpu": "x64" }, "sha512-nAB74NfSNKknqQ1RrYj6uz8FcXEomu/MATJZxh/x+BArzN2U3JbOYC0APYzUIGhVY3m5hRxA8VPNdPBoG8txlA=="],
 
-    "@vx3/vxc": ["@vx3/vxc@workspace:packages/vxc"],
+    "@vx3/solc-compiler": ["@vx3/solc-compiler@github:nk4dev/vx-solc#480fc77", { "dependencies": { "solc": "^0.8.30" }, "bin": { "vxc": "./dist/src/cli.js", "solc-compiler": "./dist/src/cli.js" } }, "nk4dev-vx-solc-480fc77", "sha512-icuQ5H9iWkvc2ckQJC2Sx16xPu289dI2dhVgK6Ht0i33rYYkQSSIyhpnwnLzuoCKDpQ0jqp3eE8YYpUxd+dAqw=="],
 
     "abbrev": ["abbrev@1.0.9", "", {}, "sha512-LEyx4aLEC3x6T0UguF6YILf+ntvmOaWsVfENmIW0E9H09vKlLDGelMjjSm0jkDHALj8A8quZ/HapKNigzwge+Q=="],
 
