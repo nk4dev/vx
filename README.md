@@ -15,16 +15,19 @@ SDK docs: <https://nknighta.me/vx>
 - **One CLI for the whole flow** — scaffold, compile, run a node, pay, estimate
   gas, fetch from IPFS, and open a live dashboard.
 - **VXC, a custom Solidity compiler** — own frontend (lexer, import resolver,
-  artifact pipeline) with a pluggable backend.
-  Lives at [`packages/vxc`](packages/vxc/README.md).
+  artifact pipeline) with a pluggable backend, powered by the external
+  [`@vx3/solc-compiler`](https://github.com/nk4dev/vx-solc) package.
 - **Real-time dashboard** — `vx3 dash` opens a dark-themed dev dashboard with
   live block number, gas fees, RPC status, and an SSE activity log.
 - **Frontend templates** — React and Vue starters, plus a Hardhat package
   pre-wired for VX3 projects.
-- **Programmatic APIs** — every CLI command is also exposed as a TypeScript
-  function.
-  React component / hooks are also available from `vx3/react`; `react` is an
-  optional peer dependency and is only needed when you use them.
+- **Programmatic APIs & UI Components** — dual ESM/CJS and browser-safe bundles.
+  Every CLI command is exposed as a TypeScript function, and ready-made UI
+  components (`ConnectWallet`, `SendPayment`, `GasTracker`, `NFTMinter`,
+  `Payment`) plus hooks/composables (`useWallet`, `useGasTracker`, `usePayment`,
+  `usePaymentStatus`, `usePaymentDialog`) are exported from `vx3/react` and
+  `vx3/vue`. `react`, `react-dom`, and `vue` are optional peer dependencies and
+  are only needed when you use them.
 
 ## Install
 
@@ -96,13 +99,25 @@ vx3 compile contracts/Token.sol \
 ```
 
 Artifacts (`<Contract>.json` + `vxc.manifest.json`) are written to `--out` and
-are deploy-ready. Full docs: [`packages/vxc/README.md`](packages/vxc/README.md).
+are deploy-ready. Powered by
+[`@vx3/solc-compiler`](https://github.com/nk4dev/vx-solc).
+
+### Frontend Components (`vx3/react` & `vx3/vue`)
+
+```tsx
+// React (additional exports: Payment, useWallet, useGasTracker, usePayment, usePaymentStatus, usePaymentDialog)
+import { ConnectWallet, SendPayment, GasTracker, NFTMinter } from 'vx3/react';
+```
+
+```ts
+// Vue 3 (additional exports: useWallet, useGasTracker)
+import { ConnectWallet, SendPayment, GasTracker, NFTMinter } from 'vx3/vue';
+```
 
 ## Packages
 
 | Package | Path | Purpose |
 | --- | --- | --- |
-| `@vx3/vxc` | `packages/vxc` | Custom Solidity compiler (frontend + pluggable backend). |
 | `@vx3/hardhat` | `packages/hardhat` | Hardhat config preset for VX3 projects. |
 | `@vx3/template` | `packages/template` | Default project template. |
 | `@vx3/react-template` | `packages/react-template` | React starter. |
@@ -112,12 +127,9 @@ are deploy-ready. Full docs: [`packages/vxc/README.md`](packages/vxc/README.md).
 
 ```bash
 bun run build           # compile TypeScript → dist/
-bun test                # jest test suite
+bun run test            # jest test suite
 bun run lint             # eslint
 bun run format           # prettier
-
-# Build the VXC compiler package separately
-cd packages/vxc && npx tsc
 ```
 
 ## Contact
@@ -150,14 +162,17 @@ SDK ドキュメント: <https://nknighta.me/vx>
   ノード起動、送金、ガス推定、IPFS 取得、そしてライブダッシュボード。
 - **VXC カスタム Solidity コンパイラ** — 独自フロントエンド（レキサー、
   import リゾルバ、アーティファクトパイプライン）とプラグイン可能なバックエンド。
-  [`packages/vxc`](packages/vxc/README.md) に格納。
+  外部パッケージ [`@vx3/solc-compiler`](https://github.com/nk4dev/vx-solc) を使用。
 - **リアルタイムダッシュボード** — `vx3 dash` でダーク UI の開発ダッシュボードを起動。
   ライブブロック番号、ガス料金、RPC ステータス、SSE アクティビティログを表示。
 - **フロントエンドテンプレート** — React・Vue スターター、VX3 プロジェクト向け
   Hardhat パッケージを同梱。
-- **プログラマティック API** — すべての CLI コマンドは TypeScript 関数としても提供。
-  React コンポーネント / フックは `vx3/react` からも利用可能。`react` は任意の
-  peer dependency で、それらを使うときだけ必要。
+- **プログラマティック API & UI コンポーネント** — デュアル ESM/CJS およびブラウザ対応バンドル。
+  すべての CLI コマンドを TypeScript 関数として提供し、UI コンポーネント
+  （`ConnectWallet`, `SendPayment`, `GasTracker`, `NFTMinter`, `Payment`）と
+  フック／Composable（`useWallet`, `useGasTracker`, `usePayment`,
+  `usePaymentStatus`, `usePaymentDialog`）を `vx3/react` および `vx3/vue` から利用可能。
+  `react`, `react-dom`, `vue` は任意の peer dependency で、使用時のみ必要。
 
 ## インストール
 
@@ -230,13 +245,24 @@ vx3 compile contracts/Token.sol \
 
 アーティファクト（`<Contract>.json` + `vxc.manifest.json`）は `--out` に出力され、
 デプロイ可能な状態で保存されます。
-詳細: [`packages/vxc/README.md`](packages/vxc/README.md)
+コンパイラ本体: [`@vx3/solc-compiler`](https://github.com/nk4dev/vx-solc)。
+
+### フロントエンドコンポーネント（`vx3/react` & `vx3/vue`）
+
+```tsx
+// React（他にも Payment, useWallet, useGasTracker, usePayment, usePaymentStatus, usePaymentDialog をエクスポート）
+import { ConnectWallet, SendPayment, GasTracker, NFTMinter } from 'vx3/react';
+```
+
+```ts
+// Vue 3（他にも useWallet, useGasTracker をエクスポート）
+import { ConnectWallet, SendPayment, GasTracker, NFTMinter } from 'vx3/vue';
+```
 
 ## パッケージ
 
 | パッケージ | パス | 用途 |
 | --- | --- | --- |
-| `@vx3/vxc` | `packages/vxc` | カスタム Solidity コンパイラ（フロントエンド + プラグイン可能バックエンド）。 |
 | `@vx3/hardhat` | `packages/hardhat` | VX3 プロジェクト向け Hardhat 設定プリセット。 |
 | `@vx3/template` | `packages/template` | デフォルトプロジェクトテンプレート。 |
 | `@vx3/react-template` | `packages/react-template` | React スターター。 |
@@ -246,12 +272,9 @@ vx3 compile contracts/Token.sol \
 
 ```bash
 bun run build           # TypeScript → dist/ にコンパイル
-bun test                # jest テストスイート
+bun run test            # jest テストスイート
 bun run lint             # eslint
 bun run format           # prettier
-
-# VXC コンパイラパッケージを個別にビルド
-cd packages/vxc && npx tsc
 ```
 
 ## 連絡先
